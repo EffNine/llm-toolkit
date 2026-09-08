@@ -1,0 +1,30 @@
+[
+  {
+    "id": "cosine",
+    "name": "Cosine Annealing",
+    "type": "scheduler",
+    "description": "Smoothly decreases learning rate from peak to minimum following a cosine curve.",
+    "commonUse": "Default choice for most LLM training. Works well with warmup."
+  },
+  {
+    "id": "warmup",
+    "name": "Linear Warmup",
+    "type": "scheduler",
+    "description": "Ramps learning rate from 0 to target over the first N steps.",
+    "commonUse": "Almost always used at the start of LLM training. Prevents early instability."
+  },
+  {
+    "id": "constant",
+    "name": "Constant",
+    "type": "scheduler",
+    "description": "Keeps learning rate fixed throughout training.",
+    "commonUse": "Rarely used for pretraining. Sometimes used for fine-tuning."
+  },
+  {
+    "id": "one-cycle",
+    "name": "One-Cycle",
+    "type": "scheduler",
+    "description": "Ramps up then down in a single cycle. Combines warmup and decay.",
+    "commonUse": "Sometimes used for fine-tuning. Less common for pretraining."
+  }
+]

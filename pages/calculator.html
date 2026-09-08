@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VRAM Calculator — LLM Toolkit</title>
+  <meta name="description" content="Estimate GPU memory requirements for LLM training.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions">
+        <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
+      </div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>VRAM Calculator</span></div>
+        <h1>VRAM Calculator</h1>
+        <p style="margin-top: var(--space-4);">Estimate GPU memory requirements for your training configuration. All values are approximations.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="planner-card">
+          <div class="planner-card-title">Configuration</div>
+          <div class="planner-config-grid">
+            <div>
+              <label class="form-label">Parameter Count (billions)</label>
+              <input type="number" id="param-count" class="form-input" value="1" min="0.001" step="0.001">
+            </div>
+            <div>
+              <label class="form-label">Number of Layers</label>
+              <input type="number" id="num-layers" class="form-input" value="24" min="1">
+            </div>
+            <div>
+              <label class="form-label">Hidden Size</label>
+              <input type="number" id="hidden-size" class="form-input" value="4096" min="64" step="64">
+            </div>
+            <div>
+              <label class="form-label">Training Method</label>
+              <select id="training-method" class="form-select">
+                <option value="pretrain">Pretraining</option>
+                <option value="sft">SFT</option>
+                <option value="lora">LoRA</option>
+                <option value="qlora">QLoRA</option>
+                <option value="dpo">DPO</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Precision</label>
+              <select id="precision" class="form-select">
+                <option value="bf16">BF16</option>
+                <option value="fp16">FP16</option>
+                <option value="fp32">FP32</option>
+                <option value="fp8">FP8</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Quantization Bits (for QLoRA)</label>
+              <input type="number" id="quant-bits" class="form-input" value="0" min="0" max="8">
+              <div class="form-hint">0 = no quantization, 4 = NF4</div>
+            </div>
+            <div>
+              <label class="form-label">Optimizer</label>
+              <select id="optimizer" class="form-select">
+                <option value="adamw">AdamW</option>
+                <option value="sgd">SGD</option>
+                <option value="adam">Adam</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Batch Size (per GPU)</label>
+              <input type="number" id="batch-size" class="form-input" value="4" min="1">
+            </div>
+            <div>
+              <label class="form-label">Sequence Length</label>
+              <input type="number" id="seq-length" class="form-input" value="2048" min="64" step="64">
+            </div>
+            <div>
+              <label class="form-label">Gradient Accumulation</label>
+              <input type="number" id="grad-accum" class="form-input" value="1" min="1">
+            </div>
+            <div>
+              <label class="form-label">GPU Count</label>
+              <input type="number" id="gpu-count" class="form-input" value="1" min="1">
+            </div>
+            <div>
+              <label class="form-label">Your GPU VRAM (GB)</label>
+              <input type="number" id="gpu-vram" class="form-input" value="0" min="0" placeholder="0 = skip comparison">
+            </div>
+          </div>
+          <div class="flex gap-4 mt-6">
+            <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
+              <input type="checkbox" id="checkpointing"> Gradient Checkpointing
+            </label>
+            <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
+              <input type="checkbox" id="lora"> LoRA Enabled
+            </label>
+          </div>
+          <div class="flex gap-4 mt-6">
+            <button id="vram-calculate" class="btn btn-primary btn-lg">Show Calculation</button>
+            <button id="show-calculations" class="btn btn-secondary">Explain Formulas</button>
+          </div>
+        </div>
+        
+        <div id="calculations-panel" class="expandable-panel" style="display:none;">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <span class="expandable-title">Calculation Details</span>
+            <span class="expandable-icon">+</span>
+          </div>
+          <div class="expandable-content">
+            <div class="expandable-body">
+              <p><strong>Weight memory</strong> = params &times; bytes_per_param</p>
+              <p><strong>Gradient memory</strong> = params &times; 2 bytes (BF16 gradients). LoRA reduces this by ~90%.</p>
+              <p><strong>Optimizer memory</strong> = params &times; bytes_per_param &times; multiplier (AdamW = 2x, SGD = 0x)</p>
+              <p><strong>Activation memory</strong> = batch &times; seq_len &times; hidden &times; layers &times; 2 bytes. Gradient checkpointing reduces by ~90%.</p>
+              <p><strong>Temporary + overhead</strong> = ~2GB for framework buffers + ~2GB overhead</p>
+              <p class="mt-4"><em>All values in GB. This is an estimate; actual usage varies by framework and GPU.</em></p>
+            </div>
+          </div>
+        </div>
+        
+        <div id="vram-result" class="mt-6"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/calculator.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    window.renderCalculator = () => Calculator.init();
+  </script>
+</body>
+</html>

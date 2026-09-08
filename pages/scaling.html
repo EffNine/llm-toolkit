@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scaling — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Scaling</span></div>
+        <h1>Distributed Training</h1>
+        <p style="margin-top: var(--space-4);">Scale from 1 GPU to many. Data parallelism, tensor parallelism, pipeline parallelism, and sharded training.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">HOW SHOULD I SCALE?</div>
+        <div class="decision-node mt-4">
+          <div class="planner-config-grid">
+            <div><label class="form-label">Model Size (B)</label><input type="number" id="scale-model" class="form-input" value="7" min="0.1" step="0.1"></div>
+            <div><label class="form-label">GPU VRAM (GB)</label><input type="number" id="scale-vram" class="form-input" value="80" min="4"></div>
+            <div><label class="form-label">GPU Count</label><input type="number" id="scale-count" class="form-input" value="8" min="1"></div>
+            <div><label class="form-label">Interconnect</label>
+              <select id="scale-interconnect" class="form-select">
+                <option value="nvlink">NVLink</option>
+                <option value="pcie">PCIe only</option>
+                <option value="infinity">Infinity Fabric (AMD)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary mt-6" onclick="Scaling.getRecommendation()">Get Recommendation</button>
+          <div id="scale-result" class="mt-6"></div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">SCALING STRATEGIES</div>
+        <div class="expandable-panel mt-4">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Data Parallelism (DDP / FSDP)</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p><strong>What it does:</strong> Each GPU gets a copy of the model. Data is split across GPUs. Gradients are averaged via all-reduce.</p>
+            <p class="mt-4"><strong>DDP:</strong> Full model on each GPU. Simple but memory-inefficient at scale.</p>
+            <p><strong>FSDP:</strong> Shards model states across GPUs. 3-4x memory savings vs DDP. PyTorch's recommended approach.</p>
+            <p><strong>When to use:</strong> Your model fits on one GPU but you want faster training. Or when using FSDP, when the model is too large for one GPU.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Tensor Parallelism</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p><strong>What it does:</strong> Splits individual layers across GPUs. Each GPU computes a slice of the matrix multiplication.</p>
+            <p class="mt-4"><strong>Best for:</strong> Single-GPU OOM situations where the model is too wide for one GPU's memory.</p>
+            <p><strong>Requirement:</strong> Fast interconnect (NVLink) between the GPUs in each tensor-parallel group.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Pipeline Parallelism</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p><strong>What it does:</strong> Splits layers across GPUs in sequence. GPU 0 processes layer 0-7, GPU 1 processes layer 8-15, etc.</p>
+            <p class="mt-4"><strong>Trade-off:</strong> Reduces per-GPU memory but introduces "bubble" time where GPUs wait for activations/grads.</p>
+            <p><strong>Best for:</strong> Very large models where tensor parallelism alone is insufficient.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">2D / 3D Parallelism</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p><strong>2D:</strong> Tensor parallelism within a node + data parallelism across nodes. The most common setup for 70B+ models.</p>
+            <p class="mt-4"><strong>3D:</strong> Tensor + pipeline + data parallelism. Used for the largest models (400B+ parameters).</p>
+            <p><strong>Guideline:</strong> Start with data parallelism (FSDP). Add tensor parallelism if a single GPU can't hold a layer. Add pipeline parallelism if you have many GPUs per node but the model still doesn't fit.</p>
+          </div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Scaling = {
+      getRecommendation() {
+        const modelSize = parseFloat(document.getElementById('scale-model')?.value) || 7;
+        const vram = parseFloat(document.getElementById('scale-vram')?.value) || 80;
+        const count = parseInt(document.getElementById('scale-count')?.value) || 8;
+        const interconnect = document.getElementById('scale-interconnect')?.value || 'nvlink';
+        
+        const bytesPerParam = 2; // BF16
+        const memPerGPU = (modelSize * 1e9 * bytesPerParam * 4 / 1e9) / count; // 4x for training
+        
+        let strategy = '';
+        let reasons = [];
+        
+        if (memPerGPU <= vram * 0.7) {
+          strategy = 'Data Parallelism (FSDP)';
+          reasons.push(`Per-GPU memory (~${memPerGPU.toFixed(0)}GB) fits comfortably in ${vram}GB VRAM`);
+        } else if (memPerGPU <= vram) {
+          strategy = 'FSDP with Gradient Checkpointing';
+          reasons.push(`Memory is tight (~${memPerGPU.toFixed(0)}GB / ${vram}GB). Enable gradient checkpointing to reduce activation memory.`);
+        } else {
+          const tp = Math.ceil(memPerGPU / vram);
+          strategy = `Tensor Parallelism (tp=${tp}) + Data Parallelism`;
+          reasons.push(`Model too large for one GPU (${memPerGPU.toFixed(0)}GB needed, ${vram}GB available). Split layers across ${tp} GPUs.`);
+          if (count > tp && interconnect !== 'nvlink') {
+            reasons.push('WARNING: PCIe-only interconnect will limit throughput. NVLink strongly recommended for tensor parallelism.');
+          }
+        }
+        
+        const el = document.getElementById('scale-result');
+        if (el) {
+          el.innerHTML = `
+            <div class="callout callout-info">
+              <div class="callout-title">Recommended Strategy</div>
+              <p><strong>${strategy}</strong></p>
+              <ul style="padding-left: var(--space-4); margin-top: var(--space-2);">
+                ${reasons.map(r => `<li style="font-size: var(--text-sm); margin-bottom: var(--space-1);">${r}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="callout callout-warning mt-4">
+              <div class="callout-title">Note</div>
+              <p>This is a simplified estimate. Actual requirements depend on model architecture, batch size, sequence length, and framework implementation.</p>
+            </div>
+          `;
+        }
+      }
+    };
+    window.Scaling = Scaling;
+    window.renderScaling = () => {};
+  </script>
+</body>
+</html>

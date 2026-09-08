@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reference — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Reference</span></div>
+        <h1>Reference</h1>
+        <p style="margin-top: var(--space-4);">Quick lookup for concepts, formulas, commands, and configurations.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">KEY FORMULAS</div>
+        <div class="grid-2 mt-4">
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Weights</div>
+            <pre style="margin:0; font-size: var(--text-sm);">weights = params × bytes_per_param</pre>
+            <p class="text-xs mt-2">BF16 = 2 bytes, FP32 = 4 bytes</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Optimizer (AdamW)</div>
+            <pre style="margin:0; font-size: var(--text-sm);">optimizer = params × 2 × bytes_per_param</pre>
+            <p class="text-xs mt-2">m and v buffers, each same size as weights</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Activations</div>
+            <pre style="margin:0; font-size: var(--text-sm);">acts = batch × seq × hidden × layers × 2</pre>
+            <p class="text-xs mt-2">BF16 activations. Checkpointing reduces ~90%</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Perplexity</div>
+            <pre style="margin:0; font-size: var(--text-sm);">PPL = exp(cross_entropy_loss)</pre>
+            <p class="text-xs mt-2">Lower is better. PPL=10 means 10^10 possible next tokens effectively</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">MFU</div>
+            <pre style="margin:0; font-size: var(--text-sm);">MFU = actual_FLOPs / peak_FLOPs</pre>
+            <p class="text-xs mt-2">Target: 40-60% for training. Measures hardware efficiency.</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">KV Cache Memory</div>
+            <pre style="margin:0; font-size: var(--text-sm);">KV = 2 × seq × layers × kv_heads × head_dim × 2</pre>
+            <p class="text-xs mt-2">BF16. GQA reduces by sharing KV heads.</p>
+          </div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">USEFUL COMMANDS</div>
+        <div class="expandable-panel mt-4">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">GPU Monitoring</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <pre>nvidia-smi                    # GPU status
+nvidia-smi dmon -s u          # Real-time utilization
+nvidia-smi pmon -g all        # Per-process memory
+nccl-tests/build/all_reduce_perf -b 8 -f 2 -g 1  # NCCL benchmark</pre>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">PyTorch Profiling</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <pre>with torch.profiler.profile() as prof:
+    # training step
+print(prof.key_averages().table(sort_by="cuda_time_total"))</pre>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Distributed Launch</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <pre># Single node, 4 GPUs
+torchrun --nproc_per_node=4 train.py
+
+# Multi-node
+torchrun --nnodes=2 --nproc_per_node=8 \
+  --node_rank=$RANK --master_addr=$ADDR \
+  train.py</pre>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Memory Profiling</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <pre>import torch
+print(f"Allocated: {torch.cuda.memory_allocated()/1e9:.1f}GB")
+print(f"Cached:    {torch.cuda.memory_reserved()/1e9:.1f}GB")
+torch.cuda.max_memory_allocated()  # Peak memory</pre>
+          </div></div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">PRECISION REFERENCE</div>
+        <table class="data-table mt-4">
+          <thead><tr><th>Format</th><th>Bits</th><th>Max Value</th><th>Training Use</th><th>Inference Use</th></tr></thead>
+          <tbody>
+            <tr><td>FP32</td><td class="text-mono">32</td><td class="text-mono">~3.4×10³⁸</td><td>Accumulation only</td><td>Rarely</td></tr>
+            <tr><td>TF32</td><td class="text-mono">19 (truncated)</td><td class="text-mono">~6.8×10³⁸</td><td>Ampere+ matmul</td><td>-</td></tr>
+            <tr><td>BF16</td><td class="text-mono">16</td><td class="text-mono">~65504</td><td class="badge badge-success">Preferred</td><td class="badge badge-success">Common</td></tr>
+            <tr><td>FP16</td><td class="text-mono">16</td><td class="text-mono">~65504</td><td class="badge badge-warning">Use with care</td><td class="badge badge-info">Common</td></tr>
+            <tr><td>FP8</td><td class="text-mono">8</td><td class="text-mono">~448 (E4M3)</td><td class="badge badge-info">Experimental</td><td class="badge badge-success">Hopper+ inference</td></tr>
+            <tr><td>INT8</td><td class="text-mono">8</td><td class="text-mono">127</td><td>-</td><td class="badge badge-success">Widespread</td></tr>
+            <tr><td>INT4</td><td class="text-mono">4</td><td class="text-mono">7</td><td>-</td><td class="badge badge-warning">Aggressive quant</td></tr>
+          </tbody>
+        </table>
+        
+        <div class="callout callout-warning mt-6">
+          <div class="callout-title">Verification</div>
+          <p>Specifications should be verified against current vendor documentation. Hardware capabilities change with driver and framework updates.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>window.renderReference = () => {};</script>
+</body>
+</html>

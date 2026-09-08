@@ -1,0 +1,58 @@
+[
+  {
+    "id": "accuracy",
+    "title": "Accuracy",
+    "category": "evaluation",
+    "description": "Simple correctness rate on classification or multiple-choice tasks.",
+    "whenToUse": "Multiple choice benchmarks, factual QA."
+  },
+  {
+    "id": "perplexity-eval",
+    "title": "Perplexity",
+    "category": "evaluation",
+    "description": "Exp(mean cross-entropy loss)). Lower is better. Standard for language modeling.",
+    "whenToUse": "Measuring language modeling quality. Comparing models on the same test set."
+  },
+  {
+    "id": "mmlu",
+    "title": "MMLU",
+    "category": "evaluation",
+    "description": "Measurements of 57 subjects (math, history, law, medicine, etc.) in multiple-choice format.",
+    "whenToUse": "Broad knowledge assessment. The most commonly reported benchmark."
+  },
+  {
+    "id": "gsm8k",
+    "title": "GSM8K",
+    "category": "evaluation",
+    "description": "8.5K grade-school math word problems. Tests mathematical reasoning.",
+    "whenToUse": "Evaluating mathematical reasoning ability."
+  },
+  {
+    "id": "hellaswag",
+    "title": "HellaSwag",
+    "category": "evaluation",
+    "description": "Commonsense reasoning: complete the sentence given a context from activity descriptions.",
+    "whenToUse": "Evaluating commonsense and procedural reasoning."
+  },
+  {
+    "id": "truthfulqa",
+    "title": "TruthfulQA",
+    "category": "evaluation",
+    "description": "Tests whether models reproduce common misconceptions or provide truthful answers.",
+    "whenToUse": "Evaluating truthfulness and resistance to misinformation."
+  },
+  {
+    "id": "ifeval",
+    "title": "IFEval",
+    "category": "evaluation",
+    "description": "Instruction following evaluation: can the model follow exact constraints in prompts?",
+    "whenToUse": "Evaluating instruction-following capability."
+  },
+  {
+    "id": "human-eval",
+    "title": "HumanEval",
+    "category": "evaluation",
+    "description": "Python coding tasks. Measure pass@k: can the model generate correct code?",
+    "whenToUse": "Evaluating code generation capability."
+  }
+]

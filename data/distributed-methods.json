@@ -1,0 +1,47 @@
+[
+  {
+    "id": "ddp",
+    "name": "Data Parallelism (DDP)",
+    "type": "distributed",
+    "description": "Replicate model on each GPU, split data, average gradients via all-reduce.",
+    "scaling": "linear-with-gpus",
+    "memoryPerGPU": "full-model",
+    "communication": "all-reduce-gradients"
+  },
+  {
+    "id": "fsdp",
+    "name": "Fully Sharded Data Parallel",
+    "type": "distributed",
+    "description": "PyTorch's ZeRO-like implementation. Shards model, gradients, and optimizer states across GPUs.",
+    "scaling": "near-linear",
+    "memoryPerGPU": "model / num_gpus",
+    "communication": "all-gather-parameters + all-reduce-gradients"
+  },
+  {
+    "id": "zero",
+    "name": "DeepSpeed ZeRO",
+    "type": "distributed",
+    "description": "Microsoft's sharded data parallelism. Stages 1-3 progressively shard more state.",
+    "scaling": "near-linear",
+    "memoryPerGPU": "model / num_gpus (stage 3)",
+    "communication": "all-gather + all-reduce"
+  },
+  {
+    "id": "tensor-parallel",
+    "name": "Tensor Parallelism",
+    "type": "distributed",
+    "description": "Split individual layer operations across GPUs. Requires fast interconnect (NVLink).",
+    "scaling": "per-layer",
+    "memoryPerGPU": "model / tp_size",
+    "communication": "all-reduce-within-layer"
+  },
+  {
+    "id": "pipeline-parallel",
+    "name": "Pipeline Parallelism",
+    "type": "distributed",
+    "description": "Split model layers across GPUs in sequence. Different micro-batches on different GPUs.",
+    "scaling": "model-size-limited",
+    "memoryPerGPU": "model / pp_size",
+    "communication": "send-activations-forward + send-graduations-backward"
+  }
+]

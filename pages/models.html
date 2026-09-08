@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Models — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Models</span></div>
+        <h1>Model Database</h1>
+        <p style="margin-top: var(--space-4);">Representative models with verified specifications. Select a model to see details.</p>
+      </div>
+      <div class="page-content">
+        <div class="scroll-x">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Params</th>
+                <th>Type</th>
+                <th>Context</th>
+                <th>Tokenizer</th>
+                <th>License</th>
+                <th>Best For</th>
+              </tr>
+            </thead>
+            <tbody id="models-table-body"></tbody>
+          </table>
+        </div>
+        <div id="model-detail" class="mt-8"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Models = {
+      async init() {
+        try {
+          const mod = await import('../data/models.json');
+          window.MODELS = mod.default || mod;
+        } catch { window.MODELS = []; }
+        this.renderTable();
+      },
+      renderTable() {
+        const tbody = document.getElementById('models-table-body');
+        if (!tbody || !window.MODELS) return;
+        
+        tbody.innerHTML = window.MODELS.map(m => `
+          <tr style="cursor:pointer;" onclick="Models.show('${m.id}')">
+            <td><strong>${m.name}</strong></td>
+            <td class="text-mono">${m.parameters}${m.denseParameters ? ' (' + m.denseParameters + ' active)' : ''}</td>
+            <td>${m.type}</td>
+            <td class="text-mono">${m.contextLength ? m.contextLength.toLocaleString() : '-'}</td>
+            <td class="text-mono text-xs">${m.tokenizer || '-'}</td>
+            <td class="text-xs">${m.license || '-'}</td>
+            <td class="text-xs">${m.intendedUse || '-'}</td>
+          </tr>
+        `).join('');
+      },
+      show(id) {
+        const m = window.MODELS?.find(m => m.id === id);
+        if (!m) return;
+        
+        const el = document.getElementById('model-detail');
+        if (!el) return;
+        
+        el.innerHTML = `
+          <div class="planner-card">
+            <div class="planner-card-title">${m.name}</div>
+            <div class="grid-2">
+              <div>
+                <div class="metric-label">Parameters</div>
+                <div class="metric-value mt-1">${m.parameters}B</div>
+                ${m.denseParameters ? `<div class="text-xs text-tertiary mt-1">${m.denseParameters}B active (MoE)</div>` : ''}
+              </div>
+              <div>
+                <div class="metric-label">Architecture</div>
+                <div class="text-bold mt-1">${m.type}${m.variant ? ' · ' + m.variant : ''}</div>
+                <div class="text-xs text-tertiary mt-1">${m.layers || '?'} layers · ${m.hiddenSize || '?'} hidden</div>
+              </div>
+            </div>
+            <div class="grid-2 mt-4">
+              <div>
+                <div class="metric-label">Context Length</div>
+                <div class="text-bold mt-1">${m.contextLength ? m.contextLength.toLocaleString() : '?'}</div>
+              </div>
+              <div>
+                <div class="metric-label">Attention</div>
+                <div class="text-mono text-sm mt-1">${m.numHeads ? m.numHeads + ' heads' : ''} ${m.numKVHeads && m.numKVHeads !== m.numHeads ? '(KV: ' + m.numKVHeads + ')' : ''}</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="grid-2">
+              <div>
+                <div class="metric-label">Tokenizer</div>
+                <div class="text-sm mt-1">${m.tokenizer || '-'}</div>
+              </div>
+              <div>
+                <div class="metric-label">License</div>
+                <div class="text-sm mt-1">${m.license || '-'} <a href="${m.licenseUrl || '#'}" target="_blank" rel="noopener" class="text-muted">(details)</a></div>
+              </div>
+            </div>
+            ${m.hardwareConsiderations ? `<div class="callout callout-info mt-4"><div class="callout-title">Hardware Considerations</div><p style="margin:0;">${m.hardwareConsiderations}</p></div>` : ''}
+            ${m.source ? `<div class="mt-2 text-xs text-tertiary">Source: <a href="${m.source}" target="_blank" rel="noopener">${m.source}</a></div>` : ''}
+          </div>
+        `;
+      }
+    };
+    window.Models = Models;
+    window.renderModels = async () => { await Models.init(); };
+  </script>
+</body>
+</html>

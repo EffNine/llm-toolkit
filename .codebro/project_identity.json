@@ -1,0 +1,27 @@
+{
+  "name": "llm-toolkit",
+  "description": null,
+  "languages": [
+    "unknown"
+  ],
+  "frameworks": [],
+  "build_system": null,
+  "package_manager": null,
+  "testing_framework": null,
+  "repository_url": null,
+  "repository_type": null,
+  "architecture_summary": "0 modules across 1 packages, organized into 0 source areas; primary areas by symbol count: none",
+  "known_patterns": [],
+  "known_modules": [],
+  "important_files": [],
+  "engineering_decisions": [],
+  "known_constraints": [],
+  "current_sprint": null,
+  "roadmap": [],
+  "recent_milestones": [],
+  "coding_conventions": [],
+  "workspace_root": "/home/afnan/projects/active/llm-toolkit",
+  "schema_version": "1.0.0",
+  "created_at": null,
+  "updated_at": "2026-09-08T09:42:19.478743512+00:00"
+}

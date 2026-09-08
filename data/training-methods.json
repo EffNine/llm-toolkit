@@ -1,0 +1,93 @@
+[
+  {
+    "id": "pretraining",
+    "title": "Pretraining",
+    "category": "training-method",
+    "description": "Training a model from scratch on raw text using next-token prediction.",
+    "whenToUse": "You want to create a new foundation model or train on a completely new language/domain.",
+    "whyNotOthers": "Most expensive and data-hungry. Only choose when fine-tuning cannot achieve your goal.",
+    "dataRequired": "Billions to trillions of tokens. Cleaned, deduplicated, filtered text.",
+    "hardware": "Multi-GPU (8+ H100/A100) for models >1B. Single GPU for <100M parameter models.",
+    "cost": "High. $10K-$1M+ depending on scale.",
+    "complexity": "High. Requires distributed training expertise.",
+    "relatedMethods": ["continued-pretraining", "fine-tuning"]
+  },
+  {
+    "id": "continued-pretraining",
+    "title": "Continued Pretraining",
+    "category": "training-method",
+    "description": "Continuing to train an existing model on new data to expand its knowledge or adapt to a new domain.",
+    "whenToUse": "You have domain-specific text and want the model to learn new facts/patterns without changing its basic behavior.",
+    "whyNotOthers": "Better than fine-tuning when the new data is large (millions of tokens) and similar in format to pretraining data.",
+    "dataRequired": "Millions to billions of tokens of domain text.",
+    "hardware": "Similar to pretraining but can start with fewer GPUs if model is frozen except last layers.",
+    "cost": "Medium to high.",
+    "complexity": "Medium.",
+    "relatedMethods": ["pretraining", "fine-tuning"]
+  },
+  {
+    "id": "sft",
+    "title": "Supervised Fine-Tuning (SFT)",
+    "category": "training-method",
+    "description": "Training a model on input-output pairs to teach it to follow instructions.",
+    "whenToUse": "You want the model to respond in a specific format or follow instructions for a specific task.",
+    "whyNotOthers": "Use SFT when you have labeled examples. Use continued pretraining when you have raw domain text.",
+    "dataRequired": "Thousands to hundreds of thousands of instruction-response pairs.",
+    "hardware": "Single GPU (with LoRA) to multi-GPU (full fine-tuning).",
+    "cost": "Low to medium.",
+    "complexity": "Low to medium.",
+    "relatedMethods": ["lora", "qlora", "dpo"]
+  },
+  {
+    "id": "lora",
+    "title": "LoRA",
+    "category": "training-method",
+    "description": "Low-Rank Adaptation: freeze the base model and train small rank-decomposition matrices attached to selected layers.",
+    "whenToUse": "GPU memory is limited but you want better results than prompt engineering. The standard approach for fine-tuning.",
+    "whyNotOthers": "Slightly less capable than full fine-tuning, but uses ~10x less memory. Choose full FT only if you have the hardware.",
+    "dataRequired": "Similar to SFT: thousands to hundreds of thousands of examples.",
+    "hardware": "Single consumer GPU (24GB) for 7B models. Multi-GPU for larger models.",
+    "cost": "Low.",
+    "complexity": "Low.",
+    "relatedMethods": ["sft", "qlora"]
+  },
+  {
+    "id": "qlora",
+    "title": "QLoRA",
+    "category": "training-method",
+    "description": "LoRA combined with 4-bit quantization of the base model. Enables fine-tuning 7B models on a single 8GB GPU.",
+    "whenToUse": "You have very limited GPU memory (8-12GB) but want to fine-tune a large model.",
+    "whyNotOthers": "Slightly lower quality than full LoRA due to quantization noise. But often good enough, and dramatically cheaper.",
+    "dataRequired": "Same as SFT/LoRA.",
+    "hardware": "Single 8GB+ GPU.",
+    "cost": "Very low.",
+    "complexity": "Low.",
+    "relatedMethods": ["lora", "sft"]
+  },
+  {
+    "id": "dpo",
+    "title": "DPO (Direct Preference Optimization)",
+    "category": "training-method",
+    "description": "Align model behavior using preference pairs instead of training a separate reward model.",
+    "whenToUse": "You have preference data (chosen/rejected responses) and want to align the model without RL.",
+    "whyNotOthers": "Simpler than RLHF (no reward model, no PPO). But requires preference data which is harder to collect than instruction data.",
+    "dataRequired": "Preference pairs: (chosen_response, rejected_response) for many prompts.",
+    "hardware": "Same as SFT/LoRA.",
+    "cost": "Low.",
+    "complexity": "Medium.",
+    "relatedMethods": ["sft", "rlhf"]
+  },
+  {
+    "id": "rlhf",
+    "title": "RLHF",
+    "category": "training-method",
+    "description": "Reinforcement Learning from Human Feedback. Train a reward model, then optimize the LLM with PPO.",
+    "whenToUse": "You need the most sophisticated alignment. The original InstructGPT/ChatGPT approach.",
+    "whyNotOthers": "Much more complex than DPO. Three models needed (LLM, reward, reference) instead of DPO's two. DPO is usually sufficient.",
+    "dataRequired": " ranked responses for reward model training + preference data for RL.",
+    "hardware": "More GPUs than DPO (need room for reward model + reference model).",
+    "cost": "High.",
+    "complexity": "High.",
+    "relatedMethods": ["dpo", "sft"]
+  }
+]

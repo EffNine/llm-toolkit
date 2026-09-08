@@ -1,0 +1,63 @@
+{
+  "workspaces": [
+    {
+      "id": "ws::llm-toolkit",
+      "name": "llm-toolkit",
+      "root": "/home/afnan/projects/active/llm-toolkit",
+      "packages": [
+        "pkg::llm-toolkit"
+      ],
+      "metadata": {
+        "tags": [],
+        "attributes": [],
+        "description": null,
+        "language": null
+      }
+    }
+  ],
+  "modules": [],
+  "packages": [
+    {
+      "id": "pkg::llm-toolkit",
+      "name": "llm-toolkit",
+      "version": null,
+      "workspace": "ws::llm-toolkit",
+      "language": "unknown",
+      "build_targets": [
+        "build::bin::llm-toolkit"
+      ],
+      "metadata": {
+        "tags": [],
+        "attributes": [],
+        "description": null,
+        "language": null
+      }
+    }
+  ],
+  "symbols": [],
+  "tests": [],
+  "build_targets": [
+    {
+      "id": "build::bin::llm-toolkit",
+      "name": "llm-toolkit",
+      "kind": "Binary",
+      "language": "unknown",
+      "package": "pkg::llm-toolkit",
+      "metadata": {
+        "tags": [],
+        "attributes": [],
+        "description": null,
+        "language": null
+      }
+    }
+  ],
+  "dependencies": [],
+  "relationships": [],
+  "references": [],
+  "diagnostics": [],
+  "architecture_rules": [],
+  "languages": [],
+  "frameworks": [],
+  "entry_points": [],
+  "file_digests": {}
+}

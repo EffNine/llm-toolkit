@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Training — LLM Toolkit</title>
+  <meta name="description" content="Training methods, decision tree, and planning guide for LLM pretraining and fine-tuning.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/learning.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions">
+        <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
+      </div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Training</span></div>
+        <h1>Training Methods</h1>
+        <p style="margin-top: var(--space-4);">Choose the right training approach for your goal and hardware.</p>
+      </div>
+      <div class="page-content narrow">
+        <!-- Decision Tree -->
+        <div class="decision-node mb-8">
+          <div class="decision-question">WHAT ARE YOU TRYING TO CHANGE?</div>
+          <div class="decision-branches">
+            <div class="decision-branch" onclick="Training.showRecommendation('foundation')">
+              <strong>Model Knowledge</strong>
+              <div class="text-xs text-muted mt-1">Add new facts, languages, domains</div>
+            </div>
+            <div class="decision-branch" onclick="Training.showRecommendation('behaviour')">
+              <strong>Behaviour / Instructions</strong>
+              <div class="text-xs text-muted mt-1">Teach the model to follow formats</div>
+            </div>
+            <div class="decision-branch" onclick="Training.showRecommendation('memory')">
+              <strong>Limited GPU Memory</strong>
+              <div class="text-xs text-muted mt-1">Work around hardware constraints</div>
+            </div>
+            <div class="decision-branch" onclick="Training.showRecommendation('preference')">
+              <strong>Preference Alignment</strong>
+              <div class="text-xs text-muted mt-1">Make outputs safer, more helpful</div>
+            </div>
+            <div class="decision-branch" onclick="Training.showRecommendation('efficiency')">
+              <strong>Size / Efficiency</strong>
+              <div class="text-xs text-muted mt-1">Distill or compress the model</div>
+            </div>
+            <div class="decision-branch" onclick="Training.showRecommendation('new-foundation')">
+              <strong>New Foundation Model</strong>
+              <div class="text-xs text-muted mt-1">Pretrain from scratch</div>
+            </div>
+          </div>
+        </div>
+        
+        <div id="training-recommendation" style="display:none;"></div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">TRAINING METHODS REFERENCE</div>
+        <div id="methods-list" class="mt-4"></div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">PLANNER</div>
+        <div class="planner-card">
+          <div class="planner-card-title">Training Configuration</div>
+          <div class="planner-config-grid">
+            <div>
+              <label class="form-label">Goal</label>
+              <select id="train-goal" class="form-select">
+                <option value="pretrain">Pretraining</option>
+                <option value="cpt">Continued Pretraining</option>
+                <option value="sft">SFT</option>
+                <option value="lora">LoRA</option>
+                <option value="qlora">QLoRA</option>
+                <option value="dpo">DPO</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">Model Size (B)</label>
+              <input type="number" id="train-model-size" class="form-input" value="1" min="0.01" step="0.01">
+            </div>
+            <div>
+              <label class="form-label">Dataset Size (tokens)</label>
+              <input type="number" id="train-dataset-size" class="form-input" value="1000000000" min="1000000" step="1000000">
+            </div>
+            <div>
+              <label class="form-label">GPU VRAM (GB)</label>
+              <input type="number" id="train-gpu-vram" class="form-input" value="24" min="4">
+            </div>
+            <div>
+              <label class="form-label">GPU Count</label>
+              <input type="number" id="train-gpu-count" class="form-input" value="1" min="1">
+            </div>
+            <div>
+              <label class="form-label">Precision</label>
+              <select id="train-precision" class="form-select">
+                <option value="bf16">BF16</option>
+                <option value="fp16">FP16</option>
+                <option value="fp32">FP32</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary mt-6" onclick="Training.generatePlan()">Generate Training Plan</button>
+          <div id="training-plan-result" class="mt-6"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Training = {
+      recommendations: {
+        foundation: {
+          method: 'Continued Pretraining',
+          why: 'You want the model to learn new domain knowledge while preserving existing capabilities.',
+          whyNotOthers: 'SFT would change behavior too much. Full pretraining is overkill unless building from scratch.',
+          data: 'Millions to billions of tokens of domain text',
+          hardware: 'Same as full pretraining but can use lower LR',
+          cost: 'Medium to high',
+          complexity: 'Medium'
+        },
+        behaviour: {
+          method: 'Supervised Fine-Tuning (SFT)',
+          why: 'You have input-output pairs and want the model to learn the desired response format.',
+          whyNotOthers: 'Pretraining is for knowledge, not behavior. SFT is the right tool for instruction following.',
+          data: 'Thousands to hundreds of thousands of instruction-response pairs',
+          hardware: 'Single GPU with LoRA, or multi-GPU for full fine-tuning',
+          cost: 'Low to medium',
+          complexity: 'Low'
+        },
+        memory: {
+          method: 'LoRA or QLoRA',
+          why: 'These methods freeze the base model and only train small adapter matrices, dramatically reducing memory.',
+          whyNotOthers: 'Full fine-tuning requires 3x-6x more memory. Prompt tuning is lighter but less capable.',
+          data: 'Same as SFT',
+          hardware: 'Single consumer GPU (24GB) for 7B with QLoRA',
+          cost: 'Very low',
+          complexity: 'Low'
+        },
+        preference: {
+          method: 'DPO (Direct Preference Optimization)',
+          why: 'Simpler than RLHF. Works directly with preference pairs without needing a reward model or PPO.',
+          whyNotOthers: 'RLHF is more complex and unstable. DPO achieves similar results with half the engineering.',
+          data: 'Preference pairs: (chosen, rejected) responses for many prompts',
+          hardware: 'Same as SFT',
+          cost: 'Low',
+          complexity: 'Medium'
+        },
+        efficiency: {
+          method: 'Distillation or Quantization',
+          why: 'Reduce model size while preserving capability. Distillation trains a small model from a large one.',
+          whyNotOthers: 'Fine-tuning doesn\'t reduce size. Quantization reduces size but may hurt quality more than distillation.',
+          data: 'Large model outputs as training signal (distillation) or labeled data',
+          hardware: 'Smaller than full training',
+          cost: 'Low',
+          complexity: 'Medium'
+        },
+        'new-foundation': {
+          method: 'Pretraining',
+          why: 'You are building a new model from scratch. This is the only approach that creates new foundational capability.',
+          whyNotOthers: 'Fine-tuning can only adapt existing knowledge. It cannot create fundamentally new capabilities.',
+          data: 'Billions to trillions of tokens',
+          hardware: 'Multi-GPU cluster (8+ H100/A100 for models >1B)',
+          cost: 'High ($10K-$1M+)',
+          complexity: 'High'
+        }
+      },
+      
+      async init() {
+        await this.loadMethods();
+        this.renderMethods();
+      },
+      
+      async loadMethods() {
+        try {
+          const mod = await import('../data/training-methods.json');
+          window.TRAINING_METHODS = mod.default || mod;
+        } catch { window.TRAINING_METHODS = []; }
+      },
+      
+      renderMethods() {
+        const el = document.getElementById('methods-list');
+        if (!el || !window.TRAINING_METHODS) return;
+        
+        el.innerHTML = window.TRAINING_METHODS.map(m => `
+          <div class="expandable-panel">
+            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+              <span class="expandable-title">${m.title}</span>
+              <span class="expandable-icon">+</span>
+            </div>
+            <div class="expandable-content">
+              <div class="expandable-body">
+                <p>${m.description}</p>
+                <p><strong>When to use:</strong> ${m.whenToUse}</p>
+                <p><strong>Why not others:</strong> ${m.whyNotOthers}</p>
+                <p><strong>Data required:</strong> ${m.dataRequired}</p>
+                <p><strong>Hardware:</strong> ${m.hardware}</p>
+                <p><strong>Cost:</strong> ${m.cost} &middot; <strong>Complexity:</strong> ${m.complexity}</p>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+      
+      showRecommendation(key) {
+        const rec = this.recommendations[key];
+        if (!rec) return;
+        
+        const el = document.getElementById('training-recommendation');
+        if (!el) return;
+        el.style.display = 'block';
+        
+        el.innerHTML = `
+          <div class="callout callout-info">
+            <div class="callout-title">Recommended: ${rec.method}</div>
+            <p><strong>Why:</strong> ${rec.why}</p>
+            <p><strong>Why not others:</strong> ${rec.whyNotOthers}</p>
+            <p><strong>Data required:</strong> ${rec.data}</p>
+            <p><strong>Hardware:</strong> ${rec.hardware}</p>
+            <p><strong>Cost:</strong> ${rec.cost} &middot; <strong>Complexity:</strong> ${rec.complexity}</p>
+          </div>
+        `;
+        
+        document.querySelectorAll('.decision-branch').forEach(b => b.classList.remove('selected'));
+        event.target.closest('.decision-branch')?.classList.add('selected');
+      },
+      
+      generatePlan() {
+        const goal = document.getElementById('train-goal')?.value || 'sft';
+        const modelSize = parseFloat(document.getElementById('train-model-size')?.value) || 1;
+        const datasetSize = parseInt(document.getElementById('train-dataset-size')?.value) || 1e9;
+        const gpuVram = parseFloat(document.getElementById('train-gpu-vram')?.value) || 24;
+        const gpuCount = parseInt(document.getElementById('train-gpu-count')?.value) || 1;
+        const precision = document.getElementById('train-precision')?.value || 'bf16';
+        
+        const bytesPerParam = precision === 'bf16' || precision === 'fp16' ? 2 : 4;
+        const params = modelSize * 1e9;
+        
+        let methodMethod = goal;
+        let memMultiplier = 1;
+        
+        if (goal === 'pretrain' || goal === 'cpt') {
+          memMultiplier = 4; // weights + grads + optimizer
+        } else if (goal === 'lora') {
+          memMultiplier = 0.2; // only adapters
+        } else if (goal === 'qlora') {
+          memMultiplier = 0.15; // quantized + adapters
+        } else if (goal === 'dpo') {
+          memMultiplier = 3;
+        }
+        
+        const totalMemGB = (params * bytesPerParam * memMultiplier / 1e9);
+        const perGpu = totalMemGB / gpuCount;
+        const tokens = datasetSize;
+        const tokensPerStep = 32 * 2048 * gpuCount; // rough estimate
+        const steps = Math.ceil(tokens / tokensPerStep);
+        const epochs = Math.ceil(tokens / (datasetSize > 0 ? datasetSize : 1));
+        
+        let lr = 0.0001;
+        if (goal === 'pretrain' || goal === 'cpt') lr = 0.0001;
+        else if (goal === 'lora' || goal === 'qlora') lr = 0.0002;
+        else lr = 0.0001;
+        
+        const resultEl = document.getElementById('training-plan-result');
+        if (resultEl) {
+          resultEl.innerHTML = `
+            <div class="planner-result">
+              <div class="planner-card-title">TRAINING PLAN</div>
+              <div class="planner-result-grid">
+                <div class="planner-result-item"><div class="metric-value">${modelSize}</div><div class="metric-label">Parameters (B)</div></div>
+                <div class="planner-result-item"><div class="metric-value">${gpuCount}</div><div class="metric-label">GPUs</div></div>
+                <div class="planner-result-item"><div class="metric-value">${steps.toLocaleString()}</div><div class="metric-label">Estimated Steps</div></div>
+                <div class="planner-result-item"><div class="metric-value">${lr}</div><div class="metric-label">Learning Rate</div></div>
+                <div class="planner-result-item"><div class="metric-value">${perGpu.toFixed(1)}</div><div class="metric-label">GB/GPU (est.)</div></div>
+                <div class="planner-result-item"><div class="metric-value">${gpuVram - perGpu >= 0 ? 'OK' : 'OOM'}</div><div class="metric-label">VRAM Status</div></div>
+              </div>
+              <div class="callout callout-info mt-4">
+                <div class="callout-title">Notes</div>
+                <p>This is an estimate. Actual memory varies by framework, activation checkpointing, and GPU architecture. Verify with the VRAM calculator.</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+    };
+    
+    window.renderTraining = async () => { await Training.init(); };
+  </script>
+</body>
+</html>

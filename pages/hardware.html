@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardware — LLM Toolkit</title>
+  <meta name="description" content="GPU architecture database and hardware compatibility checker.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions">
+        <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
+      </div>
+    </header>
+    <main class="main-content">
+      <div class="page-header">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Hardware</span></div>
+        <h1>Hardware Database</h1>
+        <p style="margin-top: var(--space-4);">GPU architectures, specifications, and training suitability ratings. Select a GPU to see its training profile.</p>
+      </div>
+      <div class="page-content">
+        <div class="grid-2" style="gap: var(--space-8);">
+          <div>
+            <div class="section-title">FILTER</div>
+            <div class="flex flex-col gap-4" style="margin-bottom: var(--space-6);">
+              <div>
+                <label class="form-label">Vendor</label>
+                <select id="gpu-vendor-filter" class="form-select">
+                  <option value="">All Vendors</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Architecture</label>
+                <select id="gpu-arch-filter" class="form-select">
+                  <option value="">All Architectures</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label">Search</label>
+                <input type="text" id="gpu-search" class="form-input" placeholder="e.g., H100, 4090...">
+              </div>
+            </div>
+            
+            <div class="section-title">GPUs</div>
+            <div class="scroll-x">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>GPU</th>
+                    <th>Vendor</th>
+                    <th>Arch</th>
+                    <th>VRAM</th>
+                    <th>Memory</th>
+                    <th>Compute</th>
+                    <th>Precision</th>
+                    <th>Train</th>
+                  </tr>
+                </thead>
+                <tbody id="gpu-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+          
+          <div id="gpu-profile-container">
+            <div class="section-title">GPU PROFILE</div>
+            <div id="gpu-profile" style="color: var(--color-text-tertiary); font-size: var(--text-sm); padding: var(--space-8); text-align: center; border: var(--border); border-radius: var(--radius-lg);">
+              Select a GPU from the list to see its training profile
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/hardware.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    window.renderHardware = async () => {
+      await Hardware.init();
+      Hardware.renderArchFilter();
+    };
+  </script>
+</body>
+</html>

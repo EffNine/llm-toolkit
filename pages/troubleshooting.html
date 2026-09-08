@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Troubleshooting — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Troubleshooting</span></div>
+        <h1>Troubleshooting</h1>
+        <p style="margin-top: var(--space-4);">Common failures and how to fix them. Select your symptom to get targeted guidance.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">WHAT WENT WRONG?</div>
+        <div class="troubleshoot-flow mt-4">
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('oom')">
+            <div class="troubleshoot-icon">🧠</div>
+            <div><div class="troubleshoot-title">CUDA Out of Memory</div><div class="troubleshoot-desc">Training crashes with memory errors</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('slow')">
+            <div class="troubleshoot-icon">🐌</div>
+            <div><div class="troubleshoot-title">Training Too Slow</div><div class="troubleshoot-desc">Low throughput, GPU underutilized</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('nan')">
+            <div class="troubleshoot-icon">💥</div>
+            <div><div class="troubleshoot-title">Loss is NaN</div><div class="troubleshoot-desc">Loss becomes NaN and training breaks</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('nostep')">
+            <div class="troubleshoot-icon">📉</div>
+            <div><div class="troubleshoot-title">Loss Not Decreasing</div><div class="troubleshoot-desc">Training loss stays flat or increases</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('nogpu')">
+            <div class="troubleshoot-icon">🖥️</div>
+            <div><div class="troubleshoot-title">GPU Not Detected</div><div class="troubleshoot-desc">torch.cuda.is_available() returns False</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('dataset')">
+            <div class="troubleshoot-icon">📦</div>
+            <div><div class="troubleshoot-title">Dataset Error</div><div class="troubleshoot-desc">Data loading fails or produces bad batches</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('checkpoint')">
+            <div class="troubleshoot-icon">💾</div>
+            <div><div class="troubleshoot-title">Checkpoint Error</div><div class="troubleshoot-desc">Cannot save or load checkpoints</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('dist')">
+            <div class="troubleshoot-icon">🔗</div>
+            <div><div class="troubleshoot-title">Distributed Training Failure</div><div class="troubleshoot-desc">NCCL errors, scaling issues</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('poor')">
+            <div class="troubleshoot-icon">😕</div>
+            <div><div class="troubleshoot-title">Poor Evaluation</div><div class="troubleshoot-desc">Model scores lower than expected</div></div>
+          </div>
+          <div class="troubleshoot-option" onclick="Troubleshoot.show('badoutputs')">
+            <div class="troubleshoot-icon">🤷</div>
+            <div><div class="troubleshoot-title">Model Outputs Are Bad</div><div class="troubleshoot-desc">Generated text is incoherent or off-target</div></div>
+          </div>
+        </div>
+        
+        <div id="troubleshoot-result" class="mt-8" style="display:none;"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Troubleshoot = {
+      solutions: {
+        oom: {
+          title: 'CUDA Out of Memory',
+          causes: ['Batch size too large', 'Sequence length too long', 'Model too large for GPU', 'Memory leak in DataLoader'],
+          checks: ['Check torch.cuda.memory_allocated()', 'Profile with nvidia-smi', 'Check for detached tensors accumulating'],
+          fixes: [
+            'Reduce batch size (try 1, then increase)',
+            'Enable gradient checkpointing: torch.utils.checkpoint.checkpoint()',
+            'Reduce sequence length',
+            'Use mixed precision (BF16/FP16)',
+            'Enable FSDP for multi-GPU: FSDP(model, shard_state_in_grad=False)',
+            'Offload activations to CPU: fsdp_config={\'cpu_offload\': OffloadConfig(offload_activations=True)}',
+            'Check for tensor leaks: detach() intermediates you don\'t need gradients for'
+          ],
+          prevention: 'Always profile memory before training. Set a memory budget and stay 20% below it.'
+        },
+        slow: {
+          title: 'Training Too Slow',
+          causes: ['Data loading bottleneck', 'Small batch size', 'Gradient accumulation overhead', 'Communication overhead in distributed'],
+          checks: [
+            'Check GPU utilization: nvidia-smi dmon -s u',
+            'Profile with torch.profiler',
+            'Check DataLoader num_workers',
+            'Measure step time breakdown (forward/backward/optim)'
+          ],
+          fixes: [
+            'Increase num_workers in DataLoader (try 4-8)',
+            'Use pin_memory=True in DataLoader',
+            'Increase batch size to fill GPU memory',
+            'Enable Flash Attention: attn_impl="flash"',
+            'Use torch.compile() for JIT compilation',
+            'For distributed: check NCCL bandwidth, use NVLink',
+            'Profile to find the actual bottleneck (CPU vs GPU vs network)'
+          ],
+          prevention: 'Profile early and often. Know your MFU target (40%+ for training).'
+        },
+        nan: {
+          title: 'Loss is NaN',
+          causes: ['Learning rate too high', 'Numerical instability in mixed precision', 'Bad data (extreme values)', 'Gradient explosion'],
+          checks: [
+            'Check if NaN appears immediately or after some steps',
+            'Inspect loss value history',
+            'Check data for extreme outliers',
+            'Verify mixed precision is configured correctly'
+          ],
+          fixes: [
+            'Reduce learning rate (try 1/10th)',
+            'Add gradient clipping: torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)',
+            'Use BF16 instead of FP16 (more stable)',
+            'Add loss scaling if using FP16: GradScaler',
+            'Check for division by zero in custom loss functions',
+            'Inspect dataset for pathological samples'
+          ],
+          prevention: 'Always use gradient clipping. Start with BF16. Validate your data.'
+        },
+        nostep: {
+          title: 'Loss Not Decreasing',
+          causes: ['Learning rate too low', 'Model capacity issues', 'Data problems', 'Implementation bug'],
+          checks: [
+            'Verify loss is computed correctly',
+            'Check that gradients are flowing (inspect grad attributes)',
+            'Try a single batch to verify the model can learn',
+            'Check learning rate schedule'
+          ],
+          fixes: [
+            'Increase learning rate',
+            'Add warmup if not present',
+            'Verify optimizer is actually updating parameters',
+            'Check that your model receives gradients (no detached tensors)',
+            'Try a simpler dataset first to verify the pipeline works'
+          ],
+          prevention: 'Always test your training loop on a tiny subset first.'
+        },
+        nogpu: {
+          title: 'GPU Not Detected',
+          causes: ['CUDA drivers not installed', 'Wrong CUDA version', 'PyTorch installed without CUDA', 'Container missing GPU access'],
+          checks: [
+            'nvidia-smi (should show GPU info)',
+            'python -c "import torch; print(torch.cuda.is_available())"',
+            'python -c "import torch; print(torch.version.cuda)"',
+            'Check Docker GPU access: nvidia-container-toolkit'
+          ],
+          fixes: [
+            'Install NVIDIA drivers matching your GPU',
+            'Install PyTorch with CUDA support: pip install torch --index-url https://download.pytorch.org/whl/cu121',
+            'For Docker: add --gpus all flag',
+            'For WSL2: ensure NVIDIA driver is installed in Windows host'
+          ],
+          prevention: 'Verify GPU access before starting any training run.'
+        },
+        dataset: {
+          title: 'Dataset Error',
+          causes: ['Corrupted files', 'Tokenizer mismatch', 'Sequence length exceeded', 'Memory overflow in collation'],
+          checks: [
+            'Sample a few examples from the dataset',
+            'Check tokenizer vocabulary size matches model config',
+            'Verify max_length is reasonable',
+            'Check disk space and file permissions'
+          ],
+          fixes: [
+            'Re-download or repair corrupted data',
+            'Ensure tokenizer matches the model (use model\'s tokenizer)',
+            'Increase truncation length or filter long sequences',
+            'Use streaming datasets for large corpora',
+            'Check for encoding issues (use utf-8)'
+          ],
+          prevention: 'Validate your dataset before starting training. Sample and inspect.'
+        },
+        checkpoint: {
+          title: 'Checkpoint Error',
+          causes: ['Disk full', 'Permission issues', 'FSDP checkpoint incompatibility', 'Framework version mismatch'],
+          checks: [
+            'Check available disk space',
+            'Verify write permissions on checkpoint directory',
+            'Check framework versions match between save and load',
+            'Inspect checkpoint file integrity'
+          ],
+          fixes: [
+            'Free disk space or use remote storage',
+            'Fix permissions: chmod 777 on checkpoint dir',
+            'For FSDP: save/load with same FSDP version',
+            'Use sharded checkpoints for large models',
+            'Document framework versions in experiment notes'
+          ],
+          prevention: 'Save checkpoints incrementally. Use remote storage (S3, GCS) for critical checkpoints.'
+        },
+        dist: {
+          title: 'Distributed Training Failure',
+          causes: ['NCCL communication errors', 'Uneven data across GPUs', 'GPU visibility issues', 'Network problems'],
+          checks: [
+            'Check NCCL logs: NCCL_DEBUG=INFO',
+            'Verify all GPUs visible: nvidia-smi on each node',
+            'Check GPU assignment: CUDA_VISIBLE_DEVICES',
+            'Test NCCL connectivity: nccl-tests'
+          ],
+          fixes: [
+            'Set NCCL_DEBUG=INFO for detailed error messages',
+            'Ensure equal GPU count on all nodes',
+            'Check NVLink/PCIe connectivity between GPUs',
+            'Set correct CUDA_VISIBLE_DEVICES per process',
+            'Use torchrun instead of manual multiprocessing',
+            'For multi-node: verify network bandwidth and latency'
+          ],
+          prevention: 'Test distributed training on a small model first.'
+        },
+        poor: {
+          title: 'Poor Evaluation',
+          causes: ['Insufficient training data', 'Overfitting to training set', 'Wrong training objective', 'Contamination in test set'],
+          checks: [
+            'Compare train vs validation loss',
+            'Check for data leakage in evaluation',
+            'Review training data quality',
+            'Evaluate on held-out test set'
+          ],
+          fixes: [
+            'Increase training data quantity and quality',
+            'Add regularization if overfitting',
+            'Extend training (more tokens)',
+            ' Tune hyperparameters (LR, batch size)',
+            'Verify evaluation is not contaminated',
+            'Try different model architecture or larger model'
+          ],
+          prevention: 'Always keep a clean, contamination-free test set. Report train/val/test metrics separately.'
+        },
+        badoutputs: {
+          title: 'Model Outputs Are Bad',
+          causes: ['Insufficient fine-tuning data', 'Wrong hyperparameters', 'Mode collapse', 'Bad prompt format'],
+          checks: [
+            'Sample outputs at different temperatures',
+            'Check if model reproduces training data format',
+            'Inspect loss curve during fine-tuning',
+            'Verify chat template matches training format'
+          ],
+          fixes: [
+            'Increase fine-tuning data quality and quantity',
+            'Adjust learning rate (often too high for SFT)',
+            'Use temperature > 0 for more diverse outputs',
+            'Verify prompt/template format matches training',
+            'Try LoRA rank adjustment (increase if underfitting)',
+            'Add more diverse training examples'
+          ],
+          prevention: 'Evaluate qualitatively during training, not just at the end.'
+        }
+      },
+      
+      show(key) {
+        const sol = this.solutions[key];
+        if (!sol) return;
+        
+        const el = document.getElementById('troubleshoot-result');
+        if (!el) return;
+        el.style.display = 'block';
+        
+        el.innerHTML = `
+          <div class="planner-card">
+            <div class="planner-card-title">${sol.title}</div>
+            
+            <div class="mt-4">
+              <div class="section-title">LIKELY CAUSES</div>
+              <ul style="padding-left: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+                ${sol.causes.map(c => `<li style="margin-bottom: var(--space-1);">${c}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="mt-4">
+              <div class="section-title">CHECK</div>
+              <ul style="padding-left: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+                ${sol.checks.map(c => `<li style="margin-bottom: var(--space-1);">${c}</li>`).join('')}
+              </ul>
+            </div>
+            
+            <div class="mt-4">
+              <div class="section-title">FIX</div>
+              <ol style="padding-left: var(--space-6); font-size: var(--text-sm); color: var(--color-text-secondary);">
+                ${sol.fixes.map(f => `<li style="margin-bottom: var(--space-2);">${f}</li>`).join('')}
+              </ol>
+            </div>
+            
+            <div class="callout callout-tip mt-4">
+              <div class="callout-title">Prevention</div>
+              <p style="margin:0;">${sol.prevention}</p>
+            </div>
+          </div>
+        `;
+        
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+    window.Troubleshoot = Troubleshoot;
+    window.renderTroubleshooting = () => {};
+  </script>
+</body>
+</html>

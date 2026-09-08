@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inference — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Inference</span></div>
+        <h1>Inference</h1>
+        <p style="margin-top: var(--space-4);">Generate text from your model. Sampling strategies, KV cache, and optimization techniques.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">GENERATION STRATEGIES</div>
+        <div class="grid-2 mt-4">
+          <div class="expandable-panel">
+            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Greedy Decoding</span><span class="expandable-icon">+</span></div>
+            <div class="expandable-content"><div class="expandable-body">
+              <p>Always pick the token with highest probability. Deterministic, fastest, but often repetitive and boring output.</p>
+              <p class="mt-4"><strong>Use when:</strong> You need deterministic output, or evaluating model capability.</p>
+            </div></div>
+          </div>
+          <div class="expandable-panel">
+            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Temperature Sampling</span><span class="expandable-icon">+</span></div>
+            <div class="expandable-content"><div class="expandable-body">
+              <p>Divide logits by temperature before softmax. Low temp (&lt;0.5) = focused/deterministic. High temp (&gt;1.0) = creative/random.</p>
+              <p class="mt-4"><strong>Typical range:</strong> 0.7-1.0 for most applications. Below 0.5 risks repetitive output.</p>
+            </div></div>
+          </div>
+          <div class="expandable-panel">
+            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Top-K Sampling</span><span class="expandable-icon">+</span></div>
+            <div class="expandable-content"><div class="expandable-body">
+              <p>Only sample from the K most likely tokens. Prevents low-probability nonsense while maintaining diversity.</p>
+              <p class="mt-4"><strong>Typical range:</strong> K=40-100. Combine with temperature for best results.</p>
+            </div></div>
+          </div>
+          <div class="expandable-panel">
+            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Top-P (Nucleus) Sampling</span><span class="expandable-icon">+</span></div>
+            <div class="expandable-content"><div class="expandable-body">
+              <p>Sample from the smallest set of tokens whose cumulative probability exceeds P. Adaptive to distribution shape.</p>
+              <p class="mt-4"><strong>Typical range:</strong> P=0.9-0.95. Often preferred over top-K for variable-quality text.</p>
+            </div></div>
+          </div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">KV CACHE</div>
+        <div class="card mt-4">
+          <p><strong>The problem:</strong> Without KV cache, each new token requires recomputing attention over all previous tokens. Complexity: O(n²).</p>
+          <p class="mt-4"><strong>The solution:</strong> Store computed K,V pairs. Each new token only computes attention against cached keys/values. Complexity: O(n).</p>
+          <p class="mt-4"><strong>Memory cost:</strong> 2 × seq_len × num_layers × num_kv_heads × head_dim × 2 bytes (BF16).</p>
+          <p class="mt-4"><strong>Example:</strong> 7B model, 4096 context, BF16 = ~1.3GB KV cache. At 32K context = ~10GB.</p>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">INFERENCE ENGINES</div>
+        <div class="grid-2 mt-4">
+          <div class="card">
+            <div class="section-title">vLLM</div>
+            <p class="text-sm">PagedAttention, continuous batching, highest throughput. The industry standard for serving.</p>
+          </div>
+          <div class="card">
+            <div class="section-title">TGI (Text Generation Inference)</div>
+            <p class="text-sm">Hugging Face's production server. Good integration with Hugging Face ecosystem.</p>
+          </div>
+          <div class="card">
+            <div class="section-title">Ollama</div>
+            <p class="text-sm">Local inference with GGUF quantized models. Simplest way to run models locally.</p>
+          </div>
+          <div class="card">
+            <div class="section-title">llama.cpp</div>
+            <p class="text-sm">CPU + GPU hybrid inference. Best for running large models on limited hardware.</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>window.renderInference = () => {};</script>
+</body>
+</html>

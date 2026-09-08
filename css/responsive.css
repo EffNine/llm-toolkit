@@ -1,0 +1,27 @@
+@media (max-width: 1024px) {
+  .site-wrapper { grid-template-columns: 1fr; grid-template-areas: "nav" "main"; }
+  .sidebar { position: fixed; left: -280px; top: var(--nav-height); width: 280px; z-index: 150; transition: left var(--transition-base); box-shadow: var(--shadow-lg); }
+  .sidebar.open { left: 0; }
+  .hamburger { display: flex; }
+  .sidebar-overlay { position: fixed; inset: 0; top: var(--nav-height); background: rgba(0,0,0,0.3); z-index: 140; opacity: 0; visibility: hidden; transition: all var(--transition-base); }
+  .sidebar-overlay.active { opacity: 1; visibility: visible; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .page-header, .page-content { padding-left: var(--space-6); padding-right: var(--space-6); }
+}
+@media (max-width: 640px) {
+  :root { --text-5xl: 2rem; --text-4xl: 1.75rem; --text-3xl: 1.5rem; }
+  .page-header, .page-content { padding-left: var(--space-4); padding-right: var(--space-4); }
+  .selection-grid { grid-template-columns: 1fr; }
+  .planner-config-grid { grid-template-columns: 1fr; }
+  .decision-branches { grid-template-columns: 1fr; }
+  .knowledge-graph { grid-template-columns: 1fr; }
+  .topic-nav { flex-direction: column; }
+  .topic-nav-btn { max-width: 100%; }
+  .top-nav { padding: 0 var(--space-4); }
+}
+@media print {
+  .sidebar, .top-nav, .hamburger, .sidebar-overlay { display: none !important; }
+  .site-wrapper { display: block; }
+  .main-content { padding: 0; }
+  body { background: white; color: black; }
+}

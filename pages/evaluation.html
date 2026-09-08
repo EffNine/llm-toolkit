@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluation — LLM Toolkit</title>
+  <meta name="description" content="Evaluation methods, benchmarks, and planning for LLM assessment.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/learning.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Evaluation</span></div>
+        <h1>Evaluation</h1>
+        <p style="margin-top: var(--space-4);">How to measure whether your model is actually good. Benchmarks, metrics, and evaluation design.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">EVALUATION CATEGORIES</div>
+        <div class="knowledge-graph mt-4">
+          <div class="graph-card" onclick="Evaluation.showCategory('general')"><div class="graph-card-title">General Knowledge</div><div class="graph-card-type">MMLU, HellaSwag, TruthfulQA</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('math')"><div class="graph-card-title">Math &amp; Reasoning</div><div class="graph-card-type">GSM8K, MATH, AIME</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('coding')"><div class="graph-card-title">Coding</div><div class="graph-card-type">HumanEval, MBPP, SWE-bench</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('instruction')"><div class="graph-card-title">Instruction Following</div><div class="graph-card-type">IFEval, BEAVERTAILS</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('safety')"><div class="graph-card-title">Safety</div><div class="graph-card-type">RealToxicity, Jailbreak</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('domain')"><div class="graph-card-title">Domain Specific</div><div class="graph-card-type">Build your own</div></div>
+        </div>
+        
+        <div id="eval-content" class="mt-8"></div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">EVALUATION PRINCIPLES</div>
+        <div class="expandable-panel mt-4">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <span class="expandable-title">Training Loss vs Validation Loss</span>
+            <span class="expandable-icon">+</span>
+          </div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Training loss should decrease monotonically. Validation loss should decrease then plateau. If validation loss starts increasing while training loss continues decreasing, you are overfitting.</p>
+            <p class="mt-4"><strong>What to watch:</strong> A gap of more than 0.1-0.2 between train and val loss is a warning sign. The gap should narrow with more data or stronger regularization.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <span class="expandable-title">Contamination</span>
+            <span class="expandable-icon">+</span>
+          </div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Contamination occurs when test data appears in the training set. This inflates benchmark scores artificially. With web-scale pretraining, some contamination is nearly unavoidable.</p>
+            <p class="mt-4"><strong>How to detect:</strong> Exact n-gram matching, fuzzy matching, and checking known benchmark sources against your training data. Tools like <code>lm-evaluation-harness</code> include contamination detection.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <span class="expandable-title">Benchmark Design</span>
+            <span class="expandable-icon">+</span>
+          </div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Good benchmarks are: (1) hard for humans to game, (2) aligned with the capability you want to measure, (3) large enough for statistical significance, and (4) resistant to contamination.</p>
+            <p class="mt-4"><strong>Common pitfalls:</strong> Multiple-choice formats can be gamed by memorization. Few-shot prompts can leak into training. Always report zero-shot and few-shot results separately.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <span class="expandable-title">Qualitative Evaluation</span>
+            <span class="expandable-icon">+</span>
+          </div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Numerical benchmarks miss a lot. Systematically evaluate outputs by reading them. Check for: coherence, factual accuracy, instruction following, safety, and style consistency.</p>
+            <p class="mt-4"><strong>Technique:</strong> Create a diverse set of 50-100 evaluation prompts spanning your target capabilities. Have humans rate outputs on a 1-5 scale across multiple dimensions.</p>
+          </div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Evaluation = {
+      categories: {
+        general: {
+          title: 'General Knowledge',
+          benchmarks: ['MMLU (57 subjects)', 'HellaSwag (commonsense)', 'TruthfulQA (truthfulness)', 'Winogrande (coreference)'],
+          description: 'Measures breadth of knowledge across academic and everyday subjects. MMLU is the most widely cited benchmark.'
+        },
+        math: {
+          title: 'Math & Reasoning',
+          benchmarks: ['GSM8K (grade-school math)', 'MATH (competition math)', 'AIME (American Invitational)', 'FMCP (college-level math)'],
+          description: 'Tests mathematical reasoning from basic arithmetic to competition-level problems. Key indicator of general reasoning ability.'
+        },
+        coding: {
+          title: 'Coding',
+          benchmarks: ['HumanEval (Python function generation)', 'MBPP (basic programming)', 'SWE-bench (real GitHub issues)', 'LiveCodeBench (dynamic)'],
+          description: 'Evaluates code generation, debugging, and software engineering capability. SWE-bench is the hardest and most realistic.'
+        },
+        instruction: {
+          title: 'Instruction Following',
+          benchmarks: ['IFEval (constraint following)', 'BEAVERTAILS (safety)', 'NIAH (needle in haystack)'],
+          description: 'Measures how well the model follows explicit instructions, constraints, and formatting requirements.'
+        },
+        safety: {
+          title: 'Safety & Alignment',
+          benchmarks: ['RealToxicity (toxicity generation)', 'Jailbreak benchmarks', 'HC3 (helpfulness vs harm)'],
+          description: 'Assesses whether the model produces harmful, biased, or unsafe outputs. Critical for production deployment.'
+        },
+        domain: {
+          title: 'Domain-Specific',
+          benchmarks: ['Build your own', 'Custom evaluation harness'],
+          description: 'For specialized applications (medical, legal, technical), build custom evaluation based on your use case.'
+        }
+      },
+      
+      showCategory(key) {
+        const cat = this.categories[key];
+        if (!cat) return;
+        
+        const el = document.getElementById('eval-content');
+        if (!el) return;
+        
+        el.innerHTML = `
+          <div class="card">
+            <div class="uppercase text-tertiary text-xs tracking-wider mb-2">${cat.title}</div>
+            <h3 style="margin-bottom: var(--space-4);">${cat.title} Evaluation</h3>
+            <p>${cat.description}</p>
+            <div class="mt-4">
+              <div class="section-title">KEY BENCHMARKS</div>
+              <ul style="padding-left: var(--space-4);">
+                ${cat.benchmarks.map(b => `<li style="margin-bottom: var(--space-2); font-family: var(--font-mono); font-size: var(--text-sm);">${b}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="callout callout-info mt-4">
+              <div class="callout-title">Tip</div>
+              <p>Don't optimize for any single benchmark. Focus on broad capability improvement. Benchmark scores can be gamed through data contamination.</p>
+            </div>
+          </div>
+        `;
+      }
+    };
+    window.Evaluation = Evaluation;
+    window.renderEvaluation = () => {};
+  </script>
+</body>
+</html>

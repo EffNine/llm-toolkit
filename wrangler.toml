@@ -1,0 +1,10 @@
+{
+  "site_id": "llm-effnine-dev",
+  "description": "LLM Training & Engineering Toolkit - Interactive learning and engineering resource",
+  "branch": "main",
+  "build_command": "",
+  "output_dir": ".",
+  "dev_command": "",
+  "install_command": "",
+  "env": {}
+}

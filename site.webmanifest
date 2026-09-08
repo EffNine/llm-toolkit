@@ -1,0 +1,16 @@
+{
+  "name": "LLM Training & Engineering Toolkit",
+  "short_name": "LLM Toolkit",
+  "description": "Interactive toolkit for learning and building Large Language Models",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#18181b",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

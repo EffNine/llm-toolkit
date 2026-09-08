@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deployment — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Deployment</span></div>
+        <h1>Deployment</h1>
+        <p style="margin-top: var(--space-4);">From training run to production API. Serving, monitoring, and operational concerns.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="section-title">DEPLOYMENT PATTERNS</div>
+        <div class="grid-3 mt-4">
+          <div class="card">
+            <div class="section-title">Local Inference</div>
+            <p class="text-sm">Run on your own machine. Use Ollama, llama.cpp, or LM Studio. Best for development and personal use.</p>
+          </div>
+          <div class="card">
+            <div class="section-title">Workstation Server</div>
+            <p class="text-sm">Dedicated GPU machine serving via vLLM or TGI. Good for team access and moderate traffic.</p>
+          </div>
+          <div class="card">
+            <div class="section-title">Cloud API</div>
+            <p class="text-sm">Containerized deployment on cloud GPU instances. Auto-scaling, load balancing, monitoring.</p>
+          </div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">QUANTIZATION FOR DEPLOYMENT</div>
+        <div class="expandable-panel mt-4">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">INT8 Quantization</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Halves model size with minimal quality loss. Supported natively on most modern GPUs. Good first step for deployment.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">GPTQ / AWQ (4-bit)</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Post-training quantization to 4-bit. 4x size reduction. GPTQ and AWQ are the most common methods. Minor quality impact on well-calibrated models.</p>
+          </div></div>
+        </div>
+        <div class="expandable-panel mt-3">
+          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">GGUF (llama.cpp format)</span><span class="expandable-icon">+</span></div>
+          <div class="expandable-content"><div class="expandable-body">
+            <p>Universal quantization format supporting CPU + GPU offloading. Q4_K_M, Q5_K_M, Q6_K are popular middle-ground quantizations.</p>
+          </div></div>
+        </div>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="section-title mt-8">OPERATIONAL CONSIDERATIONS</div>
+        <ul style="padding-left: var(--space-6); color: var(--color-text-secondary);">
+          <li style="margin-bottom: var(--space-2);"><strong>Monitoring:</strong> Track latency, throughput, error rate, and GPU utilization</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Autoscaling:</strong> Scale GPU instances based on queue depth or request rate</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Model versioning:</strong> Keep old versions running while testing new ones</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Rate limiting:</strong> Prevent abuse and manage GPU costs</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Caching:</strong> Cache frequent prompts to reduce redundant computation</li>
+        </ul>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>window.renderDeployment = () => {};</script>
+</body>
+</html>

@@ -1,0 +1,1091 @@
+[
+  {
+    "id": "linux-basics",
+    "title": "Linux & Shell Basics",
+    "category": "foundations",
+    "difficulty": "L0",
+    "prerequisites": [],
+    "related": ["shell", "git-basics", "python-fundamentals"],
+    "estimatedTime": "~4h",
+    "summary": "Essential Linux commands and shell navigation for LLM work.",
+    "sections": {
+      "beginner": "<p>Linux is the operating system most LLM training runs use. You do not need to be a Linux expert, but you should be comfortable navigating the filesystem, running commands, and managing processes.</p>",
+      "intermediate": "<p>Key skills: file management, process control, SSH, package management, environment variables, and basic scripting.</p>",
+      "advanced": "<p>Understanding systemd, cgroups, namespaces, and how Linux resource limits affect GPU training.</p>",
+      "deepdive": "<p>Kernel modules for NVIDIA drivers, GPU passthrough, and container runtime considerations.</p>"
+    }
+  },
+  {
+    "id": "python-fundamentals",
+    "title": "Python Fundamentals",
+    "category": "foundations",
+    "difficulty": "L0",
+    "prerequisites": [],
+    "related": ["linux-basics", "numpy", "virtual-environments"],
+    "estimatedTime": "~8h",
+    "summary": "Python is the primary language of LLM engineering.",
+    "sections": {
+      "beginner": "<p>Variables, functions, control flow, data structures, and basic I/O. The foundation everything else builds on.</p>",
+      "intermediate": "<p>List comprehensions, generators, decorators, context managers, and OOP patterns used in ML codebases.</p>",
+      "advanced": "<p>Metaclasses, async/await, C extensions, and performance optimization techniques.</p>",
+      "deepdive": "<p>CPython internals, GIL behavior, and memory management in long-running training processes.</p>"
+    }
+  },
+  {
+    "id": "git-basics",
+    "title": "Git & Version Control",
+    "category": "foundations",
+    "difficulty": "L0",
+    "prerequisites": [],
+    "related": ["linux-basics", "python-fundamentals"],
+    "estimatedTime": "~2h",
+    "summary": "Track changes, collaborate, and manage experiment code.",
+    "sections": {
+      "beginner": "<p>Commits, branches, merges, pull requests, and .gitignore. Essential for experiment tracking.</p>",
+      "intermediate": "<p>Git hooks, bisect for debugging, submodule management for dataset versioning.</p>",
+      "advanced": "<p>Rebase workflows, cherry-picking, and managing large binary assets with Git LFS.</p>",
+      "deepdive": "<p>Git internals, object model, and how to recover from corruption in long training runs.</p>"
+    }
+  },
+  {
+    "id": "numpy",
+    "title": "NumPy & Arrays",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": ["python-fundamentals"],
+    "related": ["python-fundamentals", "tensors", "linear-algebra"],
+    "estimatedTime": "~4h",
+    "summary": "Vectorized computation is the basis of all DL frameworks.",
+    "sections": {
+      "beginner": "<p>Arrays, shapes, broadcasting, indexing, and vectorized operations. Understand how NumPy avoids Python loops.</p>",
+      "intermediate": "<p>Reshaping, transposing, stacking, splitting, and broadcasting rules for multi-dimensional data.</p>",
+      "advanced": "<p>Memory layout (C vs Fortran order), strided views, and performance characteristics of different operations.</p>",
+      "deepdive": "<p>NumPy's C backend, SIMD optimization, and how PyTorch tensors relate to NumPy arrays.</p>"
+    }
+  },
+  {
+    "id": "linear-algebra",
+    "title": "Linear Algebra",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": ["numpy"],
+    "related": ["numpy", "calculus", "neural-networks"],
+    "estimatedTime": "~10h",
+    "summary": "Matrices, vectors, and operations that power every neural network.",
+    "sections": {
+      "beginner": "<p>Vectors, matrices, matrix multiplication, transpose, dot product, and matrix norms. The language of neural networks.</p>",
+      "intermediate": "<p>Eigenvalues, SVD, rank, null space, and how they relate to model capacity and attention mechanisms.</p>",
+      "advanced": "<p>Kronecker products, tensor decompositions, and the linear algebra behind backpropagation.</p>",
+      "deepdive": "<p>Numerical linear algebra: condition numbers, stability of matrix operations, and why BF16 matters for matrix multiply.</p>"
+    }
+  },
+  {
+    "id": "calculus",
+    "title": "Calculus for ML",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": ["linear-algebra"],
+    "related": ["linear-algebra", "optimization", "autograd"],
+    "estimatedTime": "~6h",
+    "summary": "Derivatives and gradients are how models learn.",
+    "sections": {
+      "beginner": "<p>Functions, derivatives, chain rule, partial derivatives, and the gradient vector. The math of 'which way to adjust weights'.</p>",
+      "intermediate": "<p>Jacobian and Hessian matrices, directional derivatives, and the chain rule applied to computation graphs.</p>",
+      "advanced": "<p>Automatic differentiation theory, reverse-mode vs forward-mode, and how autograd implements the chain rule.</p>",
+      "deepdive": "<p>Symbolic vs numerical differentiation, and the trade-offs in framework implementations.</p>"
+    }
+  },
+  {
+    "id": "probability",
+    "title": "Probability & Statistics",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": [],
+    "related": ["calculus", "optimization", "evaluation"],
+    "estimatedTime": "~6h",
+    "summary": "Understanding uncertainty, distributions, and evaluation metrics.",
+    "sections": {
+      "beginner": "<p>Random variables, probability distributions, expectation, variance, and Bayes' theorem. Foundation for understanding loss functions and sampling.</p>",
+      "intermediate": "<p>Maximum likelihood estimation, cross-entropy, KL divergence, and why they matter for language modeling.</p>",
+      "advanced": "<p>Concentration inequalities, statistical testing for evaluation, and confidence intervals for benchmarks.</p>",
+      "deepdive": "<p>Information theory basics: entropy, perplexity as an information-theoretic measure.</p>"
+    }
+  },
+  {
+    "id": "optimization",
+    "title": "Optimization Fundamentals",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": ["calculus", "linear-algebra"],
+    "related": ["calculus", "learning-rate", "loss-functions"],
+    "estimatedTime": "~4h",
+    "summary": "How gradient descent actually works.",
+    "sections": {
+      "beginner": "<p>Loss landscapes, gradient descent, learning rate, and why optimization is harder than it looks.</p>",
+      "intermediate": "<p>Momentum, Adam, adaptive learning rates, and the difference between local and global minima in high dimensions.</p>",
+      "advanced": "<p>Saddle points, sparse gradients, saddle point escape strategies, and second-order methods.</p>",
+      "deepdive": "<p>Optimization theory: convergence rates, Lipschitz continuity, and why learning rate schedules matter more than optimizer choice.</p>"
+    }
+  },
+  {
+    "id": "ml-fundamentals",
+    "title": "Machine Learning Fundamentals",
+    "category": "foundations",
+    "difficulty": "L1",
+    "prerequisites": ["python-fundamentals", "numpy", "optimization"],
+    "related": ["numpy", "optimization", "neural-networks"],
+    "estimatedTime": "~8h",
+    "summary": "From datasets to models: the ML workflow.",
+    "sections": {
+      "beginner": "<p>Supervised vs unsupervised learning, training/validation/test splits, overfitting, regularization, and the bias-variance tradeoff.</p>",
+      "intermediate": "<p>Cross-validation, feature engineering, model selection, and basic evaluation metrics (accuracy, precision, recall).</p>",
+      "advanced": "<p>Regularization techniques, ensemble methods, and the statistical learning theory behind generalization.</p>",
+      "deepdive": "<p>Vapnik-Chervonenkis theory, Rademacher complexity, and why deep learning generalizes despite overparameterization.</p>"
+    }
+  },
+  {
+    "id": "tensors",
+    "title": "Tensors & Autograd",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["python-fundamentals", "numpy", "linear-algebra"],
+    "related": ["numpy", "linear-algebra", "neural-networks", "autograd"],
+    "estimatedTime": "~6h",
+    "summary": "PyTorch tensors and automatic differentiation.",
+    "sections": {
+      "beginner": "<p>Tensor creation, shapes, device placement (CPU/GPU), and basic operations. Autograd: how gradients are computed automatically.</p>",
+      "intermediate": "<p>Computation graphs, backward passes, detached tensors, and in-place operations. Understanding what autograd actually tracks.</p>",
+      "advanced": "<p>Custom autograd functions, gradient accumulation, and memory-efficient backward passes.</p>",
+      "deepdive": "<p>PyTorch's autograd engine, Function classes, and how gradient checkpoints work at the engine level.</p>"
+    }
+  },
+  {
+    "id": "neural-networks",
+    "title": "Neural Networks",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["tensors", "ml-fundamentals"],
+    "related": ["tensors", "ml-fundamentals", "activations", "loss-functions"],
+    "estimatedTime": "~6h",
+    "summary": "From perceptrons to modern architectures.",
+    "sections": {
+      "beginner": "<p>Layers, activations, fully connected networks, forward pass, and building a simple classifier in PyTorch.</p>",
+      "intermediate": "<p>Convolutional layers, pooling, batch normalization, initialization strategies, and training loops.</p>",
+      "advanced": "<p>Residual connections, layer normalization, and the design patterns that scale to deep networks.</p>",
+      "deepdive": "<p>Representational capacity, universal approximation theorem, and why depth matters more than width.</p>"
+    }
+  },
+  {
+    "id": "activations",
+    "title": "Activation Functions",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["neural-networks"],
+    "related": ["neural-networks", "neural-networks"],
+    "estimatedTime": "~2h",
+    "summary": "ReLU, GELU, SwiGLU — the non-linearity that makes networks learn.",
+    "sections": {
+      "beginner": "<p>Sigmoid, tanh, ReLU. Why we need non-linearity and which activation to use where.</p>",
+      "intermediate": "<p>GELU, SiLU/Swish, and why these are preferred in modern transformers.</p>",
+      "advanced": "<p>SwiGLU, GEGLU, and the role of gated activations in transformer FFNs.</p>",
+      "deepdive": "<p>Numerical properties of activations in mixed precision, vanishing gradient issues, and activation checkpointing trade-offs.</p>"
+    }
+  },
+  {
+    "id": "loss-functions",
+    "title": "Loss Functions",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["neural-networks", "probability"],
+    "related": ["neural-networks", "probability", "optimization"],
+    "estimatedTime": "~3h",
+    "summary": "Cross-entropy, contrastive loss, and what loss actually means.",
+    "sections": {
+      "beginner": "<p>Cross-entropy loss, negative log likelihood, and why language models minimize cross-entropy.</p>",
+      "intermediate": "<p>Label smoothing, focal loss, contrastive loss, and loss functions for preference optimization.</p>",
+      "advanced": "<p>Direct preference optimization (DPO) loss, REINFORCE for RLHF, and loss landscape analysis.</p>",
+      "deepdive": "<p>The connection between cross-entropy minimization and maximum likelihood, and why perplexity is exp(loss).</p>"
+    }
+  },
+  {
+    "id": "learning-rate",
+    "title": "Learning Rates & Schedulers",
+    "category": "deep-learning",
+    "difficulty": "L2",
+    "prerequisites": ["optimization", "neural-networks"],
+    "related": ["optimization", "neural-networks", "schedulers"],
+    "estimatedTime": "~4h",
+    "summary": "The single most important hyperparameter.",
+    "sections": {
+      "beginner": "<p>What learning rate does, warmup, cosine decay, and why the right LR matters more than the optimizer.</p>",
+      "intermediate": "<p>Learning rate finder, cyclical learning rates, one-cycle policy, and layer-wise LR decay.</p>",
+      "advanced": "<p>Adaptive learning rates, natural gradient, and the relationship between LR and batch size.</p>",
+      "deepdive": "<p>Theoretical bounds on learning rates, sharpness-aware minimization, and why LLMs need different LR strategies than CV models.</p>"
+    }
+  },
+  {
+    "id": "schedulers",
+    "title": "Training Schedulers",
+    "category": "deep-learning",
+    "difficulty": "L2",
+    "prerequisites": ["learning-rate"],
+    "related": ["learning-rate", "optimization"],
+    "estimatedTime": "~2h",
+    "summary": "How learning rate changes over the training run.",
+    "sections": {
+      "beginner": "<p>Cosine annealing, linear warmup, constant LR, and when to use each.</p>",
+      "intermediate": "<p>Warmup with cosine decay, triangular schedules, and scheduling per-layer.</p>",
+      "advanced": "<p>Lookahead schedulers, gradient scaling schedules, and optimizer state warmup.</p>",
+      "deepdive": "<p>The theory behind why warmup is critical for large models, and how scheduler choice interacts with batch size.</p>"
+    }
+  },
+  {
+    "id": "regularization",
+    "title": "Regularization",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["neural-networks", "ml-fundamentals"],
+    "related": ["neural-networks", "ml-fundamentals", "dropout"],
+    "estimatedTime": "~3h",
+    "summary": "Preventing overfitting: dropout, weight decay, and more.",
+    "sections": {
+      "beginner": "<p>Overfitting, L2 regularization (weight decay), dropout, and early stopping.</p>",
+      "intermediate": "<p>DropPath, stochastic depth, mixup, cutmix, and label smoothing as regularization.</p>",
+      "advanced": "<p>Gradient clipping, noise injection, and regularization in the context of large language models.</p>",
+      "deepdive": "<p>Why weight decay and L2 regularization differ in optimizers like Adam, and how regularization interacts with model scale.</p>"
+    }
+  },
+  {
+    "id": "normalization",
+    "title": "Normalization",
+    "category": "deep-learning",
+    "difficulty": "L2",
+    "prerequisites": ["neural-networks"],
+    "related": ["neural-networks", "batch-normalization"],
+    "estimatedTime": "~3h",
+    "summary": "LayerNorm, RMSNorm, and why normalization is critical for transformers.",
+    "sections": {
+      "beginner": "<p>Batch normalization in CNNs, layer normalization in transformers, and why they solve different problems.</p>",
+      "intermediate": "<p>RMSNorm vs LayerNorm, pre-norm vs post-norm, and the impact on training stability.</p>",
+      "advanced": "<p>Group normalization, instance normalization, and normalization in mixed precision training.</p>",
+      "deepdive": "<p>The mathematical difference between RMSNorm and LayerNorm, and why RMSNorm is preferred in modern architectures.</p>"
+    }
+  },
+  {
+    "id": "batch-normalization",
+    "title": "Batch Normalization",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["neural-networks"],
+    "related": ["normalization", "neural-networks"],
+    "estimatedTime": "~2h",
+    "summary": "Stabilizing training by normalizing layer inputs.",
+    "sections": {
+      "beginner": "<p>What batch norm does, running statistics, and why it matters less for transformers than CNNs.</p>",
+      "intermediate": "<p>Batch norm with small batch sizes, fused batch norm, and alternatives in transformer architectures.</p>",
+      "advanced": "<p>Batch norm in distributed training, sync batch norm, and cross-GPU statistics.</p>",
+      "deepdive": "<p>The statistics of batch norm, its interaction with mixed precision, and why layer norm replaced it in transformers.</p>"
+    }
+  },
+  {
+    "id": "training-loops",
+    "title": "Training Loops",
+    "category": "deep-learning",
+    "difficulty": "L1",
+    "prerequisites": ["tensors", "neural-networks"],
+    "related": ["tensors", "neural-networks", "checkpoints"],
+    "estimatedTime": "~4h",
+    "summary": "Building a correct training loop from scratch.",
+    "sections": {
+      "beginner": "<p>Forward pass, loss computation, backward pass, optimizer step. The basic training loop pattern in PyTorch.</p>",
+      "intermediate": "<p>Gradient accumulation, mixed precision training, progress tracking, and validation loops.</p>",
+      "advanced": "<p>Gradient scaling for FP16, gradient clipping, and handling numerical instability in the training loop.</p>",
+      "deepdive": "<p>The exact order of operations in a training step, and common bugs that cause silent training failures.</p>"
+    }
+  },
+  {
+    "id": "checkpoints",
+    "title": "Checkpoints & Resuming",
+    "category": "deep-learning",
+    "difficulty": "L2",
+    "prerequisites": ["training-loops"],
+    "related": ["training-loops", "distributed-training"],
+    "estimatedTime": "~3h",
+    "summary": "Saving and restoring training state safely.",
+    "sections": {
+      "beginner": "<p>What to save (model weights, optimizer state, epoch, step), torch.save vs torch.save snapshot patterns.</p>",
+      "intermediate": "<p>Sharded checkpoints, FSDP checkpointing, ZeRO-3 save/load, and distributed checkpoint consistency.</p>",
+      "advanced": "<p>Checkpoint compression, incremental checkpointing, and recovery from partial failures.</p>",
+      "deepdive": "<p>Filesystem performance impact on checkpoint I/O, and strategies for managing checkpoint storage at scale.</p>"
+    }
+  },
+  {
+    "id": "embeddings",
+    "title": "Token Embeddings",
+    "category": "transformers",
+    "difficulty": "L1",
+    "prerequisites": ["tensors", "neural-networks"],
+    "related": ["tensors", "neural-networks", "tokenizers"],
+    "estimatedTime": "~3h",
+    "summary": "How words become vectors.",
+    "sections": {
+      "beginner": "<p>Vocabulary, token IDs, embedding tables, and how lookups work. The simplest possible embedding layer.</p>",
+      "intermediate": "<p>Embedding dimension, vocabulary size trade-offs, and shared embeddings vs separate input/output embeddings.</p>",
+      "advanced": "<p>Soft prompts, prefix tuning, and how embeddings interact with tokenizer design.</p>",
+      "deepdive": "<p>Embedding table memory costs, quantization of embeddings, and the relationship between vocab size and training data.</p>"
+    }
+  },
+  {
+    "id": "positional-encoding",
+    "title": "Positional Encoding",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["embeddings", "attention"],
+    "related": ["embeddings", "attention", "rope"],
+    "estimatedTime": "~4h",
+    "summary": "Giving the model a sense of token order.",
+    "sections": {
+      "beginner": "<p>Why transformers need position information, absolute positional encoding ( sinusoidal ), and learned positions.</p>",
+      "intermediate": "<p>RoPE (Rotary Positional Embeddings), ALiBi, and relative position encodings. Why RoPE became dominant.</p>",
+      "advanced": "<p>Extending context length beyond training, NTK-aware interpolation, and YaRN positioning.</p>",
+      "deepdive": "<p>The mathematics of rotary embeddings, how they preserve relative position through attention, and extrapolation behavior.</p>"
+    }
+  },
+  {
+    "id": "rope",
+    "title": "Rotary Positional Embeddings (RoPE)",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["positional-encoding", "attention"],
+    "related": ["positional-encoding", "attention", "attention"],
+    "estimatedTime": "~3h",
+    "summary": "The position encoding used by LLaMA, Mistral, and most modern models.",
+    "sections": {
+      "beginner": "<p>What RoPE does: rotates query and key vectors by position-dependent angles so that attention depends on relative position.</p>",
+      "intermediate": "<p>Mathematical derivation, how RoPE enables extrapolation, and implementation in PyTorch.</p>",
+      "advanced": "<p>Long-context extensions, frequency interpolation, and combining RoPE with other positioning strategies.</p>",
+      "deepdive": "<p>Full derivation of RoPE from first principles, connection to spectral filtering, and why it works better than absolute positions at scale.</p>"
+    }
+  },
+  {
+    "id": "attention",
+    "title": "Attention Mechanism",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["tensors", "linear-algebra"],
+    "related": ["tensors", "linear-algebra", "self-attention"],
+    "estimatedTime": "~6h",
+    "summary": "The core innovation that made transformers possible.",
+    "sections": {
+      "beginner": "<p>Q, K, V vectors. Dot-product attention. Why attention lets the model 'focus' on relevant tokens.</p>",
+      "intermediate": "<p>Softmax scaling, attention masks (causal, bidirectional), and the attention score distribution.</p>",
+      "advanced": "<p>Flash Attention algorithm, memory-compute trade-offs, and implementation optimizations.</p>",
+      "deepdive": "<p>Complexity analysis O(n²d), sparse attention patterns, and the hardware-aware optimizations that make attention feasible at scale.</p>"
+    }
+  },
+  {
+    "id": "self-attention",
+    "title": "Self-Attention",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["attention"],
+    "related": ["attention", "multi-head-attention"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>How each token attends to every other token. The self-attention computation in detail.</p>",
+      "intermediate": "<p>Causal masking for decoder-only models, padding masks, and attention patterns in practice.</p>",
+      "advanced": "<p>Memory-efficient attention implementations, KV cache for inference, and attention compression.</p>",
+      "deepdive": "<p>Achieving O(n²) speedup through tiling and recomputation, and the trade-offs of approximate attention methods.</p>"
+    }
+  },
+  {
+    "id": "multi-head-attention",
+    "title": "Multi-Head Attention (MHA)",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["self-attention"],
+    "related": ["self-attention", "mqa", "gqa"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>Multiple attention heads in parallel, each learning different relationships. Concatenation and output projection.</p>",
+      "intermediate": "<p>Why multiple heads help, head specialization, and the relationship between head count and model size.</p>",
+      "advanced": "<p>Multi-Query Attention (MQA), Grouped-Query Attention (GQA), and the compute-memory trade-off.</p>",
+      "deepdive": "<p>Hardware efficiency of different attention variants, KV cache memory savings, and real-world benchmarks.</p>"
+    }
+  },
+  {
+    "id": "mqa",
+    "title": "Multi-Query Attention (MQA)",
+    "category": "transformers",
+    "difficulty": "L3",
+    "prerequisites": ["multi-head-attention"],
+    "related": ["multi-head-attention", "gqa"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Sharing one key/value head across all query heads. Massive KV cache savings at inference.</p>",
+      "intermediate": "<p>Trade-offs: reduced expressiveness vs dramatically faster inference. When MQA is appropriate.</p>",
+      "advanced": "<p>Implementation details, compatibility with Flash Attention, and model quality impact.</p>",
+      "deepdive": "<p>Benchmarks comparing MQA vs MHA, and the theoretical limits of query head sharing.</p>"
+    }
+  },
+  {
+    "id": "gqa",
+    "title": "Grouped-Query Attention (GQA)",
+    "category": "transformers",
+    "difficulty": "L3",
+    "prerequisites": ["multi-head-attention", "mqa"],
+    "related": ["multi-head-attention", "mqa"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>The middle ground: groups of query heads share KV heads. Better quality than MQA with most of the speed.</p>",
+      "intermediate": "<p>Choosing the right number of KV heads. GQA's impact on KV cache size and throughput.</p>",
+      "advanced": "<p>GQA in production models (Gemini, LLaMA 2/3), practical configuration guidance.</p>",
+      "deepdive": "<p>Analysis of GQA groups, benchmarking across different group sizes, and integration with continuous batching.</p>"
+    }
+  },
+  {
+    "id": "ffn",
+    "title": "Feed-Forward Networks (FFN)",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["neural-networks", "attention"],
+    "related": ["neural-networks", "attention", "swiglu"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>The dense FFN in transformers: two linear layers with a non-linearity in between. What it computes.</p>",
+      "intermediate": "<p>FFN hidden size vs model hidden size, parameter count in FFNs, and why FFNs dominate model size.</p>",
+      "advanced": "<p>SwiGLU, GEGLU, and gated FFNs. Why gating improves performance in large models.</p>",
+      "deepdive": "<p>The empirical relationship between FFN expansion ratio and model quality, and memory implications of different FFN designs.</p>"
+    }
+  },
+  {
+    "id": "swiglu",
+    "title": "SwiGLU FFN",
+    "category": "transformers",
+    "difficulty": "L3",
+    "prerequisites": ["ffn"],
+    "related": ["ffn", "activations"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Replacing the simple FFN with a gated variant: split, gate through SiLU, multiply, project.</p>",
+      "intermediate": "<p>Why SwiGLU outperforms standard FFN at scale, the role of the gate in information flow.</p>",
+      "advanced": "<p>GEGLU, ReGLU, and variations. Memory and compute cost differences.</p>",
+      "deepdive": "<p>Empirical analysis across model sizes, and the connection between SwiGLU and sparse gating patterns.</p>"
+    }
+  },
+  {
+    "id": "residual-connections",
+    "title": "Residual Connections",
+    "category": "transformers",
+    "difficulty": "L1",
+    "prerequisites": ["neural-networks"],
+    "related": ["neural-networks", "normalization"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Add-and-norm: why skipping connections help train deep networks. Pre-norm vs post-norm.</p>",
+      "intermediate": "<p>Residual stream, information flow through layers, and the importance of normalization placement.</p>",
+      "advanced": "<p>Wide residual networks, modified residual connections, and connections to neural ODEs.</p>",
+      "deepdive": "<p>The residual stream as the model's 'working memory', and how information is preserved across layers.</p>"
+    }
+  },
+  {
+    "id": "transformer-block",
+    "title": "The Transformer Block",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["attention", "ffn", "residual-connections", "normalization"],
+    "related": ["attention", "ffn", "residual-connections", "normalization"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Putting it all together: attention → add-norm → FFN → add-norm. The basic decoder block.</p>",
+      "intermediate": "<p>Variants: encoder-only, decoder-only, encoder-decoder. Which blocks go where.</p>",
+      "advanced": "<p>Efficient block variants, interleaved attention, and architectural modifications for specific tasks.</p>",
+      "deepdive": "<p>Information-theoretic analysis of transformer blocks, representational capacity bounds, and depth vs width trade-offs.</p>"
+    }
+  },
+  {
+    "id": "decoder-only",
+    "title": "Decoder-Only Architecture",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["transformer-block"],
+    "related": ["transformer-block", "causal-attention"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>Why GPT-style decoder-only became the standard for LLMs. Causal masking and next-token prediction.</p>",
+      "intermediate": "<p>Comparison with encoder-decoder, when each architecture is appropriate, and hybrid approaches.</p>",
+      "advanced": "<p>Efficient decoder-only variants, linear attention alternatives, and the debate about encoder utility.</p>",
+      "deepdive": "<p>Theoretical analysis of decoder-only expressiveness, and empirical evidence for why decoder-only scales better.</p>"
+    }
+  },
+  {
+    "id": "causal-attention",
+    "title": "Causal (Masked) Attention",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["attention", "self-attention"],
+    "related": ["attention", "self-attention"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Preventing tokens from seeing future tokens. The triangular attention mask. Why it's essential for generation.</p>",
+      "intermediate": "<p>Implementation: boolean masks vs bias masks, Flash Attention compatibility, and memory implications.</p>",
+      "advanced": "<p>Sliding window attention, sparse causal patterns, and efficient causal attention implementations.</p>",
+      "deepdive": "<p>The exact mask patterns used in production, and how causal masking interacts with KV cache during inference.</p>"
+    }
+  },
+  {
+    "id": "tokenizers",
+    "title": "Tokenization",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["embeddings"],
+    "related": ["embeddings", "tokenizer-bpe", "dataset-engineering"],
+    "estimatedTime": "~6h",
+    "sections": {
+      "beginner": "<p>What tokens are, why we tokenize, word-level vs subword vs character tokenization. The basic idea.</p>",
+      "intermediate": "<p>BPE (Byte-Pair Encoding), Unigram, WordPiece. How tokenizers are trained and how they affect context length.</p>",
+      "advanced": "<p>SentencePiece, tokenizer training pipelines, special tokens, BOS/EOS/PAD, and chat templates.</p>",
+      "deepdive": "<p>Tokenizer efficiency, vocabulary size selection, multilingual tokenization challenges, and the relationship between tokenizer and model quality.</p>"
+    }
+  },
+  {
+    "id": "tokenizer-bpe",
+    "title": "Byte-Pair Encoding (BPE)",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["tokenizers"],
+    "related": ["tokenizers", "sentencepiece"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>The BPE algorithm: start with characters, iteratively merge the most frequent pairs. How GPT-2 and LLaMA tokenizers work.</p>",
+      "intermediate": "<p>Vocabulary size trade-offs, handling OOV words, special tokens, and the regex preprocessing step.</p>",
+      "advanced": "<p>Byte-level BPE vs character-level, error resilience, and variants like BPE with byte fallback.</p>",
+      "deepdive": "<p>The mathematical properties of BPE, optimality guarantees, and comparison with other subword methods.</p>"
+    }
+  },
+  {
+    "id": "sentencepiece",
+    "title": "SentencePiece Tokenizer",
+    "category": "transformers",
+    "difficulty": "L2",
+    "prerequisites": ["tokenizers"],
+    "related": ["tokenizers", "tokenizer-bpe"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>UNigram and BPE implementations. Language-agnostic tokenization. Used by T5, PaLM, and others.</p>",
+      "intermediate": "<p>Training SentencePiece models, handling multiple languages, and the piece table for fast encoding.</p>",
+      "advanced": "<p>Integration with Hugging Face tokenizers, custom training scripts, and eval-based tokenizer evaluation.</p>",
+      "deepdive": "<p>The UNigram algorithm, learning sentence-level models, and the theoretical properties of SentencePiece tokenizers.</p>"
+    }
+  },
+  {
+    "id": "dataset-engineering",
+    "title": "Dataset Engineering",
+    "category": "data",
+    "difficulty": "L2",
+    "prerequisites": ["ml-fundamentals"],
+    "related": ["ml-fundamentals", "data-cleaning", "contamination"],
+    "estimatedTime": "~8h",
+    "sections": {
+      "beginner": "<p>Where data comes from, data formats (JSONL, Parquet), basic cleaning, and train/validation/test splits.</p>",
+      "intermediate": "<p>Filtering, deduplication, quality scoring, language detection, PII removal, and safety filtering.</p>",
+      "advanced": "<p>Synthetic data generation, dataset mixing strategies, contamination detection, and dataset versioning.</p>",
+      "deepdive": "<p>At-scale data pipelines, near-duplicate detection with MinHash/LSH, and the economics of data collection.</p>"
+    }
+  },
+  {
+    "id": "data-cleaning",
+    "title": "Data Cleaning & Filtering",
+    "category": "data",
+    "difficulty": "L2",
+    "prerequisites": ["dataset-engineering"],
+    "related": ["dataset-engineering", "quality-scoring"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Removing low-quality text: repeated lines, excessive whitespace, non-language content, and code filtering.</p>",
+      "intermediate": "<p>Perplexity-based filtering, language identification, length-based filtering, and deduplication strategies.</p>",
+      "advanced": "<p>Automated quality scoring systems, LLM-based filtering, and human-in-the-loop validation.</p>",
+      "deepdive": "<p>The trade-offs between aggressive and conservative cleaning, and how cleaning choices affect downstream model behavior.</p>"
+    }
+  },
+  {
+    "id": "contamination",
+    "title": "Data Contamination",
+    "category": "data",
+    "difficulty": "L3",
+    "prerequisites": ["dataset-engineering", "evaluation"],
+    "related": ["dataset-engineering", "evaluation", "deduplication"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>What contamination is: test data leaking into training data. Why it inflates benchmark scores artificially.</p>",
+      "intermediate": "<p>Detection methods: exact match, fuzzy match, n-gram overlap. Benchmarks most vulnerable to contamination.</p>",
+      "advanced": "<p>Contamination in the era of web-scale pretraining, the impossibility of perfect detection, and mitigation strategies.</p>",
+      "deepdive": "<p>The Contamination Benchmark project, systematic contamination analysis across major LLMs, and open questions.</p>"
+    }
+  },
+  {
+    "id": "deduplication",
+    "title": "Deduplication",
+    "category": "data",
+    "difficulty": "L2",
+    "prerequisites": ["dataset-engineering"],
+    "related": ["dataset-engineering", "contamination"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>Why duplicate data hurts: overfitting to specific texts, inflated evaluation scores, and poor generalization.</p>",
+      "intermediate": "<p>Exact deduplication (hash-based), near-duplicate detection (MinHash + LSH), and document-level vs shard-level dedup.</p>",
+      "advanced": "<p>Scalable deduplication at web-scale, Bloom filter approaches, and the trade-off between dedup aggressiveness and data loss.</p>",
+      "deepdive": "<p>MinHash and Locality-Sensitive Hashing algorithms, computational complexity, and implementation in production systems.</p>"
+    }
+  },
+  {
+    "id": "pretraining",
+    "title": "Pretraining Fundamentals",
+    "category": "training",
+    "difficulty": "L2",
+    "prerequisites": ["decoder-only", "tokenizers", "dataset-engineering"],
+    "related": ["decoder-only", "tokenizers", "dataset-engineering", "fine-tuning"],
+    "estimatedTime": "~8h",
+    "sections": {
+      "beginner": "<p>Next-token prediction, causal LM loss, the pretraining objective, and what a pretraining run actually does step by step.</p>",
+      "intermediate": "<p>Token budget calculation, batch size selection, learning rate tuning, and interpreting loss curves.</p>",
+      "advanced": "<p>Training stability techniques, loss spikes, nan recovery, and the Chinchilla scaling laws.</p>",
+      "deepdive": "<p>The emergent abilities debate, scaling law fitting, and the economics of pretraining at different model sizes.</p>"
+    }
+  },
+  {
+    "id": "fine-tuning",
+    "title": "Fine-Tuning",
+    "category": "training",
+    "difficulty": "L2",
+    "prerequisites": ["pretraining", "learning-rate"],
+    "related": ["pretraining", "learning-rate", "lora"],
+    "estimatedTime": "~6h",
+    "sections": {
+      "beginner": "<p>What fine-tuning is: taking a pretrained model and adapting it to a specific task or domain with more data.</p>",
+      "intermediate": "<p>SFT (Supervised Fine-Tuning), dataset formatting for instruction tuning, and hyperparameter selection for fine-tuning.</p>",
+      "advanced": "<p>Continued pretraining vs SFT, multi-task fine-tuning, and avoiding catastrophic forgetting.</p>",
+      "deepdive": "<p>The difference between fine-tuning and adaptation, when to continue pretraining vs fine-tune directly, and empirical guidelines.</p>"
+    }
+  },
+  {
+    "id": "lora",
+    "title": "LoRA (Low-Rank Adaptation)",
+    "category": "training",
+    "difficulty": "L2",
+    "prerequisites": ["fine-tuning", "tensors"],
+    "related": ["fine-tuning", "qlora", "tensors"],
+    "estimatedTime": "~6h",
+    "sections": {
+      "beginner": "<p>Freeze the base model, add small trainable rank decomposition matrices. Huge memory savings for fine-tuning.</p>",
+      "intermediate": "<p>Rank (r), alpha (α), target modules, and how to choose LoRA hyperparameters. Merging LoRA weights.</p>",
+      "advanced": "<p>QLoRA: combining LoRA with 4-bit quantization. NF4 quantization, double quantization, and compressed quantization.</p>",
+      "deepdive": "<p>The low-rank assumption, theoretical justification for LoRA, and when LoRA fails compared to full fine-tuning.</p>"
+    }
+  },
+  {
+    "id": "qlora",
+    "title": "QLoRA",
+    "category": "training",
+    "difficulty": "L3",
+    "prerequisites": ["lora"],
+    "related": ["lora", "precision"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>QLoRA = LoRA + 4-bit quantization. Fine-tune 7B models on a single consumer GPU.</p>",
+      "intermediate": "<p>NF4 (Normal Float 4) quantization, Paged Optimizers, and the QLoRA training pipeline step by step.</p>",
+      "advanced": "<p>Quantization awareness during fine-tuning, choosing between NF4 and INT4, and handling quantization errors.</p>",
+      "deepdive": "<p>The QLoRA paper analysis, memory profiling, and the practical limits of 4-bit fine-tuning.</p>"
+    }
+  },
+  {
+    "id": "dpo",
+    "title": "DPO (Direct Preference Optimization)",
+    "category": "training",
+    "difficulty": "L3",
+    "prerequisites": ["fine-tuning", "rlhf"],
+    "related": ["fine-tuning", "rlhf", "preference"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Aligning models with human preferences without explicit RL. DPO replaces RLHF with a simpler loss function.</p>",
+      "intermediate": "<p>Preference pairs, the DPO loss derivation from RLHF, and constructing preference datasets.</p>",
+      "advanced": "<p>KTO, IPO, and alternatives to DPO. Handling indifference and tied responses.</p>",
+      "deepdive": "<p>The theoretical connection between DPO and RLHF, conditions under which they are equivalent, and practical differences.</p>"
+    }
+  },
+  {
+    "id": "rlhf",
+    "title": "RLHF (Reinforcement Learning from Human Feedback)",
+    "category": "training",
+    "difficulty": "L3",
+    "prerequisites": ["fine-tuning", "dpo"],
+    "related": ["fine-tuning", "dpo", "preference"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>The original alignment method: train a reward model, then optimize the LLM with PPO using the reward signal.</p>",
+      "intermediate": "<p>Reward model training, PPO algorithm, kl penalty, and the complexity of the RLHF pipeline.</p>",
+      "advanced": "<p>Why DPO emerged as a simpler alternative, when RLHF is still preferred, and the current state of alignment methods.</p>",
+      "deepdive": "<p>PPO implementation details, reward model evaluation, and the reproducibility challenges in alignment research.</p>"
+    }
+  },
+  {
+    "id": "evaluation",
+    "title": "Evaluation Methods",
+    "category": "evaluation",
+    "difficulty": "L2",
+    "prerequisites": ["ml-fundamentals"],
+    "related": ["ml-fundamentals", "contamination"],
+    "estimatedTime": "~6h",
+    "sections": {
+      "beginner": "<p>Training loss vs validation loss, perplexity, benchmark suites (MMLU, HellaSwag, GSM8K), and what each metric tells you.</p>",
+      "intermediate": "<p>Benchmark design, contamination detection, few-shot vs zero-shot evaluation, and qualitative assessment.</p>",
+      "advanced": "<p>Dynamic evaluation, IFEval for instruction following, and building custom evaluation harnesses.</p>",
+      "deepdive": "<p>The evaluation crisis in LLMs, benchmark gaming, and the search for reliable capability measurement.</p>"
+    }
+  },
+  {
+    "id": "perplexity",
+    "title": "Perplexity & Loss",
+    "category": "evaluation",
+    "difficulty": "L1",
+    "prerequisites": ["pretraining", "probability"],
+    "related": ["pretraining", "probability"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Perplexity = exp(loss). Lower is better. How to read training and validation loss curves.</p>",
+      "intermediate": "<p>Loss curve interpretation: what healthy training looks like, signs of overfitting, and when to stop.</p>",
+      "advanced": "<p>Perplexity on different data types, domain-specific perplexity, and the limits of perplexity as a metric.</p>",
+      "deepdive": "<p>The relationship between perplexity and downstream performance, and why perplexity alone is insufficient for evaluation.</p>"
+    }
+  },
+  {
+    "id": "precision-fp32",
+    "title": "FP32 Precision",
+    "category": "precision",
+    "difficulty": "L1",
+    "prerequisites": [],
+    "related": ["fp16", "bf16", "mixed-precision"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>32-bit floating point: the default for most computation. Full precision, full range, no surprises.</p>",
+      "intermediate": "<p>FP32 memory costs, why we can't train everything in FP32, and when FP32 is still necessary (accumulation, reductions).</p>",
+      "advanced": "<p>TF32 on Ampere+: truncated FP32 that speeds up matmul without code changes. How it differs from true FP32.</p>",
+      "deepdive": "<p>IEEE 754 FP32 format, machine epsilon, and the numerical properties that make FP32 safe but slow.</p>"
+    }
+  },
+  {
+    "id": "precision-fp16",
+    "title": "FP16 Precision",
+    "category": "precision",
+    "difficulty": "L2",
+    "prerequisites": ["precision-fp32"],
+    "related": ["precision-fp32", "bf16", "mixed-precision"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>16-bit floating point. Half the memory of FP32. But limited range: max value only ~65504.</p>",
+      "intermediate": "<p>Overflow issues in training, loss scaling, and why FP16 is risky for large-scale training without careful handling.</p>",
+      "advanced": "<p>FP16 vs BF16: same bits, different exponent/bias split. Why BF16 generally preferred for training.</p>",
+      "deepdive": "<p>IEEE 754 FP16 format, the overflow/underflow probability in deep training, and mitigation strategies.</p>"
+    }
+  },
+  {
+    "id": "bf16",
+    "title": "BF16 (Bfloat16)",
+    "category": "precision",
+    "difficulty": "L2",
+    "prerequisites": ["precision-fp16", "precision-fp32"],
+    "related": ["precision-fp16", "precision-fp32", "mixed-precision"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>Mantissa: 7 bits like FP16. Exponent: 8 bits like FP32. Same range as FP32, half the memory. Created by Google for TPU.</p>",
+      "intermediate": "<p>Why BF16 is safer than FP16 for training: no overflow with typical activation values. Hardware support status.</p>",
+      "advanced": "<p>BF16 matmul performance on different GPUs, mixed precision patterns (BF16 compute + FP32 accumulation), and framework defaults.</p>",
+      "deepdive": "<p>Bit-level comparison: FP16 vs BF16 format, the rounding behavior difference, and when to prefer one over the other.</p>"
+    }
+  },
+  {
+    "id": "mixed-precision",
+    "title": "Mixed Precision Training",
+    "category": "precision",
+    "difficulty": "L2",
+    "prerequisites": ["bf16", "precision-fp16"],
+    "related": ["bf16", "precision-fp16", "fp8"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Use BF16/FP16 for computation, FP32 for accumulation and optimizer states. The standard recipe for efficient training.</p>",
+      "intermediate": "<p>Grad scaler for FP16, when to use it, automatic mixed precision (AMP) in PyTorch, and manual precision control.</p>",
+      "advanced": "<p>Full mixed precision recipes, when to keep specific operations in FP32, and numerical stability debugging.</p>",
+      "deepdive": "<p>The complete memory breakdown in mixed precision: which tensors stay in FP32 and why, and the role of master weights.</p>"
+    }
+  },
+  {
+    "id": "fp8",
+    "title": "FP8 Precision",
+    "category": "precision",
+    "difficulty": "L3",
+    "prerequisites": ["bf16", "mixed-precision"],
+    "related": ["bf16", "mixed-precision", "quantization"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>8-bit floating point. 2x the memory savings of BF16. Supported on Hopper (H100) and Blackwell GPUs.</p>",
+      "intermediate": "<p>FP8 formats: E4M3 vs E5M2. Quantization strategies: per-tensor vs per-channel vs dynamic scaling.</p>",
+      "advanced": "<p>FP8 training (not just inference), accumulator precision requirements, and the experimental status of FP8 pretraining.</p>",
+      "deepdive": "<p>NVIDIA FP8 implementation details, cuBLAS FP8 support, and the path toward FP8 becoming standard for training.</p>"
+    }
+  },
+  {
+    "id": "quantization",
+    "title": "Quantization",
+    "category": "precision",
+    "difficulty": "L2",
+    "prerequisites": ["precision-fp32"],
+    "related": ["precision-fp32", "fp8", "lora"],
+    "estimatedTime": "~6h",
+    "sections": {
+      "beginner": "<p>Reducing bit-width: FP32 → FP16 → INT8 → INT4. Trade-offs between model size, speed, and quality.</p>",
+      "intermediate": "<p>Post-training quantization (PTQ), quantization-aware training (QAT), and the difference between symmetric and asymmetric quantization.</p>",
+      "advanced": "<p>GGUF format, AWQ, GPTQ, and the nuances of 4-bit quantization for inference. NF4 in QLoRA.</p>",
+      "deepdive": "<p>Mathematical foundations of quantization, quantization error bounds, and the relationship between bit-width and model quality.</p>"
+    }
+  },
+  {
+    "id": "vram-memory",
+    "title": "GPU Memory Anatomy",
+    "category": "hardware",
+    "difficulty": "L2",
+    "prerequisites": ["ml-fundamentals"],
+    "related": ["ml-fundamentals", "precision-fp32"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Where memory goes during training: weights, gradients, optimizer states, activations. The four big consumers.</p>",
+      "intermediate": "<p>Memory计算公式: weights (params × bytes), gradients (same as weights), optimizer states (2× params for Adam), activations (the wildcard).</p>",
+      "advanced": "<p>Memory fragmentation, framework overhead, temporary buffers, and why actual usage exceeds theoretical estimates.</p>",
+      "deepdive": "<p>Per-layer memory breakdown, peak memory during forward/backward, and strategies for memory profiling during training.</p>"
+    }
+  },
+  {
+    "id": "memory-optimization",
+    "title": "Memory Optimization Techniques",
+    "category": "hardware",
+    "difficulty": "L2",
+    "prerequisites": ["vram-memory"],
+    "related": ["vram-memory", "gradient-checkpointing"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Gradient checkpointing: trade computation for memory. Mixed precision. The two most impactful techniques.</p>",
+      "intermediate": "<p>Activation checkpointing strategies, offloading to CPU, and the memory-compute trade-off curve.</p>",
+      "advanced": "<p>Unified memory (Apple), memory-efficient attention, and framework-specific optimization flags.</p>",
+      "deepdive": "<p>Advanced techniques: 8-bit Adam, paged attention, and the cutting edge of memory optimization research.</p>"
+    }
+  },
+  {
+    "id": "gradient-checkpointing",
+    "title": "Gradient Checkpointing",
+    "category": "hardware",
+    "difficulty": "L2",
+    "prerequisites": ["training-loops"],
+    "related": ["training-loops", "memory-optimization"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Don't store all activations. Recompute them during backward. Saves ~50% activation memory at ~20% compute cost.</p>",
+      "intermediate": "<p>Which layers to checkpoint, selective checkpointing, and the trade-off between memory savings and training time.</p>",
+      "advanced": "<p>Continuous checkpointing, gradient checkpt with FSDP, and integration with flash attention for maximum savings.</p>",
+      "deepdive": "<p>The algorithm: forward pass saves select activations, backward pass recomputes intermediates. Memory-time Pareto frontier.</p>"
+    }
+  },
+  {
+    "id": "ddp",
+    "title": "Data Parallelism (DDP)",
+    "category": "distributed",
+    "difficulty": "L2",
+    "prerequisites": ["training-loops"],
+    "related": ["training-loops", "fsdp", "zero"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Each GPU gets a copy of the model. Different data on each GPU. Average gradients across GPUs. The simplest form of multi-GPU training.</p>",
+      "intermediate": "<p>PyTorch DDP wrapper, broadcast, all-reduce, and the communication pattern. Scaling to 8 GPUs.</p>",
+      "advanced": "<p>DDP vs torch.compile, distributed sampler, and handling uneven data batches across GPUs.</p>",
+      "deepdive": "<p>NCCL backend, collective operation semantics, and the performance characteristics of all-reduce vs ring-all-reduce.</p>"
+    }
+  },
+  {
+    "id": "fsdp",
+    "title": "Fully Sharded Data Parallel (FSDP)",
+    "category": "distributed",
+    "difficulty": "L3",
+    "prerequisites": ["ddp"],
+    "related": ["ddp", "zero"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>PyTorch's implementation of ZeRO. Shards model states across GPUs. Each GPU only stores a fraction of the model.</p>",
+      "intermediate": "<p>ZeRO stages: 1 (optimizer shards), 2 (gradient shards), 3 (parameter shards). When to use each stage.</p>",
+      "advanced": "<p>FSDP2, backward prefetching, CPU offloading, and the intersection of FSDP with gradient checkpointing.</p>",
+      "deepdive": "<p>The communication-computation overlap in FSDP, eager vs lazy initialization, and checkpoint compatibility across FSDP versions.</p>"
+    }
+  },
+  {
+    "id": "zero",
+    "title": "DeepSpeed ZeRO",
+    "category": "distributed",
+    "difficulty": "L3",
+    "prerequisites": ["ddp"],
+    "related": ["ddp", "fsdp"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Microsoft's ZeRO optimization: shard optimizer states, gradients, and parameters across data parallel workers.</p>",
+      "intermediate": "<p>ZeRO-1, ZeRO-2, ZeRO-3. When to upgrade between stages. ZeRO-Infinity for CPU offloading.</p>",
+      "advanced": "<p>ZeRO vs FSDP comparison, performance characteristics, and integration with PyTorch Distributed.</p>",
+      "deepdive": "<p>The ZeRO paper analysis, communication patterns at each stage, and practical tuning for different cluster sizes.</p>"
+    }
+  },
+  {
+    "id": "tensor-parallelism",
+    "title": "Tensor Parallelism",
+    "category": "distributed",
+    "difficulty": "L3",
+    "prerequisites": ["attention", "ffn"],
+    "related": ["attention", "ffn", "pipeline-parallelism"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Split individual layers across GPUs. Each GPU handles a slice of the computation. Need fast interconnect.</p>",
+      "intermediate": "<p>Attention TP (split heads), FFN TP (split rows), and the all-reduce collectives needed at each layer boundary.</p>",
+      "advanced": "<p>FlexGen, vLLM PagedAttention TP, and tensor parallelism in inference engines.</p>",
+      "deepdive": "<p>The exact communication pattern for TP, bandwidth requirements, and when TP is better than DP.</p>"
+    }
+  },
+  {
+    "id": "pipeline-parallelism",
+    "title": "Pipeline Parallelism",
+    "category": "distributed",
+    "difficulty": "L3",
+    "prerequisites": ["tensor-parallelism"],
+    "related": ["tensor-parallelism", "expert-parallelism"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Split the model across GPUs by layers. Each GPU processes a different micro-batch simultaneously. Like an assembly line.</p>",
+      "intermediate": "<p>1D pipeline parallelism, micro-batching, bubble time, and the trade-off between pipeline depth and utilization.</p>",
+      "advanced": "<p>2D parallelism (TP + PP), interleaved pipeline parallelism (ZeRO-FSP), and schedule optimization (ring, LMDP).</p>",
+      "deepdive": "<p>The math of pipeline bubble minimization, optimal micro-batch sizing, and the intersection with tensor parallelism.</p>"
+    }
+  },
+  {
+    "id": "expert-parallelism",
+    "title": "Expert Parallelism",
+    "category": "distributed",
+    "difficulty": "L4",
+    "prerequisites": ["tensor-parallelism", "pipeline-parallelism"],
+    "related": ["tensor-parallelism", "pipeline-parallelism", "moe"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>For MoE models: each expert lives on a different GPU. Routes tokens to experts across the network.</p>",
+      "intermediate": "<p>Expert placement strategies, communication patterns in MoE, and the bandwidth requirements for expert parallelism.</p>",
+      "advanced": "<p>DeepSpeed MoE, Megatron-LM MoE, and the trade-offs between expert parallelism and tensor parallelism in MoE.</p>",
+      "deepdive": "<p>Top-k routing, load balancing, and the communication overhead that dominates MoE training at scale.</p>"
+    }
+  },
+  {
+    "id": "moE",
+    "title": "Mixture of Experts (MoE)",
+    "category": "architecture",
+    "difficulty": "L3",
+    "prerequisites": ["ffn", "expert-parallelism"],
+    "related": ["ffn", "expert-parallelism"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Each token routes to a subset of experts. Sparse activation: only some parameters active per token. Scale model size without scaling compute.</p>",
+      "intermediate": "<p>Top-k routing, load balancing loss, auxiliary loss, and the trade-offs between dense and sparse models.</p>",
+      "advanced": "<p>Switch Transformers, GShard, and the engineering challenges of MoE: load imbalance, expert collapse, and routing stability.</p>",
+      "deepdive": "<p>Production MoE systems: PaLM-E, Mixtral, and the current state of sparse model research.</p>"
+    }
+  },
+  {
+    "id": "inference-basic",
+    "title": "Inference Basics",
+    "category": "inference",
+    "difficulty": "L1",
+    "prerequisites": ["decoder-only"],
+    "related": ["decoder-only", "kv-cache", "sampling"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>Autoregressive generation: predict one token at a time. Temperature, top-k, top-p sampling. The basics of text generation.</p>",
+      "intermediate": "<p>KV cache: caching past key/value pairs to avoid recomputing. How it reduces complexity from O(n²) to O(n) per step.</p>",
+      "advanced": "<p>Continuous batching, speculative decoding, and the trade-offs between latency and throughput in serving.</p>",
+      "deepdive": "<p>PagedAttention, vLLM architecture, and the cutting edge of inference optimization.</p>"
+    }
+  },
+  {
+    "id": "kv-cache",
+    "title": "KV Cache",
+    "category": "inference",
+    "difficulty": "L2",
+    "prerequisites": ["attention", "inference-basic"],
+    "related": ["attention", "inference-basic", "tensor-parallelism"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>During generation, we recompute attention over all previous tokens every step. KV cache stores previously computed K,V to avoid this.</p>",
+      "intermediate": "<p>Memory size of KV cache: 2 × seq_len × num_layers × num_kv_heads × head_dim × bytes_per_element. How it dominates memory for long contexts.</p>",
+      "advanced": "<p>PagedAttention (vLLM): treating KV cache like virtual memory. Slab allocation, page tables, and memory reuse.</p>",
+      "deepdive": "<p>Quantized KV cache, KV cache eviction policies, and the trade-offs between context length and throughput.</p>"
+    }
+  },
+  {
+    "id": "sampling",
+    "title": "Text Sampling Strategies",
+    "category": "inference",
+    "difficulty": "L1",
+    "prerequisites": ["inference-basic"],
+    "related": ["inference-basic"],
+    "estimatedTime": "~2h",
+    "sections": {
+      "beginner": "<p>Greedy decoding (always pick highest probability), temperature (control randomness), top-k (pick from top K), top-p (nucleus sampling).</p>",
+      "intermediate": "<p>Repetition penalty, presence penalty, frequency penalty, and combining sampling strategies for desired output style.</p>",
+      "advanced": "<p>Contrastive decoding, guided decoding, and constrained generation (JSON, schemas).</p>",
+      "deepdive": "<p>The physics of sampling: temperature as 'energy', the relationship between temperature and entropy, and empirical guidelines.</p>"
+    }
+  },
+  {
+    "id": "throughput",
+    "title": "Throughput & MFU",
+    "category": "performance",
+    "difficulty": "L2",
+    "prerequisites": ["training-loops"],
+    "related": ["training-loops", "vram-memory"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>MFU (Model FLOPs Utilization): how efficiently you're using your GPU's theoretical peak compute. Target: 40-60% for training.</p>",
+      "intermediate": "<p>Measuring MFU: theoretical FLOPs vs actual FLOPs. Throughput (tokens/sec/GPU), step time breakdown, and bottleneck identification.</p>",
+      "advanced": "<p>Achieving high MFU: kernel fusion, communication overlap, memory bandwidth utilization, and hardware-aware scheduling.</p>",
+      "deepdive": "<p>The MFU vs GFLOPs discussion, why peak FLOPs is rarely achievable, and the gap between theoretical and practical throughput.</p>"
+    }
+  },
+  {
+    "id": "profiling",
+    "title": "Profiling & Debugging",
+    "category": "performance",
+    "difficulty": "L2",
+    "prerequisites": ["training-loops"],
+    "related": ["training-loops"],
+    "estimatedTime": "~3h",
+    "sections": {
+      "beginner": "<p>torch.profiler, TensorBoard, wandb. How to measure step time, GPU utilization, and memory usage during training.</p>",
+      "intermediate": "<p>Flame graphs, CUDA event timing, and identifying CPU bottlenecks vs GPU bottlenecks.</p>",
+      "advanced": "<p>nsys profiling, NCCL debug tools, and deep performance analysis for distributed training.</p>",
+      "deepdive": "<p>Root cause analysis of training slowdowns, and the systematic approach to performance debugging at scale.</p>"
+    }
+  },
+  {
+    "id": "deployment-basics",
+    "title": "Deployment Basics",
+    "category": "deployment",
+    "difficulty": "L2",
+    "prerequisites": ["inference-basic"],
+    "related": ["inference-basic"],
+    "estimatedTime": "~4h",
+    "sections": {
+      "beginner": "<p>From trained model to serving API. Model serialization, inference engines (vLLM, TGI), and basic deployment patterns.</p>",
+      "intermediate": "<p>Containerization, autoscaling, model versioning, and the operational concerns of serving LLMs in production.</p>",
+      "advanced": "<p>Multi-model serving, A/B testing, canary deployments, and the monitoring stack for LLM services.</p>",
+      "deepdive": "<p>Production latency optimization, GPU utilization in serving, and the economics of inference deployment at scale.</p>"
+    }
+  }
+]

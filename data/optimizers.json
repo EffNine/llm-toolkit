@@ -1,0 +1,26 @@
+[
+  {
+    "id": "adamw",
+    "name": "AdamW",
+    "type": "optimizer",
+    "description": "Adam with decoupled weight decay. The default optimizer for most LLM training.",
+    "memoryMultiplier": 2,
+    "notes": "2× parameter memory for optimizer states (m and v buffers). AdamW fixes the bias correction issue in original Adam."
+  },
+  {
+    "id": "sgd",
+    "name": "SGD",
+    "type": "optimizer",
+    "description": "Simple stochastic gradient descent, with or without momentum.",
+    "memoryMultiplier": 0,
+    "notes": "Minimal memory. Momentum adds 1× parameter memory. Sometimes used for fine-tuning."
+  },
+  {
+    "id": "adam",
+    "name": "Adam",
+    "type": "optimizer",
+    "description": "Original Adam optimizer with bias correction.",
+    "memoryMultiplier": 2,
+    "notes": "Same memory as AdamW but with bias correction. Less common in practice for LLM training."
+  }
+]

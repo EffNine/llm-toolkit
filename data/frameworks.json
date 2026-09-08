@@ -1,0 +1,42 @@
+[
+  {
+    "id": "cuda",
+    "name": "CUDA",
+    "vendor": "NVIDIA",
+    "type": "compute-platform",
+    "description": "NVIDIA's parallel computing platform. The dominant ecosystem for LLM training.",
+    "gpuSupport": ["NVIDIA"],
+    "frameworkSupport": ["PyTorch", "TensorFlow", "JAX", "DeepSpeed"],
+    "maturity": "mature"
+  },
+  {
+    "id": "rocm",
+    "name": "ROCm",
+    "vendor": "AMD",
+    "type": "compute-platform",
+    "description": "AMD's open computing platform. Improving rapidly but less mature than CUDA.",
+    "gpuSupport": ["AMD"],
+    "frameworkSupport": ["PyTorch", "JAX"],
+    "maturity": "developing"
+  },
+  {
+    "id": "metal",
+    "name": "Metal / MPS",
+    "vendor": "Apple",
+    "type": "compute-platform",
+    "description": "Apple's GPU acceleration framework. MPS (Metal Performance Shaders) is PyTorch's interface.",
+    "gpuSupport": ["Apple Silicon"],
+    "frameworkSupport": ["PyTorch", "Core ML"],
+    "maturity": "developing"
+  },
+  {
+    "id": "oneapi",
+    "name": "oneAPI",
+    "vendor": "Intel",
+    "type": "compute-platform",
+    "description": "Intel's cross-architecture computing framework. Gaudi support via PyTorch extension.",
+    "gpuSupport": ["Intel Gaudi"],
+    "frameworkSupport": ["PyTorch", "TensorFlow"],
+    "maturity": "developing"
+  }
+]

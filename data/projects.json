@@ -875,5 +875,80 @@
         "href": "/pages/learn.html#inference-batching"
       }
     ]
+  },
+  {
+    "id": "wx-mini-pipeline",
+    "title": "Worked Example: Build a Miniature Versioned Dataset System",
+    "difficulty": "L2",
+    "prerequisites": [
+      "dataset-engineering",
+      "deduplication",
+      "data-mixing-splits",
+      "dataset-systems"
+    ],
+    "related": [
+      "wx-dataset-pipeline"
+    ],
+    "estimatedHours": 4,
+    "objective": "INPUT: 5,000 raw documents of mixed quality and one afternoon. Build a miniature staged pipeline (clean, dedupe, score, calibrate, release) that produces a versioned, checkable v0.1 - the Atlas architecture at toy scale, using none of its data.",
+    "hardware": "Any laptop (CPU only; toy corpus, stdlib hashing)",
+    "software": "Python 3.10+, standard library only (hashlib, json)",
+    "dataset": "5,000 mixed-quality sample documents you assemble (or generate)",
+    "architecture": "Pipeline: raw/ (immutable) -> clean/ -> deduped/ -> scored/ -> manifest v0.1 with SHA-256 chain",
+    "steps": [
+      "INPUT: freeze the raw set - copy 5,000 documents into raw/ and record its SHA-256. Nothing downstream ever writes here.",
+      "REASONING: each stage gets a contract (reads previous output, writes a new directory, deterministic). Write the five stage scripts before running any of them.",
+      "TOOL: clean (normalize whitespace/encoding, drop empties - log retention), then exact dedup by SHA-256 of the raw line, then MinHash/LSH near-dedup for paraphrase-level copies the hash misses.",
+      "RESULT: a heuristic quality scorer (length, repetition, boilerplate signals) grades every record; a stratified 200-item sample goes to human review to calibrate it - record agreement overall and per category.",
+      "TOOL: Token calculator - measure bytes-per-token on a sample with the target tokenizer, then convert the kept record count into a token budget and a training-step schedule.",
+      "RESULT: release v0.1 manifest (version, parent hash, per-artifact SHA-256, keep/drop counts per stage, gate results) plus two generated format views (e.g., chat and Alpaca) produced by converters, never hand-edited.",
+      "ASSUMPTIONS: see list - the 200-item calibration bounds scorer error loosely; this is a teaching rig, not a production gate.",
+      "VALIDATION: delete every derived directory and regenerate from raw/ plus the manifest - byte-identical output proves reproducibility. Re-run the eval-overlap check against one benchmark set.",
+      "NEXT STEP: scale the pattern to a real corpus (the wx-dataset-pipeline example), or study the Atlas repository linked in the Library as the production-grade version of this rig."
+    ],
+    "config": {
+      "rawRecords": 5000,
+      "dedup": "SHA-256 exact + MinHash/LSH near-dup",
+      "calibrationSample": 200,
+      "release": "v0.1 manifest with hash chain",
+      "views": [
+        "chat",
+        "alpaca"
+      ]
+    },
+    "assumptions": [
+      "Toy corpus stands in for any raw crawl; stage logic is identical at scale",
+      "200-item calibration bounds scorer error loosely - production releases review more",
+      "MinHash flags candidates; confirm near-dupes exactly before dropping",
+      "Token math must be measured with the target tokenizer, never assumed"
+    ],
+    "expectedResults": "A v0.1 manifest whose hashes verify, a calibration report with per-category agreement, and regenerated views that are byte-identical across runs. Total kept records land wherever your gates put them - the number is yours, the method transfers.",
+    "troubleshooting": "Regeneration differs: a stage reads wall-clock time, random state, or upstream files - pin seeds, sort inputs, forbid upstream writes. Calibration agreement below ~70%: scorer features are wrong for this corpus, not the sample size. Near-dedup nukes too much: raise the Jaccard threshold and confirm candidates exactly.",
+    "nextProject": "wx-dataset-pipeline",
+    "source": "Architecture: EffNine/atlas-dataset (reference implementation; see Source Library)",
+    "measures": [
+      "Retention rate per stage (logged, not guessed)",
+      "Calibrator agreement overall + per category",
+      "Byte-identical regeneration from raw + manifest"
+    ],
+    "outcomes": [
+      "Run a staged pipeline with immutable raw inputs",
+      "Calibrate an auto-scorer against human grades",
+      "Cut a hash-chained, reproducible release"
+    ],
+    "tools": [
+      {
+        "label": "Token calculator",
+        "href": "/pages/token-calc.html"
+      },
+      {
+        "label": "Learn: dataset systems",
+        "href": "/pages/learn.html#dataset-systems"
+      },
+      {
+        "label": "Learn: deduplication",
+        "href": "/pages/learn.html#deduplication"
+      }
+    ]
   }
 ]

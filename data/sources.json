@@ -2453,5 +2453,21 @@
     ],
     "lastVerified": "2026-09-08",
     "status": "verified"
+  },
+  {
+    "id": "soft-atlas-dataset",
+    "title": "Atlas Dataset Foundation (repository)",
+    "type": "software",
+    "tier": 2,
+    "url": "https://github.com/EffNine/atlas-dataset",
+    "why": "Production dataset system: staged pipeline, hash-chained releases, calibrated quality engine, MinHash dedup, model-agnostic formats. Reference implementation for the dataset curriculum.",
+    "topics": [
+      "dataset-engineering",
+      "deduplication",
+      "data-mixing-splits",
+      "sft-formatting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
   }
 ]

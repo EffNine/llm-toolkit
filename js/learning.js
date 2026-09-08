@@ -3,6 +3,20 @@ const Learning = {
   _topics: null,
   _loadError: null,
   _currentId: null,
+  _filter: { q: '', difficulty: '', hideCompleted: false },
+
+  // Curriculum stages: the 13 topic categories grouped into a learning
+  // order. Stages render in this order; topics sort by difficulty within.
+  STAGES: [
+    { key: 'foundations', title: 'Stage 1 · Foundations', desc: 'Python, math, and machine-learning basics. Start here if anything downstream feels shaky.', categories: ['foundations'] },
+    { key: 'deep-learning', title: 'Stage 2 · Deep Learning', desc: 'Tensors, networks, optimizers, schedulers, and training loops.', categories: ['deep-learning'] },
+    { key: 'transformers', title: 'Stage 3 · Transformers', desc: 'From tokenizers and attention to the full decoder-only architecture.', categories: ['transformers'] },
+    { key: 'data-training', title: 'Stage 4 · Data & Training', desc: 'Datasets, pretraining, fine-tuning, LoRA, QLoRA, and alignment.', categories: ['data', 'training'] },
+    { key: 'efficiency', title: 'Stage 5 · Efficient Engineering', desc: 'Precision, quantization, and GPU memory: doing more with less.', categories: ['precision', 'hardware'] },
+    { key: 'scale-serve', title: 'Stage 6 · Scale & Serve', desc: 'Distributed training, MoE, serving, evaluation, and production.', categories: ['distributed', 'architecture', 'inference', 'performance', 'evaluation', 'deployment'] }
+  ],
+
+  DIFF_RANK: { L0: 0, L1: 1, L2: 2, L3: 3, L4: 4 },
 
   async init() {
     if (this._booted) return;
@@ -120,18 +134,91 @@ const Learning = {
     }
 
     if (!container) return;
-    container.innerHTML = window.TOPICS.map((topic, i) => {
-      const isCompleted = completed.includes(topic.id);
+    this.renderFilters();
+    const doneSet = new Set(completed);
+    const rank = (t) => this.DIFF_RANK[t.difficulty] ?? 9;
+    const matches = (t) => {
+      const f = this._filter;
+      if (f.difficulty && t.difficulty !== f.difficulty) return false;
+      if (f.hideCompleted && doneSet.has(t.id)) return false;
+      if (f.q) {
+        const hay = `${t.title} ${t.summary || ''} ${t.id} ${t.category}`.toLowerCase();
+        if (!hay.includes(f.q)) return false;
+      }
+      return true;
+    };
+    const order = new Map(window.TOPICS.map((t, i) => [t.id, i]));
+    let shown = 0;
+    container.innerHTML = this.STAGES.map((stage, si) => {
+      const items = window.TOPICS
+        .filter((t) => stage.categories.includes(t.category) && matches(t))
+        .sort((a, b) => (rank(a) - rank(b)) || ((order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)));
+      if (items.length === 0) return '';
+      shown += items.length;
+      const done = items.filter((t) => doneSet.has(t.id)).length;
+      const pct = Math.round((done / items.length) * 100);
       return `
-        <a href="#${topic.id}" class="lesson-card${isCompleted ? ' completed' : ''}" data-topic-id="${topic.id}"${isCompleted ? ' aria-label="' + this.escapeAttr(topic.title) + ' (completed)"' : ''}>
-          <span class="lesson-number" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
-          <span class="lesson-title">${this.escapeHtml(topic.title)}</span>
-          <span class="lesson-difficulty difficulty-badge difficulty-${this.escapeAttr(topic.difficulty || 'L0')}">${this.escapeHtml(topic.difficulty || '')}</span>
-          <span class="lesson-time">${this.escapeHtml(topic.estimatedTime || '~')}</span>
-          <span class="lesson-status" aria-hidden="true">${isCompleted ? '✓' : ''}</span>
-        </a>
-      `;
-    }).join('');
+        <section class="learn-stage" aria-label="${this.escapeAttr(stage.title)}">
+          <div class="learn-stage-head">
+            <div>
+              <div class="learn-stage-kicker">Stage ${si + 1} of ${this.STAGES.length}</div>
+              <h3 class="learn-stage-title">${this.escapeHtml(stage.title.replace(/^Stage \d+ · /, ''))}</h3>
+              <p class="learn-stage-desc">${this.escapeHtml(stage.desc)}</p>
+            </div>
+            <div class="learn-stage-progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${this.escapeAttr(stage.title)} progress">
+              <span class="text-xs text-mono">${done}/${items.length}</span>
+              <span class="progress-bar learn-stage-bar"><span class="progress-bar-fill" style="width: ${pct}%"></span></span>
+            </div>
+          </div>
+          <div class="learn-stage-grid">
+            ${items.map((t) => this.topicCard(t, doneSet.has(t.id))).join('')}
+          </div>
+        </section>`;
+    }).join('') || '<div class="empty-state" role="status"><div class="empty-state-text"><strong>No topics match these filters.</strong><br>Clear the search or show completed lessons.</div></div>';
+    const countEl = document.getElementById('lesson-count');
+    if (countEl) countEl.textContent = `Showing ${shown} of ${window.TOPICS.length} topics`;
+  },
+
+  topicCard(topic, isCompleted) {
+    return `
+      <a href="#${this.escapeAttr(topic.id)}" class="card card-interactive learn-card${isCompleted ? ' completed' : ''}"${isCompleted ? ` aria-label="${this.escapeAttr(topic.title)} (completed)"` : ''}>
+        <span class="flex justify-between items-center" style="gap: var(--space-2);">
+          <span class="difficulty-badge difficulty-${this.escapeAttr(topic.difficulty || 'L0')}">${this.escapeHtml(topic.difficulty || '')}</span>
+          <span class="text-xs text-tertiary">${this.escapeHtml(topic.estimatedTime || '')}</span>
+        </span>
+        <span class="learn-card-title">${isCompleted ? '✓ ' : ''}${this.escapeHtml(topic.title)}</span>
+        <span class="learn-card-summary">${this.escapeHtml(topic.summary || '')}</span>
+        <span class="text-xs text-tertiary text-mono">${this.escapeHtml(topic.category || '')}</span>
+      </a>`;
+  },
+
+  renderFilters() {
+    const box = document.getElementById('lesson-filters');
+    if (!box || box.dataset.built) return;
+    box.dataset.built = '1';
+    const diffs = [...new Set((window.TOPICS || []).map((t) => t.difficulty).filter(Boolean))].sort();
+    box.innerHTML = `
+      <div class="learn-filters" role="search" aria-label="Filter curriculum">
+        <input type="search" id="lesson-q" class="form-input" placeholder="Filter 84 topics…" aria-label="Filter topics by keyword" autocomplete="off">
+        <select id="lesson-diff" class="form-select" aria-label="Filter by difficulty">
+          <option value="">All levels</option>
+          ${diffs.map((d) => `<option value="${this.escapeAttr(d)}">${this.escapeAttr(d)}</option>`).join('')}
+        </select>
+        <label class="learn-check"><input type="checkbox" id="lesson-hide-done"> Hide completed</label>
+        <span id="lesson-count" class="text-xs text-tertiary" role="status" aria-live="polite"></span>
+      </div>`;
+    document.getElementById('lesson-q')?.addEventListener('input', (e) => {
+      this._filter.q = e.target.value.trim().toLowerCase();
+      this.renderLessonList();
+    });
+    document.getElementById('lesson-diff')?.addEventListener('change', (e) => {
+      this._filter.difficulty = e.target.value;
+      this.renderLessonList();
+    });
+    document.getElementById('lesson-hide-done')?.addEventListener('change', (e) => {
+      this._filter.hideCompleted = e.target.checked;
+      this.renderLessonList();
+    });
   },
 
   bindHashChanges() {

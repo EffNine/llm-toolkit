@@ -230,9 +230,14 @@
           banner.style.display = '';
           banner.innerHTML = `<div class="callout-title">Continue where you left off</div><a href="/pages/learn.html#${encodeURIComponent(lastLesson)}">Resume lesson: ${lastLesson} →</a>${completed > 0 ? ` <span class="text-xs">(${completed} completed)</span>` : ''}`;
         } else if (lastPage && lastPage !== '/' && lastPage !== '/index.html' && lastPage !== here) {
-          const label = (window.APP_ROUTES || []).find((r) => r.path === lastPage)?.label || lastPage;
+          const normalize = window.Router?.normalize || ((p) => p);
+          const norm = normalize(lastPage);
+          if (norm === normalize(here)) return;
+          const match = (window.APP_ROUTES || []).find((r) => normalize(r.path) === norm);
+          const label = match?.label || lastPage;
+          const href = match?.path || lastPage;
           banner.style.display = '';
-          banner.innerHTML = `<div class="callout-title">Continue where you left off</div><a href="${lastPage}">Resume: ${label} →</a>`;
+          banner.innerHTML = `<div class="callout-title">Continue where you left off</div><a href="${href}">Resume: ${label} →</a>`;
         }
       } catch { /* ignore */ }
     };

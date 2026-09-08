@@ -27,12 +27,15 @@ window.APP_ROUTES = [
 // preventDefault on normal links, and does NOT use history.pushState.
 // Every page is an independent HTML document loaded via normal <a href>.
 const Router = {
-  // Normalise a pathname: '/' stays '/', '/pages/x.html' stays as-is.
+  // Normalise a pathname so equivalent URLs compare equal:
+  // '/' stays '/', '/pages/learn.html' and '/pages/learn' (Cloudflare
+  // Pages clean URLs) both become '/pages/learn'.
   normalize(path) {
     if (!path) return '/';
-    // Strip trailing slash except for root.
-    if (path.length > 1 && path.endsWith('/')) return path.slice(0, -1);
-    return path;
+    let p = path;
+    if (p.length > 1 && p.endsWith('/')) p = p.slice(0, -1);
+    if (p.endsWith('.html')) p = p.slice(0, -'.html'.length) || '/';
+    return p;
   },
 
   getCurrent() {

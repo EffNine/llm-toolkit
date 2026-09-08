@@ -97,9 +97,13 @@ The `_headers` file configures these Cloudflare Page Rules headers:
 - `X-XSS-Protection: 1; mode=block` — XSS filter
 - `Referrer-Policy: strict-origin-when-cross-origin` — referrer control
 - `Cache-Control: public, max-age=3600` — 1-hour cache for static assets
+Static multi-page routing (no SPA fallback):
 
-SPA routing is handled by:
-- `/* /index.html 200` — client-side router handles all paths
+- Every page is an independent document linked with normal `<a href>`.
+- Do not add a `/* /index.html 200` rewrite: unknown paths must 404 so the
+  URL always matches the served document.
+- Cloudflare Pages serves clean URLs (`/pages/learn` resolves the
+  `learn.html` document); frontend path utilities treat both forms as equal.
 
 ## Continuous Deployment
 

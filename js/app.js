@@ -101,7 +101,9 @@ const App = {
   // Initialise only the widgets belonging to the current document.
   // This is NOT SPA rendering: it never loads an unrelated page.
   bootCurrentPage() {
-    const path = window.location.pathname;
+    const rawPath = window.location.pathname;
+    // Accept both '/pages/learn.html' and clean-URL '/pages/learn' forms.
+    const path = rawPath.endsWith('.html') ? rawPath : `${rawPath}.html`;
     const call = (fn) => { try { const r = fn(); if (r && typeof r.catch === 'function') r.catch(() => {}); } catch { /* ignore */ } };
     if (path === '/' || path === '/index.html') {
       if (typeof window.renderHome === 'function') call(() => window.renderHome());

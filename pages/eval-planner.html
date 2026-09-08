@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluation Planner — LLM Toolkit</title>
+  <meta name="description" content="Plan your LLM evaluation strategy: choose benchmarks, set up regression tracking, and design custom evaluations.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="canonical" href="https://llm.effnine.dev/pages/eval-planner.html">
+  <meta property="og:title" content="Evaluation Planner — LLM Toolkit">
+  <meta property="og:description" content="Plan evaluation strategy with benchmark selection and regression tracking.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://llm.effnine.dev/pages/eval-planner.html">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content" id="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Evaluation Planner</span></div>
+        <h1>Evaluation Planner</h1>
+        <p style="margin-top: var(--space-4);">Select benchmarks and build an evaluation checklist tailored to your model and use case.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="planner-card">
+          <div class="planner-card-title">MODEL PURPOSE</div>
+          <div class="selection-grid" id="eval-purpose-grid">
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'general')" tabindex="0" role="button"><div class="selection-option-title">General Purpose</div><div class="selection-option-desc">MMLU, reasoning, chat</div></div>
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'coding')" tabindex="0" role="button"><div class="selection-option-title">Coding</div><div class="selection-option-desc">HumanEval, SWE-bench</div></div>
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'math')" tabindex="0" role="button"><div class="selection-option-title">Math & Reasoning</div><div class="selection-option-desc">GSM8K, MATH, AIME</div></div>
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'instruction')" tabindex="0" role="button"><div class="selection-option-title">Instruction Following</div><div class="selection-option-desc">IFEval, format control</div></div>
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'safety')" tabindex="0" role="button"><div class="selection-option-title">Safety & Alignment</div><div class="selection-option-desc">Toxicity, jailbreak</div></div>
+            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'domain')" tabindex="0" role="button"><div class="selection-option-title">Domain Specific</div><div class="selection-option-desc">Custom evaluation</div></div>
+          </div>
+        </div>
+        
+        <div class="planner-card">
+          <div class="planner-card-title">EVALUATION TYPES</div>
+          <div class="selection-grid">
+            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'baseline')" tabindex="0" role="button"><div class="selection-option-title">Baseline</div><div class="selection-option-desc">Zero-shot on standard benchmarks</div></div>
+            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'fewshot')" tabindex="0" role="button"><div class="selection-option-title">Few-shot</div><div class="selection-option-desc">1-shot, 5-shot, 10-shot variants</div></div>
+            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'custom')" tabindex="0" role="button"><div class="selection-option-title">Custom</div><div class="selection-option-desc">Domain-specific test set</div></div>
+            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'regression')" tabindex="0" role="button"><div class="selection-option-title">Regression</div><div class="selection-option-desc">Track changes across iterations</div></div>
+          </div>
+        </div>
+        
+        <button class="btn btn-primary mt-6" onclick="EvalPlanner.generate()">Generate Evaluation Plan</button>
+        
+        <div id="eval-plan-result" class="mt-6"></div>
+      </div>
+    
+    <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
+      <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div><strong style="color: var(--color-text);">LLM Training &amp; Engineering Toolkit</strong><br>EffNine &middot; Open source &middot; No tracking</div>
+        <div class="flex gap-4">
+          <a href="/pages/reference.html" style="color: var(--color-text-secondary);">Reference</a>
+          <a href="/pages/troubleshooting.html" style="color: var(--color-text-secondary);">Troubleshoot</a>
+          <a href="https://github.com/EffNine/llm-toolkit" style="color: var(--color-text-secondary);" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </footer>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const EvalPlanner = {
+      purpose: null,
+      types: new Set(),
+      
+      benchmarks: {
+        general: {
+          essential: ['MMLU (5-shot)', 'HellaSwag (10-shot)', 'TruthfulQA (0-shot)', 'Winogrande (5-shot)'],
+          recommended: ['ARC-Challenge', 'BBH (3-shot)', 'IFEval', 'CMMLU (for Chinese)'],
+          optional: ['AGIEval', 'DROP', 'SuperGLUE']
+        },
+        coding: {
+          essential: ['HumanEval (0-shot pass@1)', 'MBPP (3-shot)'],
+          recommended: ['SWE-bench Verified', 'LiveCodeBench', 'HumanEval-X'],
+          optional: ['APPS', 'DS-1000', 'MuCoW']
+        },
+        math: {
+          essential: ['GSM8K (8-shot)', 'MATH (4-shot)'],
+          recommended: ['AIME 2024', 'FMCP', 'Minerva Math'],
+          optional: ['AMC 2023', 'College-Math']
+        },
+        instruction: {
+          essential: ['IFEval (strict)', 'BEAVERTAILS'],
+          recommended: ['NIAH (needle-in-haystack)', 'FollowBench'],
+          optional: ['RealToxicity', 'HC3']
+        },
+        safety: {
+          essential: ['RealToxicityPrompts', 'Stanford Jailbreak'],
+          recommended: ['Toxigen', 'HC3 (harmful version)'],
+          optional: ['Do-Not-Answer', 'Dovecot']
+        },
+        domain: {
+          essential: ['Build your own test set'],
+          recommended: ['Domain-specific benchmarks'],
+          optional: ['Expert review panel']
+        }
+      },
+      
+      selectPurpose(el, purpose) {
+        document.querySelectorAll('#eval-purpose-grid .selection-option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        this.purpose = purpose;
+      },
+      
+      toggleType(el, type) {
+        el.classList.toggle('selected');
+        if (this.types.has(type)) this.types.delete(type);
+        else this.types.add(type);
+      },
+      
+      generate() {
+        if (!this.purpose) {
+          alert('Please select a model purpose first.');
+          return;
+        }
+        
+        const bm = this.benchmarks[this.purpose] || this.benchmarks.general;
+        const types = Array.from(this.types);
+        
+        const el = document.getElementById('eval-plan-result');
+        if (!el) return;
+        
+        el.innerHTML = `
+          <div class="planner-card">
+            <div class="planner-card-title">EVALUATION CHECKLIST</div>
+            <div class="text-sm text-muted mb-4">Purpose: ${this.purpose} ${types.length > 0 ? '· Types: ' + types.join(', ') : ''}</div>
+            
+            <div class="section-title">ESSENTIAL BENCHMARKS</div>
+            <div class="vram-breakdown mt-2">
+              ${bm.essential.map(b => `<div class="vram-row"><span class="vram-row-label">✓</span><span class="vram-row-value">${b}</span></div>`).join('')}
+            </div>
+            
+            <div class="section-title mt-6">RECOMMENDED BENCHMARKS</div>
+            <div class="vram-breakdown mt-2">
+              ${bm.recommended.map(b => `<div class="vram-row"><span class="vram-row-label">○</span><span class="vram-row-value">${b}</span></div>`).join('')}
+            </div>
+            
+            ${bm.optional.length > 0 ? `
+            <div class="section-title mt-6">OPTIONAL BENCHMARKS</div>
+            <div class="vram-breakdown mt-2">
+              ${bm.optional.map(b => `<div class="vram-row"><span class="vram-row-label">−</span><span class="vram-row-value">${b}</span></div>`).join('')}
+            </div>
+            ` : ''}
+          </div>
+          
+          ${types.includes('regression') ? `
+          <div class="planner-card mt-6">
+            <div class="planner-card-title">REGRESSION TRACKING SETUP</div>
+            <div class="vram-breakdown">
+              <div class="vram-row"><span class="vram-row-label">Baseline</span><span class="vram-row-value">Run all essential benchmarks before any changes</span></div>
+              <div class="vram-row"><span class="vram-row-label">Version</span><span class="vram-row-value">Tag each model with git commit + eval config hash</span></div>
+              <div class="vram-row"><span class="vram-row-label">Track</span><span class="vram-row-value">Store scores in JSON: {model, date, metrics, config}</span></div>
+              <div class="vram-row"><span class="vram-row-label">Alert</span><span class="vram-row-value">Flag any benchmark dropping >1% from baseline</span></div>
+            </div>
+          </div>
+          ` : ''}
+          
+          ${types.includes('custom') ? `
+          <div class="planner-card mt-6">
+            <div class="planner-card-title">CUSTOM EVALUATION GUIDE</div>
+            <div class="vram-breakdown">
+              <div class="vram-row"><span class="vram-row-label">Sample Size</span><span class="vram-row-value">At least 100 examples for statistical significance</span></div>
+              <div class="vram-row"><span class="vram-row-label">Annotation</span><span class="vram-row-value">Use 2+ annotators, measure inter-annotator agreement</span></div>
+              <div class="vram-row"><span class="vram-row-label">Rubric</span><span class="vram-row-value">Define clear scoring criteria before collecting data</span></div>
+              <div class="vram-row"><span class="vram-row-label">Gold Standard</span><span class="vram-row-value">Compare against human expert baseline if possible</span></div>
+            </div>
+          </div>
+          ` : ''}
+          
+          <div class="callout callout-info mt-6">
+            <div class="callout-title">Best Practices</div>
+            <ul style="padding-left:var(--space-4);margin:0;font-size:var(--text-sm);">
+              <li style="margin-bottom:var(--space-1);">Always report zero-shot and few-shot results separately</li>
+              <li style="margin-bottom:var(--space-1);">Check for contamination: verify test data is not in training</li>
+              <li style="margin-bottom:var(--space-1);">Run evaluation on held-out data, not the training set</li>
+              <li style="margin-bottom:var(--space-1);">Qualitative review complements numerical benchmarks</li>
+            </ul>
+          </div>
+        `;
+      }
+    };
+    window.EvalPlanner = EvalPlanner;
+    window.renderEvalPlanner = () => {};
+  </script>
+</body>
+</html>

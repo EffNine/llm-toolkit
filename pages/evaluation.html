@@ -24,6 +24,7 @@
   <meta name="twitter:card" content="summary">
 </head>
 <body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -32,7 +33,7 @@
       <div class="nav-brand">LLM <span>Toolkit</span></div>
       <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
     </header>
-    <main class="main-content">
+    <main class="main-content" id="main-content">
       <div class="page-header narrow">
         <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Evaluation</span></div>
         <h1>Evaluation</h1>
@@ -41,12 +42,12 @@
       <div class="page-content narrow">
         <div class="section-title">EVALUATION CATEGORIES</div>
         <div class="knowledge-graph mt-4">
-          <div class="graph-card" onclick="Evaluation.showCategory('general')"><div class="graph-card-title">General Knowledge</div><div class="graph-card-type">MMLU, HellaSwag, TruthfulQA</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('math')"><div class="graph-card-title">Math &amp; Reasoning</div><div class="graph-card-type">GSM8K, MATH, AIME</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('coding')"><div class="graph-card-title">Coding</div><div class="graph-card-type">HumanEval, MBPP, SWE-bench</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('instruction')"><div class="graph-card-title">Instruction Following</div><div class="graph-card-type">IFEval, BEAVERTAILS</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('safety')"><div class="graph-card-title">Safety</div><div class="graph-card-type">RealToxicity, Jailbreak</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('domain')"><div class="graph-card-title">Domain Specific</div><div class="graph-card-type">Build your own</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('general')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('general')"><div class="graph-card-title">General Knowledge</div><div class="graph-card-type">MMLU, HellaSwag, TruthfulQA</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('math')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('math')"><div class="graph-card-title">Math &amp; Reasoning</div><div class="graph-card-type">GSM8K, MATH, AIME</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('coding')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('coding')"><div class="graph-card-title">Coding</div><div class="graph-card-type">HumanEval, MBPP, SWE-bench</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('instruction')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('instruction')"><div class="graph-card-title">Instruction Following</div><div class="graph-card-type">IFEval, BEAVERTAILS</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('safety')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('safety')"><div class="graph-card-title">Safety</div><div class="graph-card-type">RealToxicity, Jailbreak</div></div>
+          <div class="graph-card" onclick="Evaluation.showCategory('domain')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('domain')"><div class="graph-card-title">Domain Specific</div><div class="graph-card-type">Build your own</div></div>
         </div>
         
         <div id="eval-content" class="mt-8"></div>

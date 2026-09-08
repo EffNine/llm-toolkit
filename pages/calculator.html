@@ -24,6 +24,7 @@
   <meta name="twitter:card" content="summary">
 </head>
 <body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
@@ -38,7 +39,7 @@
         <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
       </div>
     </header>
-    <main class="main-content">
+    <main class="main-content" id="main-content">
       <div class="page-header narrow">
         <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>VRAM Calculator</span></div>
         <h1>VRAM Calculator</h1>
@@ -145,6 +146,10 @@
         </div>
         
         <div id="vram-result" class="mt-6"></div>
+        <div class="flex gap-3 mt-4" id="vram-export-btns" style="display:none;">
+          <button class="btn btn-sm btn-secondary" onclick="Calculator.copyResult()">Copy Result</button>
+          <button class="btn btn-sm btn-secondary" onclick="Calculator.downloadJSON()">Download JSON</button>
+        </div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

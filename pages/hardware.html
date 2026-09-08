@@ -24,6 +24,7 @@
   <meta name="twitter:card" content="summary">
 </head>
 <body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
@@ -38,7 +39,7 @@
         <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
       </div>
     </header>
-    <main class="main-content">
+    <main class="main-content" id="main-content">
       <div class="page-header">
         <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Hardware</span></div>
         <h1>Hardware Database</h1>
@@ -90,7 +91,7 @@
           <div id="gpu-profile-container">
             <div class="section-title">GPU PROFILE</div>
             <div id="gpu-profile" style="color: var(--color-text-tertiary); font-size: var(--text-sm); padding: var(--space-8); text-align: center; border: var(--border); border-radius: var(--radius-lg);">
-              Select a GPU from the list to see its training profile
+              <div class="empty-state"><div class="empty-state-icon">◈</div><div class="empty-state-text">Select a GPU from the table to see its training profile</div></div>
             </div>
           </div>
         </div>

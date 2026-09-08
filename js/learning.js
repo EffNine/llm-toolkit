@@ -12,6 +12,7 @@ const Learning = {
     } catch {
       window.TOPICS = [];
     }
+    this.setupTopicView();
   },
   
   renderLessonList() {
@@ -132,7 +133,10 @@ const Learning = {
   
   toggleLayer(header) {
     const panel = header.closest('.expert-layer');
-    panel.classList.toggle('hidden');
+    const content = panel.querySelector('.expert-layer-content');
+    const icon = header.querySelector('.expandable-icon');
+    content.classList.toggle('hidden');
+    if (icon) icon.textContent = content.classList.contains('hidden') ? '+' : '−';
   },
   
   getBeginnerContent(topic) {
@@ -183,9 +187,9 @@ const Learning = {
   
   setupTopicView() {
     const hash = window.location.hash;
-    if (hash) {
+    if (hash && window.TOPICS) {
       const id = hash.slice(1);
-      setTimeout(() => this.viewTopic(id), 100);
+      setTimeout(() => this.viewTopic(id), 50);
     }
   }
 };

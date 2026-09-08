@@ -54,7 +54,7 @@ const Progress = {
     Storage.set('currentRoadmap', null);
   },
   getProgress() {
-    const total = window.APP_DATA?.topics?.length || 0;
+    const total = window.TOPICS?.length || 0;
     const completed = this.completedLessons.length;
     return { total, completed, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 };
   }

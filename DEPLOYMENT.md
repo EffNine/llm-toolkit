@@ -7,17 +7,35 @@ This document describes how to deploy the LLM Toolkit to https://llm.effnine.dev
 - GitHub account
 - Cloudflare account with Pages access
 - Domain `effnine.dev` managed in Cloudflare
+- Git installed locally
+
+## Repository Structure
+
+```
+llm-toolkit/
+├── index.html              # Homepage
+├── 404.html                # Not found page
+├── _headers                # Cloudflare security headers
+├── _redirects              # URL redirects
+├── robots.txt              # SEO
+├── sitemap.xml             # SEO
+├── site.webmanifest        # PWA manifest
+├── favicon.svg             # Site icon
+├── css/                    # 8 stylesheets
+├── js/                     # 12 ES module scripts
+├── data/                   # 11 JSON data files
+├── pages/                  # 20 HTML pages
+└── projects/               # 6 project directories
+```
 
 ## Step 1: Push to GitHub
 
 ```bash
 cd /home/afnan/projects/active/llm-toolkit
-git init
 git add .
-git commit -m "chore: initialize llm toolkit"
-git branch -M main
-git remote add origin https://github.com/EffNine/llm-toolkit.git
-git push -u origin main
+git commit -m "chore: v0.1.0 release"
+git tag v0.1.0
+git push origin main --tags
 ```
 
 ## Step 2: Connect to Cloudflare Pages
@@ -47,19 +65,52 @@ After deployment completes:
 
 1. Visit https://llm.effnine.dev
 2. Check that homepage loads
-3. Test navigation between pages
+3. Test navigation between all 20 pages
 4. Verify search works (press `/`)
-5. Test mobile layout (resize browser)
+5. Test mobile layout (resize browser to 375px, 768px)
 6. Check 404 page (`https://llm.effnine.dev/nonexistent`)
 7. Verify HTTPS is active (lock icon)
+8. Test interactive tools:
+   - VRAM Calculator: fill form, click Calculate, verify breakdown
+   - Hardware: select a GPU, verify profile panel populates
+   - Training: click a decision branch, verify recommendation shows
+   - Roadmap: complete wizard, verify roadmap generates
+   - Search: press `/`, type 2+ chars, verify results appear
 
 ## Step 5: Verify Assets
 
-- [ ] All CSS files load
-- [ ] JavaScript modules load (check DevTools console for errors)
-- [ ] Google Fonts load
+- [ ] All 8 CSS files load
+- [ ] All 12 JS modules load (check DevTools console for errors)
+- [ ] Google Fonts load (Inter + JetBrains Mono)
 - [ ] Favicon displays
 - [ ] Search modal opens with `/` key
+- [ ] All 20 pages return HTTP 200
+- [ ] 404 page returns HTTP 404 for unknown paths
+- [ ] All JSON data files are valid
+
+## Security Headers
+
+The `_headers` file configures these Cloudflare Page Rules headers:
+
+- `X-Frame-Options: DENY` — prevents clickjacking
+- `X-Content-Type-Options: nosniff` — prevents MIME sniffing
+- `X-XSS-Protection: 1; mode=block` — XSS filter
+- `Referrer-Policy: strict-origin-when-cross-origin` — referrer control
+- `Cache-Control: public, max-age=3600` — 1-hour cache for static assets
+
+SPA routing is handled by:
+- `/* /index.html 200` — client-side router handles all paths
+
+## Continuous Deployment
+
+Every push to `main` branch triggers an automatic rebuild and deployment. No manual intervention needed.
+
+## Rollback
+
+In Cloudflare Pages:
+1. Go to **Deploys** tab
+2. Find the previous working deployment
+3. Click **Promote to production**
 
 ## Troubleshooting
 
@@ -82,21 +133,6 @@ After deployment completes:
 - Ensure the domain is added to your Cloudflare account
 - Check that Pages is proxied (orange cloud) for SSL
 
-## Security Headers
-
-The `_headers` file configures these Cloudflare Page Rules headers:
-
-- `X-Frame-Options: DENY` — prevents clickjacking
-- `X-Content-Type-Options: nosniff` — prevents MIME sniffing
-- `Cache-Control: public, max-age=3600` — 1-hour cache for static assets
-
-## Continuous Deployment
-
-Every push to `main` branch triggers an automatic rebuild and deployment. No manual intervention needed.
-
-## Rollback
-
-In Cloudflare Pages:
-1. Go to **Deploys** tab
-2. Find the previous working deployment
-3. Click **Promote to production**
+### Pages not found after deploy
+- Verify `_redirects` and `_headers` are at repository root
+- Cloudflare Pages requires these files at the deploy root (`./`)

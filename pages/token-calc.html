@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Token Budget — LLM Toolkit</title>
+  <meta name="description" content="Calculate training token budget and estimate required tokens based on model size.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="canonical" href="https://llm.effnine.dev/pages/token-calc.html">
+  <meta property="og:title" content="Token Budget — LLM Toolkit">
+  <meta property="og:description" content="Calculate training steps and estimate token budgets from model size.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://llm.effnine.dev/pages/token-calc.html">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content" id="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Token Budget</span></div>
+        <h1>Token Budget Calculator</h1>
+        <p style="margin-top: var(--space-4);">Calculate training steps from dataset size, or estimate recommended token targets from model size.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="planner-card">
+          <div class="planner-card-title">TOKEN CALCULATION</div>
+          <div class="planner-config-grid">
+            <div><label class="form-label">Dataset Records</label><input type="number" id="tc-records" class="form-input" value="1000000" min="1000" step="1000"></div>
+            <div><label class="form-label">Avg Tokens per Record</label><input type="number" id="tc-avg-tokens" class="form-input" value="500" min="10" step="10"></div>
+            <div><label class="form-label">Epochs</label><input type="number" id="tc-epochs" class="form-input" value="1" min="0.1" step="0.1"></div>
+            <div><label class="form-label">Sequence Length</label><input type="number" id="tc-seq-len" class="form-input" value="2048" min="64" step="64"></div>
+            <div><label class="form-label">Micro Batch Size</label><input type="number" id="tc-micro-batch" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label">Grad Accumulation</label><input type="number" id="tc-grad-accum" class="form-input" value="1" min="1"></div>
+            <div><label class="form-label">GPU Count</label><input type="number" id="tc-gpu-count" class="form-input" value="1" min="1"></div>
+          </div>
+          <button id="token-calculate" class="btn btn-primary mt-6">Calculate</button>
+        </div>
+        
+        <div class="planner-card">
+          <div class="planner-card-title">TOKEN TARGET ESTIMATE (from model size)</div>
+          <div class="planner-config-grid">
+            <div><label class="form-label">Model Size (B parameters)</label><input type="number" id="tc-model-size" class="form-input" value="1" min="0.01" step="0.01"></div>
+            <div><label class="form-label">Heuristic</label>
+              <select id="tc-heuristic" class="form-select">
+                <option value="standard">Standard (Chinchilla-optimal, 20×)</option>
+                <option value="dataLimited">Data-limited (10×)</option>
+                <option value="computeLimited">Compute-limited (40×)</option>
+                <option value="aggressive">Aggressive scaling (100×)</option>
+              </select>
+            </div>
+          </div>
+          <button id="token-estimate" class="btn btn-secondary mt-6">Estimate Budget</button>
+        </div>
+        
+        <div id="token-result" class="mt-6"></div>
+      </div>
+    
+    <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
+      <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div><strong style="color: var(--color-text);">LLM Training &amp; Engineering Toolkit</strong><br>EffNine &middot; Open source &middot; No tracking</div>
+        <div class="flex gap-4">
+          <a href="/pages/reference.html" style="color: var(--color-text-secondary);">Reference</a>
+          <a href="/pages/troubleshooting.html" style="color: var(--color-text-secondary);">Troubleshoot</a>
+          <a href="https://github.com/EffNine/llm-toolkit" style="color: var(--color-text-secondary);" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </footer>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/token-calc.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    window.renderTokenCalc = () => TokenCalculator.init();
+  </script>
+</body>
+</html>

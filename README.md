@@ -3,24 +3,53 @@
 Interactive LLM Training & Engineering Toolkit — a production-quality static website for learning and building Large Language Models.
 
 **Production URL:** https://llm.effnine.dev
+**Version:** v0.1.0
 
 ## Overview
 
 This toolkit helps users go from zero knowledge to production LLM engineering through:
 
-- **Structured curriculum** — 50+ topics from Linux basics to distributed training
-- **Personalized roadmaps** — Wizard generates paths based on experience, goal, and hardware
-- **Interactive calculators** — VRAM estimator, training planner, hardware compatibility
-- **GPU database** — Structured specifications with training suitability ratings
-- **Decision trees** — Training method selector, troubleshooting flow
+- **Structured curriculum** — 71 topics from Linux basics to distributed training, with 4 depth levels (Beginner → Intermediate → Advanced → Deep Dive)
+- **Personalized roadmaps** — Wizard generates paths based on experience, goal, hardware, time, and budget
+- **Interactive calculators** — VRAM estimator, model architecture designer, token budget planner, inference memory calculator
+- **GPU database** — 21 GPUs with specifications, precision support, and training suitability ratings
+- **Model database** — 16 models with architecture details and hardware requirements
+- **Decision trees** — Training method selector, scaling recommender, troubleshooting flow
+- **Dataset planner** — Generate processing pipelines from collection to versioning
+- **Evaluation planner** — Benchmark selection and regression tracking setup
 - **Hands-on projects** — 6 project paths from tiny LM to distributed training
 - **Local progress tracking** — No account required, stored in localStorage
+
+## Tools
+
+| Tool | URL | Description |
+|------|-----|-------------|
+| Learn | `/pages/learn.html` | 71-topic curriculum with progress tracking |
+| Roadmap | `/pages/roadmap.html` | Personalized learning path builder |
+| Training Planner | `/pages/planner.html` | Full training configuration with estimates |
+| VRAM Calculator | `/pages/calculator.html` | Weight/gradient/optimizer/activation breakdown |
+| Model Calculator | `/pages/model-calc.html` | Architecture design and reverse-engineering |
+| Token Budget | `/pages/token-calc.html` | Steps calculation and scaling heuristics |
+| Inference Memory | `/pages/inference-calc.html` | KV cache and total inference memory |
+| Hardware | `/pages/hardware.html` | GPU database with filters and profiles |
+| Training Methods | `/pages/training.html` | Decision tree + method reference |
+| Data Planner | `/pages/data-planner.html` | Dataset pipeline generator |
+| Evaluation Planner | `/pages/eval-planner.html` | Benchmark selection and tracking |
+| Scaling | `/pages/scaling.html` | Distributed training strategy recommender |
+| Inference | `/pages/inference.html` | Sampling strategies, KV cache, engines |
+| Deployment | `/pages/deployment.html` | Serving patterns and quantization |
+| Troubleshooting | `/pages/troubleshooting.html` | OOM, NaN, slow training, distributed failures |
+| Projects | `/pages/projects.html` | 6 hands-on project guides |
+| Models | `/pages/models.html` | 16-model specification database |
+| Reference | `/pages/reference.html` | Formulas, commands, precision table |
+| Data | `/pages/data.html` | Dataset engineering concepts |
+| Evaluation | `/pages/evaluation.html` | Benchmark categories and principles |
 
 ## Architecture
 
 ```
 llm-toolkit/
-├── index.html              # Homepage
+├── index.html              # Homepage with navigation hub
 ├── 404.html                # Not found page
 ├── robots.txt              # SEO
 ├── sitemap.xml             # SEO
@@ -37,39 +66,47 @@ llm-toolkit/
 │   ├── components.css      # Reusable UI components
 │   ├── planner.css         # Planner-specific styles
 │   ├── learning.css        # Learning system styles
-│   └── responsive.css      # Breakpoints
+│   └── responsive.css      # Breakpoints (1024px, 640px, print)
 │
 ├── js/                     # JavaScript modules (ES modules)
 │   ├── app.js              # App bootstrap
 │   ├── storage.js          # localStorage wrapper + progress
-│   ├── router.js           # Client-side routing
+│   ├── router.js           # Client-side routing (APP_ROUTES)
 │   ├── navigation.js       # Sidebar rendering
-│   ├── search.js           # Command palette search
-│   ├── learning.js         # Lesson system
+│   ├── search.js           # Command palette search (/ key)
+│   ├── learning.js         # Lesson system (4 depth levels)
 │   ├── planner.js          # Roadmap wizard
 │   ├── calculator.js       # VRAM calculator
+│   ├── model-calc.js       # Model architecture calculator
+│   ├── token-calc.js       # Token budget calculator
+│   ├── inference-calc.js   # Inference memory calculator
 │   ├── hardware.js         # GPU database
-│   └── router.js           # Navigation logic
+│   └── search.js           # Search (re-exported via window.APP_ROUTES)
 │
 ├── data/                   # Structured knowledge (JSON)
-│   ├── topics.json         # Curriculum topics
-│   ├── gpus.json           # GPU specifications
-│   ├── gpu-architectures.json
-│   ├── models.json         # Model database
-│   ├── projects.json       # Hands-on projects
-│   ├── training-methods.json
-│   ├── evaluation-methods.json
-│   ├── frameworks.json
-│   ├── optimizers.json
-│   ├── schedulers.json
-│   └── distributed-methods.json
+│   ├── topics.json         # 71 curriculum topics
+│   ├── gpus.json           # 21 GPU specifications
+│   ├── gpu-architectures.json  # 7 GPU architecture families
+│   ├── models.json         # 16 model specifications
+│   ├── projects.json       # 6 hands-on projects
+│   ├── training-methods.json   # 7 training methods
+│   ├── evaluation-methods.json # 8 evaluation benchmarks
+│   ├── frameworks.json     # 4 compute platforms
+│   ├── optimizers.json     # 3 optimizers
+│   ├── schedulers.json     # 4 schedulers
+│   └── distributed-methods.json # 5 distributed methods
 │
-├── pages/                  # Site pages
+├── pages/                  # 20 HTML pages
 │   ├── learn.html
 │   ├── roadmap.html
 │   ├── planner.html
-│   ├── hardware.html
 │   ├── calculator.html
+│   ├── model-calc.html
+│   ├── token-calc.html
+│   ├── inference-calc.html
+│   ├── data-planner.html
+│   ├── eval-planner.html
+│   ├── hardware.html
 │   ├── training.html
 │   ├── evaluation.html
 │   ├── scaling.html
@@ -78,7 +115,8 @@ llm-toolkit/
 │   ├── troubleshooting.html
 │   ├── projects.html
 │   ├── models.html
-│   └── reference.html
+│   ├── reference.html
+│   └── data.html
 │
 └── projects/               # Project detail stubs
     ├── tiny-lm/
@@ -88,6 +126,16 @@ llm-toolkit/
     ├── 7b-qlora/
     └── distributed-training/
 ```
+
+## Design System
+
+Monochrome, minimal, technical aesthetic:
+
+- **Colors**: Near-black (`#18181b`) on near-white (`#fafafa`), gray scale throughout
+- **Typography**: Inter (sans-serif) + JetBrains Mono (monospace)
+- **Spacing**: Token-based (`--space-1` through `--space-24`)
+- **Responsive**: 1024px (tablet) and 640px (mobile) breakpoints
+- **Accessibility**: Keyboard navigation, ARIA roles, skip links, focus-visible, reduced motion
 
 ## Local Development
 
@@ -144,6 +192,26 @@ python3 -m http.server 8080
 }
 ```
 
+### Model
+```json
+{
+  "id": "llama3-8b",
+  "name": "Llama 3 8B",
+  "family": "Llama",
+  "type": "decoder-only",
+  "parameters": 8,
+  "layers": 32,
+  "hiddenSize": 4096,
+  "numHeads": 32,
+  "numKVHeads": 8,
+  "contextLength": 8192,
+  "tokenizer": "tiktoken (BPE)",
+  "license": "Llama 3 Community License",
+  "source": "https://...",
+  "lastVerified": "2025-01-15"
+}
+```
+
 ## How to Add Content
 
 ### Add a Topic
@@ -158,17 +226,6 @@ Edit `data/models.json`. Include source URL and last verified date.
 ### Add a Project
 Edit `data/projects.json`. Include all fields for the best experience.
 
-## Deployment
-
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for full Cloudflare Pages setup instructions.
-
-Quick summary:
-1. Push to GitHub repository `EffNine/llm-toolkit`
-2. Connect to Cloudflare Pages
-3. Set production branch to `main`
-4. Deploy
-5. Add `llm.effnine.dev` as custom domain
-
 ## Quality Standards
 
 - All technical claims include source URLs
@@ -176,8 +233,9 @@ Quick summary:
 - No placeholder content (Lorem ipsum)
 - Beginner explanations before advanced details
 - Mobile-responsive on all pages
-- Keyboard accessible
+- Keyboard accessible (WCAG 2.1 Level A)
 - No framework dependencies — pure vanilla JS
+- No secrets, API keys, or credentials in codebase
 
 ## License
 

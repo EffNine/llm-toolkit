@@ -6,6 +6,7 @@ const Hardware = {
     await this.loadGPUData();
     this.bindEvents();
     this.renderVendorFilter();
+    this.renderArchFilter();
   },
   
   async loadGPUData() {
@@ -21,6 +22,8 @@ const Hardware = {
   },
   
   bindEvents() {
+    if (this._bound) return;
+    this._bound = true;
     const vendorFilter = document.getElementById('gpu-vendor-filter');
     const archFilter = document.getElementById('gpu-arch-filter');
     const searchInput = document.getElementById('gpu-search');
@@ -82,7 +85,7 @@ const Hardware = {
     }
     
     tbody.innerHTML = gpus.map(gpu => `
-      <tr>
+      <tr style="cursor:pointer;" onclick="Hardware.renderGPUProfile('${gpu.id}')">
         <td><strong>${gpu.name}</strong></td>
         <td>${gpu.vendor || '-'}</td>
         <td>${gpu.architecture || '-'}</td>

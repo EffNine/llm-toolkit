@@ -24,6 +24,7 @@
   <meta name="twitter:card" content="summary">
 </head>
 <body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
@@ -32,7 +33,7 @@
       <div class="nav-brand">LLM <span>Toolkit</span></div>
       <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
     </header>
-    <main class="main-content">
+    <main class="main-content" id="main-content">
       <div class="page-header narrow">
         <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Planner</span></div>
         <h1>Training Planner</h1>
@@ -214,14 +215,62 @@
             ` : ''}
             <div class="callout callout-info mt-4">
               <div class="callout-title">Configuration Summary</div>
-              <pre style="margin:0; background: var(--color-surface); border: var(--border);">${JSON.stringify({
+              <pre id="plan-config-json" style="margin:0; background: var(--color-surface); border: var(--border);">${JSON.stringify({
                 goal, modelSize, layers, hidden, heads, tokens, seqLen,
                 gpuCount, precision, optimizer, batchSize, gradAccum, lr, scheduler, checkpointing,
                 effectiveBatch: effBatch, steps, totalMemGB: totalWithAct.toFixed(1)
               }, null, 2)}</pre>
+              <div class="flex gap-3 mt-4">
+                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.copyConfig()">Copy JSON</button>
+                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadJSON()">Download JSON</button>
+                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadYAML()">Download YAML</button>
+              </div>
             </div>
           </div>
         `;
+      }
+      copyConfig() {
+        const json = document.getElementById('plan-config-json')?.textContent;
+        if (json) {
+          navigator.clipboard.writeText(json).then(() => {
+            const btn = event.target;
+            const orig = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = orig, 1500);
+          });
+        }
+      },
+      downloadJSON() {
+        const json = document.getElementById('plan-config-json')?.textContent;
+        if (json) {
+          const blob = new Blob([json], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'training-config.json'; a.click();
+          URL.revokeObjectURL(url);
+        }
+      },
+      downloadYAML() {
+        const json = document.getElementById('plan-config-json')?.textContent;
+        if (json) {
+          let yaml = '';
+          try {
+            const obj = JSON.parse(json);
+            yaml = this.objToYaml(obj);
+          } catch { yaml = json; }
+          const blob = new Blob([yaml], { type: 'text/yaml' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url; a.download = 'training-config.yaml'; a.click();
+          URL.revokeObjectURL(url);
+        }
+      },
+      objToYaml(obj, indent = 0) {
+        const pad = '  '.repeat(indent);
+        return Object.entries(obj).map(([k, v]) => {
+          if (typeof v === 'object' && v !== null) return pad + k + ':\n' + this.objToYaml(v, indent + 1);
+          return pad + k + ': ' + v;
+        }).join('\n');
       }
     };
     window.PlannerSelect = PlannerSelect;

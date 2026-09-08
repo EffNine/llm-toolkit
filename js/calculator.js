@@ -1,5 +1,7 @@
 const Calculator = {
   init() {
+    if (this._bound) return;
+    this._bound = true;
     this.bindEvents();
   },
   
@@ -31,8 +33,9 @@ const Calculator = {
     // Weight memory
     const weightMem = totalParams * bytesPerParam / 1e9;
     
-    // Gradient memory ( bf16 for gradients)
-    const gradMem = lora ? weightMem * 0.1 : totalParams * 2 / 1e9;
+    // Gradient memory (same precision as weights)
+    const gradBytes = quantBits > 0 ? quantBits / 8 : bytesPerParam;
+    const gradMem = lora ? weightMem * 0.1 : totalParams * gradBytes / 1e9;
     
     // Optimizer memory
     let optimizerMem = 0;
@@ -131,6 +134,8 @@ const Calculator = {
           </div>
         </div>
       `;
+      const exportBtns = document.getElementById('vram-export-btns');
+      if (exportBtns) exportBtns.style.display = 'flex';
     }
     
     // Show calculations panel
@@ -154,6 +159,24 @@ const Calculator = {
       case 'bf16': return 2;
       case 'fp8': return 1;
       default: return 2;
+    }
+  },
+
+  copyResult() {
+    const resultEl = document.getElementById('vram-result');
+    if (resultEl && navigator.clipboard) {
+      navigator.clipboard.writeText(resultEl.textContent);
+    }
+  },
+
+  downloadJSON() {
+    const resultEl = document.getElementById('vram-result');
+    if (resultEl) {
+      const blob = new Blob([resultEl.textContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'vram-estimate.json'; a.click();
+      URL.revokeObjectURL(url);
     }
   }
 };

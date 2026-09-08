@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Planner — LLM Toolkit</title>
+  <meta name="description" content="Plan your LLM dataset pipeline: clean, filter, deduplicate, and prepare training data.">
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/planner.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="canonical" href="https://llm.effnine.dev/pages/data-planner.html">
+  <meta property="og:title" content="Data Planner — LLM Toolkit">
+  <meta property="og:description" content="Plan your dataset pipeline from collection to release.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://llm.effnine.dev/pages/data-planner.html">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
+      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
+    </aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content" id="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Data Planner</span></div>
+        <h1>Dataset Planner</h1>
+        <p style="margin-top: var(--space-4);">Configure your dataset and get a recommended processing pipeline with considerations for your use case.</p>
+      </div>
+      <div class="page-content narrow">
+        <div class="planner-card">
+          <div class="planner-card-title">DATASET CONFIGURATION</div>
+          <div class="planner-config-grid">
+            <div><label class="form-label">Domain</label>
+              <select id="dp-domain" class="form-select">
+                <option value="general">General</option>
+                <option value="coding">Coding / Technical</option>
+                <option value="scientific">Scientific / Academic</option>
+                <option value="medical">Medical / Health</option>
+                <option value="legal">Legal</option>
+                <option value="creative">Creative / Literary</option>
+                <option value="multilingual">Multilingual</option>
+              </select>
+            </div>
+            <div><label class="form-label">Language</label>
+              <select id="dp-language" class="form-select">
+                <option value="en">English</option>
+                <option value="multilingual">Multilingual</option>
+                <option value="zh">Chinese</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="eu">European languages</option>
+              </select>
+            </div>
+            <div><label class="form-label">Data Type</label>
+              <select id="dp-type" class="form-select">
+                <option value="web">Web text (Common Crawl, Reddit)</option>
+                <option value="books">Books / Literature</option>
+                <option value="academic">Academic papers</option>
+                <option value="code">Source code</option>
+                <option value="instructions">Instruction data</option>
+                <option value="mix">Mixed sources</option>
+              </select>
+            </div>
+            <div><label class="form-label">Approximate Size (tokens)</label>
+              <select id="dp-size" class="form-select">
+                <option value="100m">100M (learning)</option>
+                <option value="1b">1B (small model)</option>
+                <option value="10b">10B (medium)</option>
+                <option value="100b">100B (large)</option>
+                <option value="1t">1T+ (foundation model)</option>
+              </select>
+            </div>
+            <div><label class="form-label">Training Objective</label>
+              <select id="dp-objective" class="form-select">
+                <option value="pretrain">Pretraining</option>
+                <option value="cpt">Continued Pretraining</option>
+                <option value="sft">Fine-tuning (SFT)</option>
+                <option value="rlhf">Alignment (DPO/RLHF)</option>
+              </select>
+            </div>
+            <div><label class="form-label">Quality Requirement</label>
+              <select id="dp-quality" class="form-select">
+                <option value="standard">Standard (web-scale)</option>
+                <option value="high">High (curated)</option>
+                <option value="very-high">Very High (gold standard)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary mt-6" onclick="DatasetPlanner.plan()">Generate Pipeline</button>
+        </div>
+        
+        <div id="dp-result" class="mt-6"></div>
+      </div>
+    
+    <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
+      <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div><strong style="color: var(--color-text);">LLM Training &amp; Engineering Toolkit</strong><br>EffNine &middot; Open source &middot; No tracking</div>
+        <div class="flex gap-4">
+          <a href="/pages/reference.html" style="color: var(--color-text-secondary);">Reference</a>
+          <a href="/pages/troubleshooting.html" style="color: var(--color-text-secondary);">Troubleshoot</a>
+          <a href="https://github.com/EffNine/llm-toolkit" style="color: var(--color-text-secondary);" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </footer>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const DatasetPlanner = {
+      pipelines: {
+        pretrain: {
+          steps: [
+            { name: 'Collect', desc: 'Gather raw text from chosen sources. Track provenance and licenses.', tools: 'Common Crawl, Pushshift, arXiv API, book dumps' },
+            { name: 'Deduplicate', desc: 'Remove exact and near-duplicate documents. Critical for preventing overfitting.', tools: 'MinHash + LSH (datasketch), exact hash dedup' },
+            { name: 'Filter', desc: 'Remove low-quality, harmful, or irrelevant content.', tools: 'PPL filtering, language detection (fasttext), heuristic filters' },
+            { name: 'Quality Score', desc: 'Score documents by quality metrics for sampling.', tools: 'Dolma quality filters, Perplexity filtering' },
+            { name: 'Tokenize', desc: 'Tokenize text with your target tokenizer.', tools: 'tiktoken, SentencePiece, HuggingFace tokenizers' },
+            { name: 'Pack', desc: 'Pack sequences to maximize GPU utilization.', tools: 'Document packing, block packing' },
+            { name: 'Split', desc: 'Create train/validation/test splits.', tools: 'Random split with seed, temporal split' },
+            { name: 'Version', desc: 'Version your dataset and document processing steps.', tools: 'DVC, HuggingFace Datasets, Delta Lake' }
+          ]
+        },
+        cpt: {
+          steps: [
+            { name: 'Collect', desc: 'Gather domain-specific text. Quality matters more than quantity.', tools: 'Domain APIs, curated web sources, books' },
+            { name: 'Clean', desc: 'Remove non-domain content, boilerplate, noise.', tools: 'Regex cleaning, language detection, domain classifiers' },
+            { name: 'Deduplicate', desc: 'Remove duplicates within domain data and against base training data.', tools: 'Exact dedup, MinHash LSH' },
+            { name: 'Format', desc: 'Convert to tokenized sequences.', tools: 'Same tokenizer as base model' },
+            { name: 'Split', desc: 'Create train/val splits.', tools: '80/20 split typical' },
+            { name: 'Mix', desc: 'Mix with existing data if doing incremental training.', tools: 'Proportional or emphasized mixing' }
+          ]
+        },
+        sft: {
+          steps: [
+            { name: 'Collect', desc: 'Gather instruction-response pairs. Quality > quantity.', tools: 'Manual annotation, synthetic generation, public datasets' },
+            { name: 'Clean', desc: 'Remove malformed, off-topic, or low-quality examples.', tools: 'Rule-based filtering, LLM-based quality scoring' },
+            { name: 'Format', desc: 'Convert to chat template format.', tools: 'HF chat templates, custom formats' },
+            { name: 'Deduplicate', desc: 'Remove duplicate prompts/responses.', tools: 'Prompt-level deduplication' },
+            { name: 'Split', desc: 'Train/validation/test split.', tools: '70/15/15 typical' },
+            { name: 'Augment', desc: 'Augment with diverse examples if needed.', tools: 'Synthetic data generation, translation' }
+          ]
+        },
+        rlhf: {
+          steps: [
+            { name: 'Collect', desc: 'Gather prompts and generate multiple responses.', tools: 'Existing prompts, LLM-generated responses' },
+            { name: 'Rank', desc: 'Rank responses for preference learning.', tools: 'Human annotators, LLM-as-judge' },
+            { name: 'Filter', desc: 'Remove ambiguous or low-signal pairs.', tools: 'Confidence thresholding' },
+            { name: 'Format', desc: 'Format as (prompt, chosen, rejected) triplets.', tools: 'Chat template formatting' },
+            { name: 'Split', desc: 'Train/validation for DPO.', tools: 'Hold out 5-10% for evaluation' }
+          ]
+        }
+      },
+      
+      considerations: {
+        general: ['Web text needs heavy deduplication', 'Language detection for multilingual data', 'Copyright and licensing review'],
+        coding: ['Code deduplication is critical (GitHub clone rates)', 'License filtering (GPL contamination)', 'Language-specific tokenizers may help'],
+        scientific: ['ArXiv API for paper collection', 'Reference deduplication', 'Math/latex handling'],
+        medical: ['HIPAA compliance for patient data', 'Specialist annotation needed', 'Factuality verification critical'],
+        legal: ['Bar exam questions as benchmark', 'Jurisdiction-specific training', 'Confidentiality constraints'],
+        creative: ['Author voice preservation', 'Copyright considerations', 'Stylistic diversity'],
+        multilingual: ['Language mixing ratios matter', 'Per-language quality thresholds', 'Tokenizer coverage']
+      },
+      
+      sources: {
+        general: ['The Pile', 'C4', ' Dolma', 'OSCAR', 'RedPajama'],
+        coding: ['The Stack', 'GitHub dumps', 'CodeContests', 'Applications'],
+        scientific: ['arXiv', 'PubMed', 'Semantic Scholar', 'OpenAlex'],
+        medical: ['PubMed Central', 'MIMIC-IV', 'MedCon', 'ClinicalTrials'],
+        legal: ['CaseLaw', 'SCDB', 'ContractNLI', 'legal-pile'],
+        creative: ['Project Gutenberg', 'The Pile (books)', 'Literary Corpus'],
+        multilingual: ['MAID', 'BLOOM README', 'mC4', 'GCC']
+      },
+      
+      plan() {
+        const objective = document.getElementById('dp-objective')?.value || 'pretrain';
+        const domain = document.getElementById('dp-domain')?.value || 'general';
+        const quality = document.getElementById('dp-quality')?.value || 'standard';
+        const size = document.getElementById('dp-size')?.value || '1b';
+        
+        const pipeline = this.pipelines[objective] || this.pipelines.pretrain;
+        const cons = this.considerations[domain] || this.considerations.general;
+        const srcs = this.sources[domain] || this.sources.general;
+        
+        const sizeDesc = {
+          '100m': '~100M tokens (learning project)',
+          '1b': '~1B tokens (small model)',
+          '10b': '~10B tokens (medium model)',
+          '100b': '~100B tokens (large model)',
+          '1t': '1T+ tokens (foundation model)'
+        };
+        
+        const el = document.getElementById('dp-result');
+        if (!el) return;
+        
+        el.innerHTML = `
+          <div class="planner-card">
+            <div class="planner-card-title">PIPELINE: ${objective.toUpperCase()}</div>
+            <div class="text-sm text-muted mb-4">${sizeDesc[size] || size}</div>
+            <div class="roadmap-path">
+              ${pipeline.steps.map((s, i) => `
+                <div class="roadmap-step">
+                  <div class="roadmap-dot">${i + 1}</div>
+                  <div class="roadmap-content">
+                    <div class="roadmap-title">${s.name}</div>
+                    <div class="roadmap-desc">${s.desc}</div>
+                    ${s.tools ? `<div class="roadmap-desc" style="font-family:var(--font-mono);font-size:0.7rem;margin-top:2px;">Tools: ${s.tools}</div>` : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="grid-2 mt-6" style="gap:var(--space-6);">
+            <div class="planner-card">
+              <div class="planner-card-title">RECOMMENDED SOURCES</div>
+              <ul style="padding-left:var(--space-4);font-size:var(--text-sm);color:var(--color-text-secondary);">
+                ${srcs.map(s => `<li style="margin-bottom:var(--space-2);font-family:var(--font-mono);">${s}</li>`).join('')}
+              </ul>
+            </div>
+            <div class="planner-card">
+              <div class="planner-card-title">DOMAIN CONSIDERATIONS</div>
+              <ul style="padding-left:var(--space-4);font-size:var(--text-sm);color:var(--color-text-secondary);">
+                ${cons.map(c => `<li style="margin-bottom:var(--space-2);">${c}</li>`).join('')}
+              </ul>
+            </div>
+          </div>
+          
+          ${quality === 'high' || quality === 'very-high' ? `
+          <div class="callout callout-info mt-6">
+            <div class="callout-title">Quality Requirements</div>
+            <p style="margin:0;font-size:var(--text-sm);">
+              ${quality === 'very-high' 
+                ? 'For gold-standard data: invest in human review, automated quality scoring, and rigorous deduplication. Consider using established filtered datasets as a starting point rather than raw web crawl.'
+                : 'For high-quality data: apply multiple filtering passes (PPL, length, language), deduplicate aggressively, and manually review a sample of the final dataset.'}
+            </p>
+          </div>
+          ` : ''}
+        `;
+      }
+    };
+    window.DatasetPlanner = DatasetPlanner;
+    window.renderDataPlanner = () => {};
+  </script>
+</body>
+</html>

@@ -137,6 +137,17 @@ const Search = {
       tags: [r.section]
     }));
     
+    // Add tool pages
+    const tools = [
+      { title: 'VRAM Calculator', desc: 'Estimate GPU memory for training', path: '/pages/calculator.html', type: 'Tool' },
+      { title: 'Model Calculator', desc: 'Design transformer architecture', path: '/pages/model-calc.html', type: 'Tool' },
+      { title: 'Token Budget', desc: 'Calculate training token requirements', path: '/pages/token-calc.html', type: 'Tool' },
+      { title: 'Inference Memory', desc: 'Estimate inference GPU memory', path: '/pages/inference-calc.html', type: 'Tool' },
+      { title: 'Data Planner', desc: 'Plan dataset processing pipeline', path: '/pages/data-planner.html', type: 'Tool' },
+      { title: 'Evaluation Planner', desc: 'Plan model evaluation strategy', path: '/pages/eval-planner.html', type: 'Tool' },
+    ];
+    tools.forEach(t => items.push(t));
+    
     return items;
   },
   

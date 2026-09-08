@@ -237,16 +237,19 @@ const Planner = {
   resetWizard() {
     this.currentStep = 0;
     this.answers = {};
-    document.getElementById('wizard-stepper')?.remove();
-    document.getElementById('roadmap-result')?.remove();
+    const stepperEl = document.getElementById('wizard-stepper');
+    const resultEl = document.getElementById('roadmap-result');
+    if (stepperEl) stepperEl.remove();
+    if (resultEl) resultEl.style.display = 'none';
     this.renderStep();
   },
   
   modifyWizard() {
     this.currentStep = 0;
-    this.answers = {};
-    document.getElementById('wizard-stepper')?.remove();
-    document.getElementById('roadmap-result')?.remove();
+    const stepperEl = document.getElementById('wizard-stepper');
+    const resultEl = document.getElementById('roadmap-result');
+    if (stepperEl) stepperEl.remove();
+    if (resultEl) resultEl.style.display = 'none';
     this.renderStep();
   }
 };

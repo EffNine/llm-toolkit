@@ -23,6 +23,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-black focus:text-white" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo">
@@ -51,7 +52,7 @@
       </div>
     </header>
     
-    <main class="main-content" id="page-content">
+    <main class="main-content" id="main-content">
       <div id="home-view">
         <!-- Hero -->
         <section class="page-header" style="border-bottom:none; background: var(--color-bg); padding-bottom: 0;">
@@ -73,6 +74,11 @@
                 <a href="/pages/hardware.html" class="btn btn-secondary" style="width:100%;">CHECK MY GPU</a>
                 <a href="/pages/calculator.html" class="btn btn-secondary" style="width:100%;">CALCULATE VRAM</a>
                 <a href="/pages/learn.html" class="btn btn-secondary" style="width:100%;">BROWSE KNOWLEDGE</a>
+                <a href="/pages/model-calc.html" class="btn btn-secondary" style="width:100%;">MODEL DESIGNER</a>
+                <a href="/pages/token-calc.html" class="btn btn-secondary" style="width:100%;">TOKEN BUDGET</a>
+                <a href="/pages/inference-calc.html" class="btn btn-secondary" style="width:100%;">INFERENCE MEM</a>
+                <a href="/pages/data-planner.html" class="btn btn-secondary" style="width:100%;">DATA PIPELINE</a>
+                <a href="/pages/eval-planner.html" class="btn btn-secondary" style="width:100%;">EVAL PLANNER</a>
               </div>
             </div>
           </div>
@@ -101,36 +107,40 @@
         <!-- What do you want to do? -->
         <section class="page-content" style="padding-top: var(--space-8); border-top: var(--border);">
           <div class="section-title">WHAT DO YOU WANT TO DO?</div>
-          <div class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/learn.html')">
+            <div class="selection-grid" style="grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/learn.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/learn.html')">
               <div class="selection-option-title">Learn LLMs</div>
               <div class="selection-option-desc">Follow the curriculum from zero</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/roadmap.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/roadmap.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/roadmap.html')">
               <div class="selection-option-title">Build My Roadmap</div>
               <div class="selection-option-desc">Personalized learning path</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/planner.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/planner.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/planner.html')">
               <div class="selection-option-title">Plan a Training Run</div>
               <div class="selection-option-desc">Configuration &amp; estimates</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/hardware.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/hardware.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/hardware.html')">
               <div class="selection-option-title">Check My GPU</div>
               <div class="selection-option-desc">Hardware compatibility</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/calculator.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/calculator.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/calculator.html')">
               <div class="selection-option-title">Calculate VRAM</div>
               <div class="selection-option-desc">Memory requirements estimator</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/training.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/training.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/training.html')">
               <div class="selection-option-title">Training Methods</div>
               <div class="selection-option-desc">Pretraining, fine-tuning, LoRA</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/projects.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/model-calc.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/model-calc.html')">
+              <div class="selection-option-title">Model Designer</div>
+              <div class="selection-option-desc">Architecture calculator</div>
+            </div>
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/projects.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/projects.html')">
               <div class="selection-option-title">Hands-on Projects</div>
               <div class="selection-option-desc">Build real LLMs step by step</div>
             </div>
-            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/troubleshooting.html')">
+            <div class="selection-option card-interactive" onclick="Router.navigate('/pages/troubleshooting.html')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/troubleshooting.html')">
               <div class="selection-option-title">Troubleshoot</div>
               <div class="selection-option-desc">OOM, NaN, slow training</div>
             </div>
@@ -141,20 +151,35 @@
         <section class="page-content" style="padding-top: var(--space-8); border-top: var(--border);">
           <div class="section-title">FEATURED INTERACTIVE TOOLS</div>
           <div class="grid-3 mt-4">
-            <div class="card card-interactive" onclick="Router.navigate('/pages/calculator.html')" style="cursor:pointer;">
+            <div class="card card-interactive" onclick="Router.navigate('/pages/calculator.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/calculator.html')">
               <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Calculator</div>
               <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">VRAM Estimator</h3>
               <p class="text-sm text-muted">Estimate memory requirements for your training configuration. Shows weight, gradient, optimizer, and activation breakdown.</p>
             </div>
-            <div class="card card-interactive" onclick="Router.navigate('/pages/hardware.html')" style="cursor:pointer;">
+            <div class="card card-interactive" onclick="Router.navigate('/pages/hardware.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/hardware.html')">
               <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Database</div>
               <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">GPU Architecture</h3>
               <p class="text-sm text-muted">Structured database of GPU architectures, specifications, and training suitability ratings.</p>
             </div>
-            <div class="card card-interactive" onclick="Router.navigate('/pages/training.html')" style="cursor:pointer;">
+            <div class="card card-interactive" onclick="Router.navigate('/pages/model-calc.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/model-calc.html')">
+              <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Calculator</div>
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Model Designer</h3>
+              <p class="text-sm text-muted">Design transformer architectures or reverse-engineer parameters from target size.</p>
+            </div>
+            <div class="card card-interactive" onclick="Router.navigate('/pages/training.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/training.html')">
               <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Decision Tree</div>
               <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Training Method Selector</h3>
               <p class="text-sm text-muted">Answer questions about your goal and hardware to get a recommended training approach.</p>
+            </div>
+            <div class="card card-interactive" onclick="Router.navigate('/pages/token-calc.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/token-calc.html')">
+              <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Calculator</div>
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Token Budget</h3>
+              <p class="text-sm text-muted">Calculate training steps or estimate token targets from model size using scaling heuristics.</p>
+            </div>
+            <div class="card card-interactive" onclick="Router.navigate('/pages/data-planner.html')" style="cursor:pointer;" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Router.navigate('/pages/data-planner.html')">
+              <div class="uppercase text-tertiary text-xs tracking-wider mb-2">Planner</div>
+              <h3 style="font-size: var(--text-lg); margin-bottom: var(--space-2);">Data Pipeline</h3>
+              <p class="text-sm text-muted">Generate a customized dataset processing pipeline from collection to versioning.</p>
             </div>
           </div>
         </section>

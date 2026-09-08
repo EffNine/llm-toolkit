@@ -1,0 +1,39 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1" # weekly link-rot sweep, Mondays 06:00 UTC
+
+jobs:
+  content:
+    name: content + math + integrity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: run validator (warnings allowed; failures block)
+        run: python3 scripts/validate.py
+
+  links:
+    name: link-rot sweep (weekly)
+    runs-on: ubuntu-latest
+    # Weekly + manual only: slow, network-dependent, and informational.
+    # A failure here means a library URL moved or died — fix or remove it.
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: run link-rot sweep
+        run: python3 scripts/validate.py --check-links

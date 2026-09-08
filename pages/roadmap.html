@@ -47,8 +47,13 @@
       </div>
       <div class="page-content narrow">
         <div id="wizard-container">
-          <div id="wizard-stepper" class="wizard-stepper"></div>
-          <div id="wizard-step-content"></div>
+          <div id="wizard-stepper" class="wizard-stepper" role="list" aria-label="Roadmap builder progress"></div>
+          <div id="wizard-step-content" aria-live="off">
+            <div class="empty-state" role="status">
+              <div class="empty-state-text">Loading the roadmap builder…</div>
+              <noscript><div class="empty-state-text"><strong>JavaScript is required</strong> for the interactive roadmap builder. Meanwhile, you can <a href="/pages/learn.html">browse the curriculum</a> or <a href="/pages/projects.html">explore projects</a>.</div></noscript>
+            </div>
+          </div>
         </div>
         <div id="roadmap-result" style="display:none;"></div>
       </div>

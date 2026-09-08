@@ -29,15 +29,15 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
       <div class="nav-actions">
-        <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
+        <button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button>
       </div>
     </header>
     <main class="main-content" id="main-content">
@@ -51,34 +51,16 @@
         <div class="decision-node mb-8">
           <div class="decision-question">WHAT ARE YOU TRYING TO CHANGE?</div>
           <div class="decision-branches">
-            <div class="decision-branch" onclick="Training.showRecommendation('foundation')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('foundation')">
-              <strong>Model Knowledge</strong>
-              <div class="text-xs text-muted mt-1">Add new facts, languages, domains</div>
-            </div>
-            <div class="decision-branch" onclick="Training.showRecommendation('behaviour')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('behaviour')">
-              <strong>Behaviour / Instructions</strong>
-              <div class="text-xs text-muted mt-1">Teach the model to follow formats</div>
-            </div>
-            <div class="decision-branch" onclick="Training.showRecommendation('memory')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('memory')">
-              <strong>Limited GPU Memory</strong>
-              <div class="text-xs text-muted mt-1">Work around hardware constraints</div>
-            </div>
-            <div class="decision-branch" onclick="Training.showRecommendation('preference')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('preference')">
-              <strong>Preference Alignment</strong>
-              <div class="text-xs text-muted mt-1">Make outputs safer, more helpful</div>
-            </div>
-            <div class="decision-branch" onclick="Training.showRecommendation('efficiency')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('efficiency')">
-              <strong>Size / Efficiency</strong>
-              <div class="text-xs text-muted mt-1">Distill or compress the model</div>
-            </div>
-            <div class="decision-branch" onclick="Training.showRecommendation('new-foundation')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Training.showRecommendation('new-foundation')">
-              <strong>New Foundation Model</strong>
-              <div class="text-xs text-muted mt-1">Pretrain from scratch</div>
-            </div>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('foundation', this)" aria-pressed="false"><strong>Model Knowledge</strong><span class="text-xs text-muted mt-1" style="display:block;">Add new facts, languages, domains</span></button>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('behaviour', this)" aria-pressed="false"><strong>Behaviour / Instructions</strong><span class="text-xs text-muted mt-1" style="display:block;">Teach the model to follow formats</span></button>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('memory', this)" aria-pressed="false"><strong>Limited GPU Memory</strong><span class="text-xs text-muted mt-1" style="display:block;">Work around hardware constraints</span></button>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('preference', this)" aria-pressed="false"><strong>Preference Alignment</strong><span class="text-xs text-muted mt-1" style="display:block;">Make outputs safer, more helpful</span></button>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('efficiency', this)" aria-pressed="false"><strong>Size / Efficiency</strong><span class="text-xs text-muted mt-1" style="display:block;">Distill or compress the model</span></button>
+            <button type="button" class="decision-branch" onclick="Training.showRecommendation('new-foundation', this)" aria-pressed="false"><strong>New Foundation Model</strong><span class="text-xs text-muted mt-1" style="display:block;">Pretrain from scratch</span></button>
           </div>
         </div>
         
-        <div id="training-recommendation" style="display:none;"></div>
+        <div id="training-recommendation" style="display:none;" role="status" aria-live="polite"></div>
         
         <div class="divider mt-8"></div>
         
@@ -92,7 +74,7 @@
           <div class="planner-card-title">Training Configuration</div>
           <div class="planner-config-grid">
             <div>
-              <label class="form-label">Goal</label>
+              <label class="form-label" for="train-goal">Goal</label>
               <select id="train-goal" class="form-select">
                 <option value="pretrain">Pretraining</option>
                 <option value="cpt">Continued Pretraining</option>
@@ -103,23 +85,23 @@
               </select>
             </div>
             <div>
-              <label class="form-label">Model Size (B)</label>
+              <label class="form-label" for="train-model-size">Model Size (B)</label>
               <input type="number" id="train-model-size" class="form-input" value="1" min="0.01" step="0.01">
             </div>
             <div>
-              <label class="form-label">Dataset Size (tokens)</label>
+              <label class="form-label" for="train-dataset-size">Dataset Size (tokens)</label>
               <input type="number" id="train-dataset-size" class="form-input" value="1000000000" min="1000000" step="1000000">
             </div>
             <div>
-              <label class="form-label">GPU VRAM (GB)</label>
+              <label class="form-label" for="train-gpu-vram">GPU VRAM (GB)</label>
               <input type="number" id="train-gpu-vram" class="form-input" value="24" min="4">
             </div>
             <div>
-              <label class="form-label">GPU Count</label>
+              <label class="form-label" for="train-gpu-count">GPU Count</label>
               <input type="number" id="train-gpu-count" class="form-input" value="1" min="1">
             </div>
             <div>
-              <label class="form-label">Precision</label>
+              <label class="form-label" for="train-precision">Precision</label>
               <select id="train-precision" class="form-select">
                 <option value="bf16">BF16</option>
                 <option value="fp16">FP16</option>
@@ -127,8 +109,9 @@
               </select>
             </div>
           </div>
-          <button class="btn btn-primary mt-6" onclick="Training.generatePlan()">Generate Training Plan</button>
-          <div id="training-plan-result" class="mt-6"></div>
+          <button type="button" class="btn btn-primary mt-6" onclick="Training.generatePlan()">Generate Training Plan</button>
+          <div id="training-plan-result" class="mt-6" role="status" aria-live="polite"></div>
+          <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/planner.html">Open Training Planner →</a><a class="btn btn-sm btn-secondary" href="/pages/calculator.html">Estimate VRAM →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#lora">Learn LoRA →</a></div></div>
         </div>
       </div>
     
@@ -217,22 +200,29 @@
       },
       
       async loadMethods() {
+        const el = document.getElementById('methods-list');
+        if (el) el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">Loading methods…</div></div>';
         try {
-          const mod = await import('../data/training-methods.json');
-          window.TRAINING_METHODS = mod.default || mod;
+          const res = await fetch('/data/training-methods.json', { headers: { Accept: 'application/json' } });
+          window.TRAINING_METHODS = res.ok ? await res.json() : [];
+          if (!Array.isArray(window.TRAINING_METHODS)) window.TRAINING_METHODS = [];
         } catch { window.TRAINING_METHODS = []; }
       },
       
       renderMethods() {
         const el = document.getElementById('methods-list');
         if (!el || !window.TRAINING_METHODS) return;
+        if (window.TRAINING_METHODS.length === 0) {
+          el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">No training methods found.</div></div>';
+          return;
+        }
         
         el.innerHTML = window.TRAINING_METHODS.map(m => `
           <div class="expandable-panel">
-            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+            <button type="button" class="expandable-header" aria-expanded="false">
               <span class="expandable-title">${m.title}</span>
               <span class="expandable-icon">+</span>
-            </div>
+            </button>
             <div class="expandable-content">
               <div class="expandable-body">
                 <p>${m.description}</p>
@@ -247,15 +237,20 @@
         `).join('');
       },
       
-      showRecommendation(key) {
+      showRecommendation(key, srcEl) {
         const rec = this.recommendations[key];
         if (!rec) return;
+        if (srcEl) {
+          document.querySelectorAll('.decision-branch').forEach((b) => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); });
+          srcEl.classList.add('selected');
+          srcEl.setAttribute('aria-pressed', 'true');
+        }
         
-        const el = document.getElementById('training-recommendation');
-        if (!el) return;
-        el.style.display = 'block';
+        const panel = document.getElementById('training-recommendation');
+        if (!panel) return;
+        panel.style.display = 'block';
         
-        el.innerHTML = `
+        panel.innerHTML = `
           <div class="callout callout-info">
             <div class="callout-title">Recommended: ${rec.method}</div>
             <p><strong>Why:</strong> ${rec.why}</p>
@@ -266,8 +261,6 @@
           </div>
         `;
         
-        document.querySelectorAll('.decision-branch').forEach(b => b.classList.remove('selected'));
-        event.target.closest('.decision-branch')?.classList.add('selected');
       },
       
       generatePlan() {

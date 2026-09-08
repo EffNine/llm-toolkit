@@ -3,22 +3,30 @@ const Hardware = {
   architectures: [],
   
   async init() {
+    if (this._initialised) return;
+    this._initialised = true;
     await this.loadGPUData();
     this.bindEvents();
     this.renderVendorFilter();
     this.renderArchFilter();
+    this.filterGPUs();
+    this.handleDeepLink();
   },
   
+  async fetchJson(path) {
+    try {
+      const res = await fetch(path, { headers: { Accept: 'application/json' } });
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch { return []; }
+  },
+
   async loadGPUData() {
-    try {
-      const gpusMod = await import('../data/gpus.json');
-      this.gpus = gpusMod.default || gpusMod;
-    } catch { this.gpus = []; }
-    
-    try {
-      const archMod = await import('../data/gpu-architectures.json');
-      this.architectures = archMod.default || archMod;
-    } catch { this.architectures = []; }
+    const tbody = document.getElementById('gpu-table-body');
+    if (tbody) tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--color-text-secondary);" role="status">Loading GPUs…</td></tr>`;
+    this.gpus = await this.fetchJson('/data/gpus.json');
+    this.architectures = await this.fetchJson('/data/gpu-architectures.json');
   },
   
   bindEvents() {
@@ -85,8 +93,8 @@ const Hardware = {
     }
     
     tbody.innerHTML = gpus.map(gpu => `
-      <tr style="cursor:pointer;" onclick="Hardware.renderGPUProfile('${gpu.id}')">
-        <td><strong>${gpu.name}</strong></td>
+      <tr>
+        <td><button type="button" class="linklike" data-gpu-id="${gpu.id}" style="font-weight:600;text-align:left;">${gpu.name}</button></td>
         <td>${gpu.vendor || '-'}</td>
         <td>${gpu.architecture || '-'}</td>
         <td class="text-mono">${gpu.vram ? gpu.vram + ' GB' : '-'}</td>
@@ -96,6 +104,9 @@ const Hardware = {
         <td>${this.renderTrainingBadge(gpu)}</td>
       </tr>
     `).join('');
+    tbody.querySelectorAll('[data-gpu-id]').forEach((btn) => {
+      btn.addEventListener('click', () => this.renderGPUProfile(btn.getAttribute('data-gpu-id')));
+    });
   },
   
   renderPrecisionBadges(gpu) {
@@ -128,6 +139,10 @@ const Hardware = {
   renderGPUProfile(gpuId) {
     const gpu = this.gpus.find(g => g.id === gpuId || g.name === gpuId);
     if (!gpu) return;
+    try {
+      // Same-document deep link (not cross-page SPA navigation).
+      window.history.replaceState(null, '', `#${gpu.id}`);
+    } catch { /* ignore */ }
     
     const el = document.getElementById('gpu-profile');
     if (!el) return;
@@ -189,8 +204,18 @@ const Hardware = {
     else if (gpu.trainingSuitability === 'possible') recs.push('Fine-tuning (LoRA/QLoRA)', 'Small model pretraining');
     else if (gpu.trainingSuitability === 'experimental') recs.push('Inference', 'Small fine-tuning');
     else recs.push('Inference only');
-    
+
     return recs.join(', ');
+  },
+
+  handleDeepLink() {
+    const hash = window.location.hash;
+    if (hash && hash.length > 1) {
+      const id = decodeURIComponent(hash.slice(1));
+      if (this.gpus.some((g) => g.id === id || g.name === id)) {
+        this.renderGPUProfile(id);
+      }
+    }
   }
 };
 

@@ -28,14 +28,14 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -47,8 +47,8 @@
         <div class="planner-card">
           <div class="planner-card-title">Configuration</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Model Size (B parameters)</label><input type="number" id="infer-model-size" class="form-input" value="7" min="0.1" step="0.1"></div>
-            <div><label class="form-label">Precision</label>
+            <div><label class="form-label" for="infer-model-size">Model Size (B parameters)</label><input type="number" id="infer-model-size" class="form-input" value="7" min="0.1" step="0.1"></div>
+            <div><label class="form-label" for="infer-precision">Precision</label>
               <select id="infer-precision" class="form-select">
                 <option value="bf16">BF16 (2 bytes)</option>
                 <option value="fp16">FP16 (2 bytes)</option>
@@ -57,19 +57,20 @@
                 <option value="int4">INT4 (0.5 bytes)</option>
               </select>
             </div>
-            <div><label class="form-label">Quantization Bits (override)</label><input type="number" id="infer-quant" class="form-input" value="0" min="0" max="8" placeholder="0 = use precision above"></div>
-            <div><label class="form-label">Context Length</label><input type="number" id="infer-context" class="form-input" value="4096" min="64" step="64"></div>
-            <div><label class="form-label">Batch Size</label><input type="number" id="infer-batch" class="form-input" value="1" min="1"></div>
-            <div><label class="form-label">Layers</label><input type="number" id="infer-layers" class="form-input" value="32" min="1"></div>
-            <div><label class="form-label">Hidden Size</label><input type="number" id="infer-hidden" class="form-input" value="4096" min="64" step="64"></div>
-            <div><label class="form-label">Attention Heads</label><input type="number" id="infer-heads" class="form-input" value="32" min="1"></div>
-            <div><label class="form-label">KV Heads (GQA)</label><input type="number" id="infer-kv-heads" class="form-input" value="8" min="1"></div>
-            <div><label class="form-label">Your GPU VRAM (GB)</label><input type="number" id="infer-gpu-vram" class="form-input" value="0" min="0" placeholder="0 = skip comparison"></div>
+            <div><label class="form-label" for="infer-quant">Quantization Bits (override)</label><input type="number" id="infer-quant" class="form-input" value="0" min="0" max="8" placeholder="0 = use precision above"></div>
+            <div><label class="form-label" for="infer-context">Context Length</label><input type="number" id="infer-context" class="form-input" value="4096" min="64" step="64"></div>
+            <div><label class="form-label" for="infer-batch">Batch Size</label><input type="number" id="infer-batch" class="form-input" value="1" min="1"></div>
+            <div><label class="form-label" for="infer-layers">Layers</label><input type="number" id="infer-layers" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label" for="infer-hidden">Hidden Size</label><input type="number" id="infer-hidden" class="form-input" value="4096" min="64" step="64"></div>
+            <div><label class="form-label" for="infer-heads">Attention Heads</label><input type="number" id="infer-heads" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label" for="infer-kv-heads">KV Heads (GQA)</label><input type="number" id="infer-kv-heads" class="form-input" value="8" min="1"></div>
+            <div><label class="form-label" for="infer-gpu-vram">Your GPU VRAM (GB)</label><input type="number" id="infer-gpu-vram" class="form-input" value="0" min="0" placeholder="0 = skip comparison"></div>
           </div>
           <button id="infer-calculate" class="btn btn-primary mt-6">Calculate Memory</button>
         </div>
         
-        <div id="infer-result" class="mt-6"></div>
+        <div id="infer-form-error" class="text-sm mt-2" role="alert" style="color:var(--color-error);min-height:1.25em;"></div>
+        <div id="infer-result" class="mt-6" role="status" aria-live="polite"></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

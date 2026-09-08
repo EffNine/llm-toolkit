@@ -28,14 +28,14 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -47,28 +47,30 @@
         <div class="planner-card">
           <div class="planner-card-title">MODEL PURPOSE</div>
           <div class="selection-grid" id="eval-purpose-grid">
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'general')" tabindex="0" role="button"><div class="selection-option-title">General Purpose</div><div class="selection-option-desc">MMLU, reasoning, chat</div></div>
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'coding')" tabindex="0" role="button"><div class="selection-option-title">Coding</div><div class="selection-option-desc">HumanEval, SWE-bench</div></div>
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'math')" tabindex="0" role="button"><div class="selection-option-title">Math & Reasoning</div><div class="selection-option-desc">GSM8K, MATH, AIME</div></div>
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'instruction')" tabindex="0" role="button"><div class="selection-option-title">Instruction Following</div><div class="selection-option-desc">IFEval, format control</div></div>
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'safety')" tabindex="0" role="button"><div class="selection-option-title">Safety & Alignment</div><div class="selection-option-desc">Toxicity, jailbreak</div></div>
-            <div class="selection-option" onclick="EvalPlanner.selectPurpose(this,'domain')" tabindex="0" role="button"><div class="selection-option-title">Domain Specific</div><div class="selection-option-desc">Custom evaluation</div></div>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'general')" aria-pressed="false"><span class="selection-option-title">General Purpose</span><span class="selection-option-desc">MMLU, reasoning, chat</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'coding')" aria-pressed="false"><span class="selection-option-title">Coding</span><span class="selection-option-desc">HumanEval, SWE-bench</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'math')" aria-pressed="false"><span class="selection-option-title">Math & Reasoning</span><span class="selection-option-desc">GSM8K, MATH, AIME</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'instruction')" aria-pressed="false"><span class="selection-option-title">Instruction Following</span><span class="selection-option-desc">IFEval, format control</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'safety')" aria-pressed="false"><span class="selection-option-title">Safety & Alignment</span><span class="selection-option-desc">Toxicity, jailbreak</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.selectPurpose(this,'domain')" aria-pressed="false"><span class="selection-option-title">Domain Specific</span><span class="selection-option-desc">Custom evaluation</span></button>
           </div>
         </div>
         
         <div class="planner-card">
           <div class="planner-card-title">EVALUATION TYPES</div>
           <div class="selection-grid">
-            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'baseline')" tabindex="0" role="button"><div class="selection-option-title">Baseline</div><div class="selection-option-desc">Zero-shot on standard benchmarks</div></div>
-            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'fewshot')" tabindex="0" role="button"><div class="selection-option-title">Few-shot</div><div class="selection-option-desc">1-shot, 5-shot, 10-shot variants</div></div>
-            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'custom')" tabindex="0" role="button"><div class="selection-option-title">Custom</div><div class="selection-option-desc">Domain-specific test set</div></div>
-            <div class="selection-option" onclick="EvalPlanner.toggleType(this,'regression')" tabindex="0" role="button"><div class="selection-option-title">Regression</div><div class="selection-option-desc">Track changes across iterations</div></div>
+            <button type="button" class="selection-option" onclick="EvalPlanner.toggleType(this,'baseline')" aria-pressed="false"><span class="selection-option-title">Baseline</span><span class="selection-option-desc">Zero-shot on standard benchmarks</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.toggleType(this,'fewshot')" aria-pressed="false"><span class="selection-option-title">Few-shot</span><span class="selection-option-desc">1-shot, 5-shot, 10-shot variants</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.toggleType(this,'custom')" aria-pressed="false"><span class="selection-option-title">Custom</span><span class="selection-option-desc">Domain-specific test set</span></button>
+            <button type="button" class="selection-option" onclick="EvalPlanner.toggleType(this,'regression')" aria-pressed="false"><span class="selection-option-title">Regression</span><span class="selection-option-desc">Track changes across iterations</span></button>
           </div>
         </div>
         
-        <button class="btn btn-primary mt-6" onclick="EvalPlanner.generate()">Generate Evaluation Plan</button>
-        
-        <div id="eval-plan-result" class="mt-6"></div>
+        <div id="eval-form-error" class="text-sm mt-4" role="alert" style="color:var(--color-error);min-height:1.25em;"></div>
+        <button type="button" class="btn btn-primary mt-6" onclick="EvalPlanner.generate()">Generate Evaluation Plan</button>
+
+        <div id="eval-plan-result" class="mt-6" role="status" aria-live="polite"></div>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/training.html">Compare training methods →</a><a class="btn btn-sm btn-secondary" href="/pages/data-planner.html">Plan data →</a></div></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
@@ -127,22 +129,31 @@
       },
       
       selectPurpose(el, purpose) {
-        document.querySelectorAll('#eval-purpose-grid .selection-option').forEach(o => o.classList.remove('selected'));
+        document.querySelectorAll('#eval-purpose-grid .selection-option').forEach((o) => { o.classList.remove('selected'); o.setAttribute('aria-pressed', 'false'); });
         el.classList.add('selected');
+        el.setAttribute('aria-pressed', 'true');
         this.purpose = purpose;
+        const err = document.getElementById('eval-form-error');
+        if (err) err.textContent = '';
       },
-      
+
       toggleType(el, type) {
         el.classList.toggle('selected');
+        el.setAttribute('aria-pressed', el.classList.contains('selected') ? 'true' : 'false');
         if (this.types.has(type)) this.types.delete(type);
         else this.types.add(type);
       },
       
       generate() {
+        const errEl = document.getElementById('eval-form-error');
         if (!this.purpose) {
-          alert('Please select a model purpose first.');
+          if (errEl) {
+            errEl.textContent = 'Please select a model purpose first.';
+            document.getElementById('eval-purpose-grid')?.scrollIntoView({ block: 'nearest' });
+          }
           return;
         }
+        if (errEl) errEl.textContent = '';
         
         const bm = this.benchmarks[this.purpose] || this.benchmarks.general;
         const types = Array.from(this.types);

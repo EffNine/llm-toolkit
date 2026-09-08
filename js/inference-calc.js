@@ -5,16 +5,44 @@ const InferenceCalculator = {
     document.getElementById('infer-calculate')?.addEventListener('click', () => this.calculate());
   },
   
+  readNum(id, { min, max, integer, label, allowZero }) {
+    const input = document.getElementById(id);
+    const raw = input?.value?.trim() ?? '';
+    const v = integer ? Number.parseInt(raw, 10) : Number.parseFloat(raw);
+    let msg = '';
+    if (raw === '') msg = `${label} is required.`;
+    else if (!Number.isFinite(v)) msg = `${label} must be a number.`;
+    else if (integer && !Number.isInteger(v)) msg = `${label} must be a whole number.`;
+    else if (min !== undefined && v < min) msg = `${label} must be ≥ ${min}.`;
+    else if (max !== undefined && v > max) msg = `${label} must be ≤ ${max}.`;
+    if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    return { value: v, error: msg };
+  },
   calculate() {
-    const modelSize = parseFloat(document.getElementById('infer-model-size')?.value) || 7;
+    const errEl = document.getElementById('infer-form-error');
+    if (errEl) errEl.textContent = '';
+    const get = (id, o) => {
+      const r = this.readNum(id, o);
+      if (r.error) {
+        if (errEl) errEl.textContent = r.error + ' No calculation was performed.';
+        document.getElementById('infer-result').innerHTML = '';
+        document.getElementById(id)?.focus();
+        throw new Error('validation');
+      }
+      return r.value;
+    };
+    let modelSize, context, batch, layers, hidden, heads, kvHeads, quantBits;
+    try {
+      modelSize = get('infer-model-size', { min: 0.01, max: 10000, label: 'Model size' });
+      context = get('infer-context', { min: 64, max: 10000000, integer: true, label: 'Context length' });
+      batch = get('infer-batch', { min: 1, max: 1024, integer: true, label: 'Batch size' });
+      layers = get('infer-layers', { min: 1, max: 256, integer: true, label: 'Layers' });
+      hidden = get('infer-hidden', { min: 64, max: 32768, integer: true, label: 'Hidden size' });
+      heads = get('infer-heads', { min: 1, max: 256, integer: true, label: 'Attention heads' });
+      kvHeads = get('infer-kv-heads', { min: 1, max: 256, integer: true, label: 'KV heads' });
+      quantBits = get('infer-quant', { min: 0, max: 8, integer: true, label: 'Quantization bits' });
+    } catch { return; }
     const precision = document.getElementById('infer-precision')?.value || 'bf16';
-    const context = parseInt(document.getElementById('infer-context')?.value) || 4096;
-    const batch = parseInt(document.getElementById('infer-batch')?.value) || 1;
-    const layers = parseInt(document.getElementById('infer-layers')?.value) || 32;
-    const hidden = parseInt(document.getElementById('infer-hidden')?.value) || 4096;
-    const heads = parseInt(document.getElementById('infer-heads')?.value) || 32;
-    const kvHeads = parseInt(document.getElementById('infer-kv-heads')?.value) || 8;
-    const quantBits = parseInt(document.getElementById('infer-quant')?.value) || 0;
     
     const bytesPerParam = quantBits > 0 ? quantBits / 8 : (precision === 'fp32' ? 4 : 2);
     const headDim = hidden / heads;

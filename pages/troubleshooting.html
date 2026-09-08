@@ -26,12 +26,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -40,51 +40,21 @@
         <p style="margin-top: var(--space-4);">Common failures and how to fix them. Select your symptom to get targeted guidance.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">WHAT WENT WRONG?</div>
+        <h2 class="section-title">WHAT WENT WRONG?</h2>
         <div class="troubleshoot-flow mt-4">
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('oom')" tabindex="0" role="button" onkeydown="if(event.key===\x27Enter\x27)Troubleshoot.show('oom')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('oom')">
-            <div class="troubleshoot-icon">◈</div>
-            <div><div class="troubleshoot-title">CUDA Out of Memory</div><div class="troubleshoot-desc">Training crashes with memory errors</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('slow')" tabindex="0" role="button" onkeydown="if(event.key===\x27Enter\x27)Troubleshoot.show('slow')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('slow')">
-            <div class="troubleshoot-icon">⏱</div>
-            <div><div class="troubleshoot-title">Training Too Slow</div><div class="troubleshoot-desc">Low throughput, GPU underutilized</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('nan')" tabindex="0" role="button" onkeydown="if(event.key===\x27Enter\x27)Troubleshoot.show('nan')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('nan')">
-            <div class="troubleshoot-icon">▲</div>
-            <div><div class="troubleshoot-title">Loss is NaN</div><div class="troubleshoot-desc">Loss becomes NaN and training breaks</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('nostep')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('nostep')">
-            <div class="troubleshoot-icon">▽</div>
-            <div><div class="troubleshoot-title">Loss Not Decreasing</div><div class="troubleshoot-desc">Training loss stays flat or increases</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('nogpu')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('nogpu')">
-            <div class="troubleshoot-icon">▣️</div>
-            <div><div class="troubleshoot-title">GPU Not Detected</div><div class="troubleshoot-desc">torch.cuda.is_available() returns False</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('dataset')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('dataset')">
-            <div class="troubleshoot-icon">◇</div>
-            <div><div class="troubleshoot-title">Dataset Error</div><div class="troubleshoot-desc">Data loading fails or produces bad batches</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('checkpoint')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('checkpoint')">
-            <div class="troubleshoot-icon">▦</div>
-            <div><div class="troubleshoot-title">Checkpoint Error</div><div class="troubleshoot-desc">Cannot save or load checkpoints</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('dist')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('dist')">
-            <div class="troubleshoot-icon">⬡</div>
-            <div><div class="troubleshoot-title">Distributed Training Failure</div><div class="troubleshoot-desc">NCCL errors, scaling issues</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('poor')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('poor')">
-            <div class="troubleshoot-icon">◐</div>
-            <div><div class="troubleshoot-title">Poor Evaluation</div><div class="troubleshoot-desc">Model scores lower than expected</div></div>
-          </div>
-          <div class="troubleshoot-option" onclick="Troubleshoot.show('badoutputs')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Troubleshoot.show('badoutputs')">
-            <div class="troubleshoot-icon">○</div>
-            <div><div class="troubleshoot-title">Model Outputs Are Bad</div><div class="troubleshoot-desc">Generated text is incoherent or off-target</div></div>
-          </div>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('oom', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">◈</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">CUDA Out of Memory</span><span class="troubleshoot-desc" style="display:block;">Training crashes with memory errors</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('slow', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">⏱</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Training Too Slow</span><span class="troubleshoot-desc" style="display:block;">Low throughput, GPU underutilized</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('nan', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">▲</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Loss is NaN</span><span class="troubleshoot-desc" style="display:block;">Loss becomes NaN and training breaks</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('nostep', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">▽</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Loss Not Decreasing</span><span class="troubleshoot-desc" style="display:block;">Training loss stays flat or increases</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('nogpu', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">▣️</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">GPU Not Detected</span><span class="troubleshoot-desc" style="display:block;">torch.cuda.is_available() returns False</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('dataset', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">◇</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Dataset Error</span><span class="troubleshoot-desc" style="display:block;">Data loading fails or produces bad batches</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('checkpoint', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">▦</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Checkpoint Error</span><span class="troubleshoot-desc" style="display:block;">Cannot save or load checkpoints</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('dist', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">⬡</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Distributed Training Failure</span><span class="troubleshoot-desc" style="display:block;">NCCL errors, scaling issues</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('poor', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">◐</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Poor Evaluation</span><span class="troubleshoot-desc" style="display:block;">Model scores lower than expected</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('badoutputs', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">○</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Model Outputs Are Bad</span><span class="troubleshoot-desc" style="display:block;">Generated text is incoherent or off-target</span></span></button>
         </div>
         
-        <div id="troubleshoot-result" class="mt-8" style="display:none;"></div>
+        <div id="troubleshoot-result" class="mt-8" style="display:none;" role="status" aria-live="polite"></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
@@ -120,8 +90,8 @@
             'Reduce sequence length',
             'Use mixed precision (BF16/FP16)',
             'Enable FSDP for multi-GPU: FSDP(model, shard_state_in_grad=False)',
-            'Offload activations to CPU: fsdp_config={\'cpu_offload\': OffloadConfig(offload_activations=True)}',
-            'Check for tensor leaks: detach() intermediates you don\'t need gradients for'
+            'Offload activations to CPU: fsdp_config={cpu_offload: OffloadConfig(offload_activations=True)}', 
+            "Check for tensor leaks: detach() intermediates you don't need gradients for"
           ],
           prevention: 'Always profile memory before training. Set a memory budget and stay 20% below it.'
         },
@@ -210,7 +180,7 @@
           ],
           fixes: [
             'Re-download or repair corrupted data',
-            'Ensure tokenizer matches the model (use model\'s tokenizer)',
+            "Ensure tokenizer matches the model (use model's tokenizer)",
             'Increase truncation length or filter long sequences',
             'Use streaming datasets for large corpora',
             'Check for encoding issues (use utf-8)'
@@ -294,7 +264,8 @@
         }
       },
       
-      show(key) {
+      show(key, srcEl) {
+        if (srcEl) { document.querySelectorAll('.troubleshoot-option').forEach((b) => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); }); srcEl.classList.add('selected'); srcEl.setAttribute('aria-pressed', 'true'); }
         const sol = this.solutions[key];
         if (!sol) return;
         

@@ -6,14 +6,46 @@ const TokenCalculator = {
     document.getElementById('token-estimate')?.addEventListener('click', () => this.estimateBudget());
   },
   
+  readNum(id, { min, max, integer, label }) {
+    const input = document.getElementById(id);
+    const raw = input?.value?.trim() ?? '';
+    const v = integer ? Number.parseInt(raw, 10) : Number.parseFloat(raw);
+    let msg = '';
+    if (raw === '') msg = `${label} is required.`;
+    else if (!Number.isFinite(v)) msg = `${label} must be a number.`;
+    else if (integer && !Number.isInteger(v)) msg = `${label} must be a whole number.`;
+    else if (min !== undefined && v < min) msg = `${label} must be ≥ ${min}.`;
+    else if (max !== undefined && v > max) msg = `${label} must be ≤ ${max}.`;
+    if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    return { value: v, error: msg };
+  },
+  fail(msg, badId) {
+    const errEl = document.getElementById('token-form-error');
+    if (errEl) errEl.textContent = msg || '';
+    if (msg) {
+      document.getElementById('token-result').innerHTML = '';
+      if (badId) document.getElementById(badId)?.focus();
+      return true;
+    }
+    return false;
+  },
   calculate() {
-    const records = parseInt(document.getElementById('tc-records')?.value) || 1000000;
-    const avgTokens = parseInt(document.getElementById('tc-avg-tokens')?.value) || 500;
-    const epochs = parseFloat(document.getElementById('tc-epochs')?.value) || 1;
-    const seqLen = parseInt(document.getElementById('tc-seq-len')?.value) || 2048;
-    const microBatch = parseInt(document.getElementById('tc-micro-batch')?.value) || 32;
-    const gradAccum = parseInt(document.getElementById('tc-grad-accum')?.value) || 1;
-    const gpuCount = parseInt(document.getElementById('tc-gpu-count')?.value) || 1;
+    const get = (id, o) => {
+      const r = this.readNum(id, o);
+      if (r.error) { this.fail(r.error, id); throw new Error('validation'); }
+      return r.value;
+    };
+    let records, avgTokens, epochs, seqLen, microBatch, gradAccum, gpuCount;
+    try {
+      records = get('tc-records', { min: 1, max: 1e15, integer: true, label: 'Dataset records' });
+      avgTokens = get('tc-avg-tokens', { min: 1, max: 10000000, integer: true, label: 'Avg tokens per record' });
+      epochs = get('tc-epochs', { min: 0.1, max: 1000, label: 'Epochs' });
+      seqLen = get('tc-seq-len', { min: 64, max: 1048576, integer: true, label: 'Sequence length' });
+      microBatch = get('tc-micro-batch', { min: 1, max: 65536, integer: true, label: 'Micro batch size' });
+      gradAccum = get('tc-grad-accum', { min: 1, max: 4096, integer: true, label: 'Grad accumulation' });
+      gpuCount = get('tc-gpu-count', { min: 1, max: 4096, integer: true, label: 'GPU count' });
+    } catch { return; }
+    this.fail('');
     
     const totalTokens = records * avgTokens * epochs;
     const tokensPerStep = microBatch * gradAccum * gpuCount * seqLen;
@@ -54,7 +86,10 @@ const TokenCalculator = {
   },
   
   estimateBudget() {
-    const modelSize = parseFloat(document.getElementById('tc-model-size')?.value) || 1;
+    const r = this.readNum('tc-model-size', { min: 0.01, max: 10000, label: 'Model size' });
+    if (r.error) { this.fail(r.error, 'tc-model-size'); return; }
+    this.fail('');
+    const modelSize = r.value;
     const heuristic = document.getElementById('tc-heuristic')?.value || 'standard';
     
     // Heuristics for token targets based on model size

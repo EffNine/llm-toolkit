@@ -28,14 +28,14 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -47,12 +47,12 @@
         <div class="planner-card">
           <div class="planner-card-title">PARAMETER → ARCHITECTURE</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Layers</label><input type="number" id="mc-layers" class="form-input" value="32" min="1"></div>
-            <div><label class="form-label">Hidden Size</label><input type="number" id="mc-hidden" class="form-input" value="4096" min="64" step="64"></div>
-            <div><label class="form-label">Attention Heads</label><input type="number" id="mc-heads" class="form-input" value="32" min="1"></div>
-            <div><label class="form-label">KV Heads (GQA)</label><input type="number" id="mc-kv-heads" class="form-input" value="8" min="1"></div>
-            <div><label class="form-label">FFN Expansion Factor</label><input type="number" id="mc-ffn-expand" class="form-input" value="3" min="1" step="0.5"></div>
-            <div><label class="form-label">Vocabulary Size</label><input type="number" id="mc-vocab" class="form-input" value="32000" min="1000" step="1000"></div>
+            <div><label class="form-label" for="mc-layers">Layers</label><input type="number" id="mc-layers" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label" for="mc-hidden">Hidden Size</label><input type="number" id="mc-hidden" class="form-input" value="4096" min="64" step="64"></div>
+            <div><label class="form-label" for="mc-heads">Attention Heads</label><input type="number" id="mc-heads" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label" for="mc-kv-heads">KV Heads (GQA)</label><input type="number" id="mc-kv-heads" class="form-input" value="8" min="1"></div>
+            <div><label class="form-label" for="mc-ffn-expand">FFN Expansion Factor</label><input type="number" id="mc-ffn-expand" class="form-input" value="3" min="1" step="0.5"></div>
+            <div><label class="form-label" for="mc-vocab">Vocabulary Size</label><input type="number" id="mc-vocab" class="form-input" value="32000" min="1000" step="1000"></div>
           </div>
           <div class="flex gap-6 mt-4">
             <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
@@ -68,10 +68,10 @@
         <div class="planner-card">
           <div class="planner-card-title">ARCHITECTURE → PARAMETER ESTIMATE</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Target Parameters (B)</label><input type="number" id="mc-target-params" class="form-input" value="1" min="0.01" step="0.01"></div>
-            <div><label class="form-label">Layers</label><input type="number" id="mc-est-layers" class="form-input" value="24" min="1"></div>
-            <div><label class="form-label">Vocabulary Size</label><input type="number" id="mc-est-vocab" class="form-input" value="32000" min="1000" step="1000"></div>
-            <div><label class="form-label">FFN Expansion</label><input type="number" id="mc-est-ffn" class="form-input" value="3" min="1" step="0.5"></div>
+            <div><label class="form-label" for="mc-target-params">Target Parameters (B)</label><input type="number" id="mc-target-params" class="form-input" value="1" min="0.01" step="0.01"></div>
+            <div><label class="form-label" for="mc-est-layers">Layers</label><input type="number" id="mc-est-layers" class="form-input" value="24" min="1"></div>
+            <div><label class="form-label" for="mc-est-vocab">Vocabulary Size</label><input type="number" id="mc-est-vocab" class="form-input" value="32000" min="1000" step="1000"></div>
+            <div><label class="form-label" for="mc-est-ffn">FFN Expansion</label><input type="number" id="mc-est-ffn" class="form-input" value="3" min="1" step="0.5"></div>
           </div>
           <div class="flex gap-6 mt-4">
             <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
@@ -81,7 +81,8 @@
           <button id="model-estimate" class="btn btn-secondary mt-6">Estimate Architecture</button>
         </div>
         
-        <div id="model-result" class="mt-6"></div>
+        <div id="model-form-error" class="text-sm mt-2" role="alert" style="color:var(--color-error);min-height:1.25em;"></div>
+        <div id="model-result" class="mt-6" role="status" aria-live="polite"></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

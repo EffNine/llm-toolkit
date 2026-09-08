@@ -28,14 +28,14 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -47,7 +47,7 @@
         <div class="planner-card">
           <div class="planner-card-title">DATASET CONFIGURATION</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Domain</label>
+            <div><label class="form-label" for="dp-domain">Domain</label>
               <select id="dp-domain" class="form-select">
                 <option value="general">General</option>
                 <option value="coding">Coding / Technical</option>
@@ -58,7 +58,7 @@
                 <option value="multilingual">Multilingual</option>
               </select>
             </div>
-            <div><label class="form-label">Language</label>
+            <div><label class="form-label" for="dp-language">Language</label>
               <select id="dp-language" class="form-select">
                 <option value="en">English</option>
                 <option value="multilingual">Multilingual</option>
@@ -68,7 +68,7 @@
                 <option value="eu">European languages</option>
               </select>
             </div>
-            <div><label class="form-label">Data Type</label>
+            <div><label class="form-label" for="dp-type">Data Type</label>
               <select id="dp-type" class="form-select">
                 <option value="web">Web text (Common Crawl, Reddit)</option>
                 <option value="books">Books / Literature</option>
@@ -78,7 +78,7 @@
                 <option value="mix">Mixed sources</option>
               </select>
             </div>
-            <div><label class="form-label">Approximate Size (tokens)</label>
+            <div><label class="form-label" for="dp-size">Approximate Size (tokens)</label>
               <select id="dp-size" class="form-select">
                 <option value="100m">100M (learning)</option>
                 <option value="1b">1B (small model)</option>
@@ -87,7 +87,7 @@
                 <option value="1t">1T+ (foundation model)</option>
               </select>
             </div>
-            <div><label class="form-label">Training Objective</label>
+            <div><label class="form-label" for="dp-objective">Training Objective</label>
               <select id="dp-objective" class="form-select">
                 <option value="pretrain">Pretraining</option>
                 <option value="cpt">Continued Pretraining</option>
@@ -95,7 +95,7 @@
                 <option value="rlhf">Alignment (DPO/RLHF)</option>
               </select>
             </div>
-            <div><label class="form-label">Quality Requirement</label>
+            <div><label class="form-label" for="dp-quality">Quality Requirement</label>
               <select id="dp-quality" class="form-select">
                 <option value="standard">Standard (web-scale)</option>
                 <option value="high">High (curated)</option>
@@ -106,7 +106,8 @@
           <button class="btn btn-primary mt-6" onclick="DatasetPlanner.plan()">Generate Pipeline</button>
         </div>
         
-        <div id="dp-result" class="mt-6"></div>
+        <div id="dp-result" class="mt-6" role="status" aria-live="polite"></div>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/eval-planner.html">Plan evaluation →</a><a class="btn btn-sm btn-secondary" href="/pages/planner.html">Plan training →</a></div></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

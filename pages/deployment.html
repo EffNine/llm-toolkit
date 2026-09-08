@@ -25,12 +25,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -39,18 +39,18 @@
         <p style="margin-top: var(--space-4);">From training run to production API. Serving, monitoring, and operational concerns.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">DEPLOYMENT PATTERNS</div>
+        <h2 class="section-title">DEPLOYMENT PATTERNS</h2>
         <div class="grid-3 mt-4">
           <div class="card">
-            <div class="section-title">Local Inference</div>
+            <h2 class="section-title">Local Inference</h2>
             <p class="text-sm">Run on your own machine. Use Ollama, llama.cpp, or LM Studio. Best for development and personal use.</p>
           </div>
           <div class="card">
-            <div class="section-title">Workstation Server</div>
+            <h2 class="section-title">Workstation Server</h2>
             <p class="text-sm">Dedicated GPU machine serving via vLLM or TGI. Good for team access and moderate traffic.</p>
           </div>
           <div class="card">
-            <div class="section-title">Cloud API</div>
+            <h2 class="section-title">Cloud API</h2>
             <p class="text-sm">Containerized deployment on cloud GPU instances. Auto-scaling, load balancing, monitoring.</p>
           </div>
         </div>
@@ -59,19 +59,19 @@
         
         <div class="section-title mt-8">QUANTIZATION FOR DEPLOYMENT</div>
         <div class="expandable-panel mt-4">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">INT8 Quantization</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">INT8 Quantization</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Halves model size with minimal quality loss. Supported natively on most modern GPUs. Good first step for deployment.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">GPTQ / AWQ (4-bit)</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">GPTQ / AWQ (4-bit)</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Post-training quantization to 4-bit. 4x size reduction. GPTQ and AWQ are the most common methods. Minor quality impact on well-calibrated models.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">GGUF (llama.cpp format)</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">GGUF (llama.cpp format)</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Universal quantization format supporting CPU + GPU offloading. Q4_K_M, Q5_K_M, Q6_K are popular middle-ground quantizations.</p>
           </div></div>

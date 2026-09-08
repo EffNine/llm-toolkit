@@ -18,12 +18,29 @@ const Progress = {
   bookmarks: Storage.get('bookmarks', []),
   currentRoadmap: Storage.get('currentRoadmap', null),
   preferences: Storage.get('preferences', { theme: 'light', lastPage: '/' }),
-  
+
   completeLesson(id) {
+    if (!id) return;
     if (!this.completedLessons.includes(id)) {
       this.completedLessons.push(id);
       Storage.set('completedLessons', this.completedLessons);
     }
+  },
+  uncompleteLesson(id) {
+    if (!id) return;
+    const idx = this.completedLessons.indexOf(id);
+    if (idx >= 0) {
+      this.completedLessons.splice(idx, 1);
+      Storage.set('completedLessons', this.completedLessons);
+    }
+  },
+  toggleLesson(id) {
+    if (this.isCompleted(id)) this.uncompleteLesson(id);
+    else this.completeLesson(id);
+    return this.isCompleted(id);
+  },
+  isCompleted(id) {
+    return Array.isArray(this.completedLessons) && this.completedLessons.includes(id);
   },
   toggleBookmark(page) {
     const idx = this.bookmarks.indexOf(page);
@@ -55,7 +72,12 @@ const Progress = {
   },
   getProgress() {
     const total = window.TOPICS?.length || 0;
-    const completed = this.completedLessons.length;
+    const completed = (this.completedLessons || []).filter((id) =>
+      (window.TOPICS || []).some((t) => t.id === id)
+    ).length;
     return { total, completed, percentage: total > 0 ? Math.round((completed / total) * 100) : 0 };
   }
 };
+
+window.Storage = Storage;
+window.Progress = Progress;

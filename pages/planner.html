@@ -26,12 +26,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -40,74 +40,103 @@
         <p style="margin-top: var(--space-4);">Configure and plan a complete training run. Get estimates, recommendations, and a configuration summary.</p>
       </div>
       <div class="page-content narrow">
-        <div class="planner-card">
-          <div class="planner-card-title">GOAL</div>
-          <div class="selection-grid">
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'pretrain')"><div class="selection-option-title">Pretraining</div><div class="selection-option-desc">Train from scratch</div></div>
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'cpt')"><div class="selection-option-title">Continued PT</div><div class="selection-option-desc">Adapt to new domain</div></div>
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'sft')"><div class="selection-option-title">SFT</div><div class="selection-option-desc">Instruction tuning</div></div>
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'lora')"><div class="selection-option-title">LoRA</div><div class="selection-option-desc">Efficient adaptation</div></div>
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'qlora')"><div class="selection-option-title">QLoRA</div><div class="selection-option-desc">4-bit efficient</div></div>
-            <div class="selection-option" onclick="PlannerSelect.select(this, 'goal', 'dpo')"><div class="selection-option-title">DPO</div><div class="selection-option-desc">Preference alignment</div></div>
+        <form id="plan-form" novalidate>
+        <fieldset class="planner-card" style="border:none;padding:0;margin:0 0 var(--space-6);">
+          <legend class="planner-card-title">STEP 1 · WHAT ARE YOU TRYING TO DO?</legend>
+          <div class="selection-grid" role="group" aria-label="Training goal">
+            <button type="button" class="selection-option" data-goal="pretrain" aria-pressed="false"><span class="selection-option-title">Pretraining</span><span class="selection-option-desc">Train from scratch</span></button>
+            <button type="button" class="selection-option" data-goal="cpt" aria-pressed="false"><span class="selection-option-title">Continued PT</span><span class="selection-option-desc">Adapt to new domain</span></button>
+            <button type="button" class="selection-option selected" data-goal="sft" aria-pressed="true"><span class="selection-option-title">SFT</span><span class="selection-option-desc">Instruction tuning (default)</span></button>
+            <button type="button" class="selection-option" data-goal="lora" aria-pressed="false"><span class="selection-option-title">LoRA</span><span class="selection-option-desc">Efficient adaptation</span></button>
+            <button type="button" class="selection-option" data-goal="qlora" aria-pressed="false"><span class="selection-option-title">QLoRA</span><span class="selection-option-desc">4-bit efficient</span></button>
+            <button type="button" class="selection-option" data-goal="dpo" aria-pressed="false"><span class="selection-option-title">DPO</span><span class="selection-option-desc">Preference alignment</span></button>
           </div>
-        </div>
-        
-        <div class="planner-card">
-          <div class="planner-card-title">MODEL</div>
+          <p class="form-hint">Default is SFT. LoRA/QLoRA need far less memory than full training. <a href="/pages/training.html">Compare methods →</a></p>
+        </fieldset>
+
+        <fieldset class="planner-card">
+          <legend class="planner-card-title">STEP 2 · MODEL</legend>
           <div class="planner-config-grid">
-            <div><label class="form-label">Model Size (B parameters)</label><input type="number" id="plan-model-size" class="form-input" value="1" min="0.01" step="0.01"></div>
-            <div><label class="form-label">Layers</label><input type="number" id="plan-layers" class="form-input" value="24" min="1"></div>
-            <div><label class="form-label">Hidden Size</label><input type="number" id="plan-hidden" class="form-input" value="2048" min="64" step="64"></div>
-            <div><label class="form-label">Attention Heads</label><input type="number" id="plan-heads" class="form-input" value="16" min="1"></div>
+            <div><label class="form-label" for="plan-model-size">Model size (B parameters)</label><input type="number" id="plan-model-size" class="form-input" value="1" min="0.01" step="0.01" inputmode="decimal" aria-describedby="plan-model-size-hint plan-model-size-error"><div class="form-hint" id="plan-model-size-hint">Billions of parameters, e.g. 1 = 1B.</div><div class="form-error" id="plan-model-size-error" role="alert"></div></div>
           </div>
-        </div>
-        
-        <div class="planner-card">
-          <div class="planner-card-title">DATA</div>
+          <details class="mt-4">
+            <summary class="text-sm text-muted" style="cursor:pointer;">Advanced architecture (layers, hidden size, heads)</summary>
+            <div class="planner-config-grid mt-4">
+              <div><label class="form-label" for="plan-layers">Layers</label><input type="number" id="plan-layers" class="form-input" value="24" min="1" max="256" step="1" aria-describedby="plan-layers-error"><div class="form-error" id="plan-layers-error" role="alert"></div></div>
+              <div><label class="form-label" for="plan-hidden">Hidden size</label><input type="number" id="plan-hidden" class="form-input" value="2048" min="64" max="32768" step="64" aria-describedby="plan-hidden-error"><div class="form-hint">Must be divisible by attention heads.</div><div class="form-error" id="plan-hidden-error" role="alert"></div></div>
+              <div><label class="form-label" for="plan-heads">Attention heads</label><input type="number" id="plan-heads" class="form-input" value="16" min="1" max="256" step="1" aria-describedby="plan-heads-error"><div class="form-error" id="plan-heads-error" role="alert"></div></div>
+            </div>
+          </details>
+        </fieldset>
+
+        <fieldset class="planner-card">
+          <legend class="planner-card-title">STEP 3 · DATA</legend>
           <div class="planner-config-grid">
-            <div><label class="form-label">Token Budget</label><input type="number" id="plan-tokens" class="form-input" value="1000000000" min="1000000" step="1000000"></div>
-            <div><label class="form-label">Sequence Length</label><input type="number" id="plan-seq-len" class="form-input" value="2048" min="64" step="64"></div>
+            <div><label class="form-label" for="plan-tokens">Token budget (tokens)</label><input type="number" id="plan-tokens" class="form-input" value="1000000000" min="1000000" step="1000000" inputmode="numeric" aria-describedby="plan-tokens-hint plan-tokens-error"><div class="form-hint" id="plan-tokens-hint">Total training tokens. <a href="/pages/token-calc.html">Calculate →</a></div><div class="form-error" id="plan-tokens-error" role="alert"></div></div>
+            <div><label class="form-label" for="plan-seq-len">Sequence length (tokens)</label><input type="number" id="plan-seq-len" class="form-input" value="2048" min="64" max="1048576" step="64" aria-describedby="plan-seq-len-error"><div class="form-error" id="plan-seq-len-error" role="alert"></div></div>
           </div>
-        </div>
-        
-        <div class="planner-card">
-          <div class="planner-card-title">HARDWARE & TRAINING</div>
+          <p class="form-hint">Need a pipeline? <a href="/pages/data-planner.html">Open Data Planner →</a></p>
+        </fieldset>
+
+        <fieldset class="planner-card">
+          <legend class="planner-card-title">STEP 4 · HARDWARE</legend>
           <div class="planner-config-grid">
-            <div><label class="form-label">GPU VRAM (GB)</label><input type="number" id="plan-vram" class="form-input" value="24" min="4"></div>
-            <div><label class="form-label">GPU Count</label><input type="number" id="plan-gpu-count" class="form-input" value="1" min="1"></div>
-            <div><label class="form-label">Precision</label>
+            <div><label class="form-label" for="plan-vram">GPU VRAM (GB per GPU)</label><input type="number" id="plan-vram" class="form-input" value="24" min="4" max="512" step="1" aria-describedby="plan-vram-hint plan-vram-error"><div class="form-hint" id="plan-vram-hint"><a href="/pages/hardware.html">Check your GPU →</a></div><div class="form-error" id="plan-vram-error" role="alert"></div></div>
+            <div><label class="form-label" for="plan-gpu-count">GPU count</label><input type="number" id="plan-gpu-count" class="form-input" value="1" min="1" max="4096" step="1" aria-describedby="plan-gpu-count-error"><div class="form-error" id="plan-gpu-count-error" role="alert"></div></div>
+            <div><label class="form-label" for="plan-precision">Precision</label>
               <select id="plan-precision" class="form-select">
-                <option value="bf16">BF16</option>
+                <option value="bf16" selected>BF16 (recommended)</option>
                 <option value="fp16">FP16</option>
                 <option value="fp32">FP32</option>
               </select>
+              <div class="form-hint">BF16/FP16 use 2 bytes/param; FP32 uses 4.</div>
             </div>
-            <div><label class="form-label">Optimizer</label>
+          </div>
+        </fieldset>
+
+        <fieldset class="planner-card">
+          <legend class="planner-card-title">STEP 5 · TRAINING SETTINGS</legend>
+          <div class="planner-config-grid">
+            <div><label class="form-label" for="plan-optimizer">Optimizer</label>
               <select id="plan-optimizer" class="form-select">
-                <option value="adamw">AdamW</option>
+                <option value="adamw" selected>AdamW</option>
                 <option value="sgd">SGD</option>
               </select>
             </div>
-            <div><label class="form-label">Batch Size (per GPU)</label><input type="number" id="plan-batch" class="form-input" value="4" min="1"></div>
-            <div><label class="form-label">Grad Accumulation</label><input type="number" id="plan-grad-accum" class="form-input" value="1" min="1"></div>
-            <div><label class="form-label">Learning Rate</label><input type="number" id="plan-lr" class="form-input" value="0.0003" step="0.00001"></div>
-            <div><label class="form-label">Scheduler</label>
-              <select id="plan-scheduler" class="form-select">
-                <option value="cosine">Cosine + Warmup</option>
-                <option value="constant">Constant</option>
-              </select>
+            <div><label class="form-label" for="plan-batch">Batch size (per GPU)</label><input type="number" id="plan-batch" class="form-input" value="4" min="1" max="65536" step="1" aria-describedby="plan-batch-error"><div class="form-error" id="plan-batch-error" role="alert"></div></div>
+            <div><label class="form-label" for="plan-grad-accum">Gradient accumulation steps</label><input type="number" id="plan-grad-accum" class="form-input" value="1" min="1" max="4096" step="1" aria-describedby="plan-grad-accum-error"><div class="form-error" id="plan-grad-accum-error" role="alert"></div></div>
+          </div>
+          <details class="mt-4">
+            <summary class="text-sm text-muted" style="cursor:pointer;">Advanced training (learning rate, scheduler, checkpointing)</summary>
+            <div class="planner-config-grid mt-4">
+              <div><label class="form-label" for="plan-lr">Learning rate</label><input type="number" id="plan-lr" class="form-input" value="0.0003" min="0.000001" max="1" step="0.00001" inputmode="decimal" aria-describedby="plan-lr-error"><div class="form-error" id="plan-lr-error" role="alert"></div></div>
+              <div><label class="form-label" for="plan-scheduler">Scheduler</label>
+                <select id="plan-scheduler" class="form-select">
+                  <option value="cosine" selected>Cosine + Warmup</option>
+                  <option value="constant">Constant</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="flex gap-4 mt-4">
-            <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
-              <input type="checkbox" id="plan-checkpointing"> Gradient Checkpointing
-            </label>
-          </div>
+            <div class="flex gap-4 mt-4">
+              <label style="display:flex; align-items:center; gap:var(--space-2); cursor:pointer; font-size:var(--text-sm);">
+                <input type="checkbox" id="plan-checkpointing"> Gradient checkpointing (trades ~10× less activation memory for ~20% slower steps)
+              </label>
+            </div>
+          </details>
+        </fieldset>
+
+        <div class="flex gap-3 mt-6" style="flex-wrap:wrap;">
+          <button type="submit" class="btn btn-primary btn-lg">Generate Plan</button>
+          <button type="button" class="btn btn-secondary btn-lg" id="plan-reset">Reset</button>
         </div>
-        
-        <button class="btn btn-primary btn-lg" onclick="PlannerSelect.generate()">Generate Plan</button>
-        
-        <div id="plan-result" class="mt-6"></div>
+        <div id="plan-form-error" class="text-sm mt-2" role="alert" style="color:var(--color-error);min-height:1.25em;"></div>
+        </form>
+
+        <div id="plan-result" class="mt-6" role="status" aria-live="polite"></div>
+        <div class="callout mt-4" style="background:var(--color-surface-2);border-color:var(--color-border-strong);">
+          <div class="callout-title">What the status means</div>
+          <p style="margin:0;font-size:var(--text-sm);"><span class="badge badge-success">RECOMMENDED</span> fits with &gt;20% headroom · <span class="badge badge-warning">POSSIBLE</span> fits with 5–20% headroom · <span class="badge badge-warning">TIGHT</span> fits with &lt;5% headroom, may OOM · <span class="badge badge-error">OOM</span> exceeds VRAM. All values are <strong>estimates</strong>, not measured guarantees — verify on hardware.</p>
+        </div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
@@ -132,26 +161,79 @@
   <script type="module" src="/js/app.js"></script>
   <script>
     const PlannerSelect = {
-      answers: {},
-      select(el, key, value) {
-        el.closest('.selection-grid').querySelectorAll('.selection-option').forEach(o => o.classList.remove('selected'));
+      answers: { goal: 'sft' },
+      defaults: {
+        'plan-model-size': '1', 'plan-layers': '24', 'plan-hidden': '2048', 'plan-heads': '16',
+        'plan-tokens': '1000000000', 'plan-seq-len': '2048', 'plan-vram': '24', 'plan-gpu-count': '1',
+        'plan-batch': '4', 'plan-grad-accum': '1', 'plan-lr': '0.0003'
+      },
+      init() {
+        document.querySelectorAll('[data-goal]').forEach((btn) => {
+          btn.addEventListener('click', () => this.selectGoal(btn, btn.getAttribute('data-goal')));
+        });
+        document.getElementById('plan-form')?.addEventListener('submit', (e) => { e.preventDefault(); this.generate(); });
+        document.getElementById('plan-reset')?.addEventListener('click', () => this.reset());
+      },
+      selectGoal(el, value) {
+        document.querySelectorAll('[data-goal]').forEach((o) => { o.classList.remove('selected'); o.setAttribute('aria-pressed', 'false'); });
         el.classList.add('selected');
-        this.answers[key] = value;
+        el.setAttribute('aria-pressed', 'true');
+        this.answers.goal = value;
+      },
+      // Back-compat for any remaining inline calls.
+      select(el, key, value) { this.selectGoal(el, value); },
+      fieldError(id, msg) {
+        const input = document.getElementById(id);
+        const err = document.getElementById(id + '-error');
+        if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+        if (err) err.textContent = msg || '';
+        return !msg;
+      },
+      readNumber(id, { min, max, integer, label }) {
+        const raw = document.getElementById(id)?.value?.trim() ?? '';
+        if (raw === '') return { error: `${label} is required.` };
+        const v = integer ? Number.parseInt(raw, 10) : Number.parseFloat(raw);
+        if (!Number.isFinite(v)) return { error: `${label} must be a number.` };
+        if (integer && !Number.isInteger(v)) return { error: `${label} must be a whole number.` };
+        if (min !== undefined && v < min) return { error: `${label} must be ≥ ${min}.` };
+        if (max !== undefined && v > max) return { error: `${label} must be ≤ ${max}.` };
+        return { value: v };
       },
       generate() {
-        const modelSize = parseFloat(document.getElementById('plan-model-size')?.value) || 1;
-        const layers = parseInt(document.getElementById('plan-layers')?.value) || 24;
-        const hidden = parseInt(document.getElementById('plan-hidden')?.value) || 2048;
-        const heads = parseInt(document.getElementById('plan-heads')?.value) || 16;
-        const tokens = parseInt(document.getElementById('plan-tokens')?.value) || 1e9;
-        const seqLen = parseInt(document.getElementById('plan-seq-len')?.value) || 2048;
-        const vram = parseFloat(document.getElementById('plan-vram')?.value) || 24;
-        const gpuCount = parseInt(document.getElementById('plan-gpu-count')?.value) || 1;
+        const formError = document.getElementById('plan-form-error');
+        if (formError) formError.textContent = '';
+        let ok = true;
+        let firstBad = null;
+        const need = (id, opts) => {
+          const r = this.readNumber(id, opts);
+          ok = this.fieldError(id, r.error) && ok;
+          if (r.error && !firstBad) firstBad = id;
+          return r.value;
+        };
+        const modelSize = need('plan-model-size', { min: 0.01, max: 10000, label: 'Model size' });
+        const layers = need('plan-layers', { min: 1, max: 256, integer: true, label: 'Layers' });
+        const hidden = need('plan-hidden', { min: 64, max: 32768, integer: true, label: 'Hidden size' });
+        const heads = need('plan-heads', { min: 1, max: 256, integer: true, label: 'Attention heads' });
+        const tokens = need('plan-tokens', { min: 1000000, max: 1e16, integer: true, label: 'Token budget' });
+        const seqLen = need('plan-seq-len', { min: 64, max: 1048576, integer: true, label: 'Sequence length' });
+        const vram = need('plan-vram', { min: 4, max: 512, label: 'GPU VRAM' });
+        const gpuCount = need('plan-gpu-count', { min: 1, max: 4096, integer: true, label: 'GPU count' });
+        const batchSize = need('plan-batch', { min: 1, max: 65536, integer: true, label: 'Batch size' });
+        const gradAccum = need('plan-grad-accum', { min: 1, max: 4096, integer: true, label: 'Gradient accumulation' });
+        const lr = need('plan-lr', { min: 0.000001, max: 1, label: 'Learning rate' });
+        if (hidden !== undefined && heads !== undefined && hidden % heads !== 0) {
+          ok = false;
+          this.fieldError('plan-hidden', 'Hidden size must be divisible by attention heads.');
+          if (!firstBad) firstBad = 'plan-hidden';
+        }
+        if (!ok) {
+          if (formError) formError.textContent = 'Please fix the highlighted fields. No plan was generated.';
+          if (firstBad) document.getElementById(firstBad)?.focus();
+          document.getElementById('plan-result').innerHTML = '';
+          return;
+        }
         const precision = document.getElementById('plan-precision')?.value || 'bf16';
         const optimizer = document.getElementById('plan-optimizer')?.value || 'adamw';
-        const batchSize = parseInt(document.getElementById('plan-batch')?.value) || 4;
-        const gradAccum = parseInt(document.getElementById('plan-grad-accum')?.value) || 1;
-        const lr = parseFloat(document.getElementById('plan-lr')?.value) || 0.0003;
         const scheduler = document.getElementById('plan-scheduler')?.value || 'cosine';
         const checkpointing = document.getElementById('plan-checkpointing')?.checked || false;
         const goal = this.answers.goal || 'sft';
@@ -192,18 +274,19 @@
         if (!el) return;
         
         el.innerHTML = `
-          <div class="planner-result">
-            <div class="planner-card-title">TRAINING PLAN</div>
+          <div class="planner-result" tabindex="-1" id="plan-result-card">
+            <div class="planner-card-title">TRAINING PLAN — ESTIMATE</div>
             <div class="planner-result-grid">
               <div class="planner-result-item"><div class="metric-value">${modelSize}</div><div class="metric-label">Params (B)</div></div>
               <div class="planner-result-item"><div class="metric-value">${gpuCount}</div><div class="metric-label">GPUs</div></div>
-              <div class="planner-result-item"><div class="metric-value">${steps.toLocaleString()}</div><div class="metric-label">Steps</div></div>
+              <div class="planner-result-item"><div class="metric-value">${steps.toLocaleString()}</div><div class="metric-label">Steps (est.)</div></div>
               <div class="planner-result-item"><div class="metric-value">${effBatch}</div><div class="metric-label">Eff. Batch</div></div>
-              <div class="planner-result-item"><div class="metric-value">${totalWithAct.toFixed(1)}</div><div class="metric-label">GB/GPU</div></div>
+              <div class="planner-result-item"><div class="metric-value">${totalWithAct.toFixed(1)}</div><div class="metric-label">GB/GPU (est.)</div></div>
               <div class="planner-result-item"><div class="metric-value">${headroom !== null ? headroom.toFixed(0) + '%' : '-'}</div><div class="metric-label">Headroom</div></div>
             </div>
             <div class="mt-4">
               <span class="badge ${statusClass}">${status.toUpperCase()}</span>
+              <span class="text-xs text-muted" style="margin-left:var(--space-2);">Estimate — verify on hardware. Not a guarantee.</span>
             </div>
             ${bottlenecks.length > 0 ? `
             <div class="callout callout-warning mt-4">
@@ -213,31 +296,47 @@
               </ul>
             </div>
             ` : ''}
+            <div class="callout mt-4" style="background:var(--color-surface);border-color:var(--color-border-strong);">
+              <div class="callout-title">Assumptions</div>
+              <p style="margin:0;font-size:var(--text-sm);">Weights = params × ${bpp} bytes (${precision.toUpperCase()}); method multiplier ×${memMult} (${goal}); activations ≈ batch × seq × hidden × layers × 2 bytes${checkpointing ? ' × 0.1 (checkpointed)' : ''}. Framework/CUDA overhead excluded. Steps = tokens ÷ (eff. batch × seq).</p>
+            </div>
             <div class="callout callout-info mt-4">
-              <div class="callout-title">Configuration Summary</div>
+              <div class="callout-title">Next actions</div>
+              <div class="flex gap-3" style="flex-wrap:wrap;">
+                <a class="btn btn-sm btn-secondary" href="/pages/calculator.html">Verify in VRAM Calculator →</a>
+                <a class="btn btn-sm btn-secondary" href="/pages/hardware.html">Check GPU →</a>
+                <a class="btn btn-sm btn-secondary" href="/pages/data-planner.html">Plan data →</a>
+              </div>
+            </div>
+            <div class="callout callout-info mt-4">
+              <div class="callout-title">Configuration Summary (JSON)</div>
               <pre id="plan-config-json" style="margin:0; background: var(--color-surface); border: var(--border);">${JSON.stringify({
                 goal, modelSize, layers, hidden, heads, tokens, seqLen,
                 gpuCount, precision, optimizer, batchSize, gradAccum, lr, scheduler, checkpointing,
                 effectiveBatch: effBatch, steps, totalMemGB: totalWithAct.toFixed(1)
               }, null, 2)}</pre>
-              <div class="flex gap-3 mt-4">
-                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.copyConfig()">Copy JSON</button>
-                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadJSON()">Download JSON</button>
-                <button class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadYAML()">Download YAML</button>
+              <div class="flex gap-3 mt-4" style="flex-wrap:wrap;">
+                <button type="button" class="btn btn-sm btn-secondary" onclick="PlannerSelect.copyConfig(this)">Copy JSON (text)</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadJSON()">Download training-config.json</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="PlannerSelect.downloadYAML()">Download training-config.yaml</button>
               </div>
             </div>
           </div>
         `;
-      }
-      copyConfig() {
+        document.getElementById('plan-result-card')?.focus({ preventScroll: false });
+      },
+      copyConfig(srcEl) {
         const json = document.getElementById('plan-config-json')?.textContent;
-        if (json) {
-          navigator.clipboard.writeText(json).then(() => {
-            const btn = event.target;
-            const orig = btn.textContent;
-            btn.textContent = 'Copied!';
-            setTimeout(() => btn.textContent = orig, 1500);
-          });
+        if (!json) return;
+        const done = (btn) => {
+          if (!btn) return;
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = orig; }, 1500);
+        };
+        const btn = srcEl instanceof HTMLElement ? srcEl : document.activeElement;
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(json).then(() => done(btn)).catch(() => done(btn));
         }
       },
       downloadJSON() {
@@ -271,6 +370,23 @@
           if (typeof v === 'object' && v !== null) return pad + k + ':\n' + this.objToYaml(v, indent + 1);
           return pad + k + ': ' + v;
         }).join('\n');
+      },
+      reset() {
+        Object.entries(this.defaults).forEach(([id, val]) => {
+          const input = document.getElementById(id);
+          if (input) {
+            input.value = val;
+            input.removeAttribute('aria-invalid');
+            document.getElementById(id + '-error') && (document.getElementById(id + '-error').textContent = '');
+          }
+        });
+        document.getElementById('plan-precision').value = 'bf16';
+        document.getElementById('plan-optimizer').value = 'adamw';
+        document.getElementById('plan-scheduler').value = 'cosine';
+        document.getElementById('plan-checkpointing').checked = false;
+        this.selectGoal(document.querySelector('[data-goal="sft"]'), 'sft');
+        document.getElementById('plan-result').innerHTML = '';
+        document.getElementById('plan-form-error').textContent = '';
       }
     };
     window.PlannerSelect = PlannerSelect;

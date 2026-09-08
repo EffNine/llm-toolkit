@@ -41,12 +41,12 @@
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar">
         <span></span><span></span><span></span>
       </button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
       <div class="nav-actions">
-        <button class="nav-search-btn" id="nav-search-btn" aria-label="Search">
+        <button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)">
           <span>Search</span><kbd>/</kbd>
         </button>
       </div>
@@ -64,7 +64,7 @@
       
       <div class="page-content narrow">
         <div id="lesson-list-view">
-          <div class="section-title">CURRICULUM</div>
+          <h2 class="section-title">CURRICULUM</h2>
           <div id="lesson-list"></div>
         </div>
         <div id="topic-content-view" style="display:none;">

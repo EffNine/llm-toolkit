@@ -85,23 +85,30 @@ const Planner = {
     
     el.innerHTML = `
       <h2 style="margin-bottom: var(--space-6);">${config.title}</h2>
-      <div class="selection-grid">
+      <div class="selection-grid" role="group" aria-label="${config.title}">
         ${config.options.map(opt => `
-          <div class="selection-option ${selected === opt.value ? 'selected' : ''}" 
-               onclick="Planner.select('${step}', '${opt.value}')">
-            <div class="selection-option-title">${opt.label}</div>
-            <div class="selection-option-desc">${opt.desc}</div>
-          </div>
+          <button type="button" class="selection-option ${selected === opt.value ? 'selected' : ''}"
+               aria-pressed="${selected === opt.value ? 'true' : 'false'}"
+               data-step="${step}" data-value="${opt.value}">
+            <span class="selection-option-title" style="display:block;">${opt.label}</span>
+            <span class="selection-option-desc" style="display:block;">${opt.desc}</span>
+          </button>
         `).join('')}
       </div>
       <div class="flex justify-between mt-8">
-        ${this.currentStep > 0 ? `<button class="btn btn-secondary" onclick="Planner.prevStep()">← Back</button>` : '<div></div>'}
-        ${this.currentStep < this.steps.length - 1 
-          ? `<button class="btn btn-primary" onclick="Planner.nextStep()" ${!selected ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>Next →</button>`
-          : `<button class="btn btn-primary btn-lg" onclick="Planner.generateRoadmap()" ${!selected ? 'disabled style="opacity:0.4;cursor:not-allowed;"' : ''}>Generate Roadmap →</button>`
+        ${this.currentStep > 0 ? `<button type="button" class="btn btn-secondary" data-action="prev">← Back</button>` : '<div></div>'}
+        ${this.currentStep < this.steps.length - 1
+          ? `<button type="button" class="btn btn-primary" data-action="next"${!selected ? ' disabled' : ''}>Next →</button>`
+          : `<button type="button" class="btn btn-primary btn-lg" data-action="generate"${!selected ? ' disabled' : ''}>Generate Roadmap →</button>`
         }
       </div>
     `;
+    el.querySelectorAll('[data-step]').forEach((btn) => {
+      btn.addEventListener('click', () => this.select(btn.dataset.step, btn.dataset.value));
+    });
+    el.querySelector('[data-action="prev"]')?.addEventListener('click', () => this.prevStep());
+    el.querySelector('[data-action="next"]')?.addEventListener('click', () => this.nextStep());
+    el.querySelector('[data-action="generate"]')?.addEventListener('click', () => this.generateRoadmap());
   },
   
   select(step, value) {
@@ -203,16 +210,17 @@ const Planner = {
   renderRoadmap(roadmap) {
     const el = document.getElementById('roadmap-result');
     if (!el) return;
-    
+    el.style.display = '';
+
     const completed = Progress.completedLessons;
-    
+
     el.innerHTML = `
-      <div class="planner-card">
+      <div class="planner-card" role="status" aria-live="polite">
         <div class="planner-card-title">Your Personalized Roadmap</div>
         <div class="roadmap-path">
           ${roadmap.map((step, i) => `
             <div class="roadmap-step ${completed.includes(step.id) ? 'completed' : ''} ${i === 0 ? 'active' : ''}">
-              <div class="roadmap-dot">${completed.includes(step.id) ? '✓' : i + 1}</div>
+              <div class="roadmap-dot" aria-hidden="true">${completed.includes(step.id) ? '✓' : i + 1}</div>
               <div class="roadmap-content">
                 <div class="roadmap-title">${step.title}</div>
                 <div class="roadmap-desc">Estimated: ${step.duration}</div>
@@ -221,17 +229,23 @@ const Planner = {
           `).join('')}
         </div>
       </div>
-      <div class="flex gap-4">
-        <button class="btn btn-primary" onclick="Planner.saveRoadmap()">Save Roadmap</button>
-        <button class="btn btn-secondary" onclick="Planner.resetWizard()">Start Over</button>
-        <button class="btn btn-ghost" onclick="Planner.modifyWizard()">Modify</button>
+      <div class="flex gap-4" style="flex-wrap:wrap;">
+        <button type="button" class="btn btn-primary" data-action="save">Save Roadmap</button>
+        <button type="button" class="btn btn-secondary" data-action="reset">Start Over</button>
+        <button type="button" class="btn btn-ghost" data-action="modify">Modify</button>
       </div>
+      <div id="roadmap-save-status" class="text-sm mt-2" role="status" aria-live="polite"></div>
     `;
+    el.querySelector('[data-action="save"]')?.addEventListener('click', () => this.saveRoadmap());
+    el.querySelector('[data-action="reset"]')?.addEventListener('click', () => this.resetWizard());
+    el.querySelector('[data-action="modify"]')?.addEventListener('click', () => this.modifyWizard());
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   },
-  
+
   saveRoadmap() {
     Progress.setRoadmap({ ...this.answers, roadmap: this.buildRoadmap(), saved: true });
-    alert('Roadmap saved to your progress!');
+    const status = document.getElementById('roadmap-save-status');
+    if (status) status.textContent = 'Roadmap saved on this device.';
   },
   
   resetWizard() {

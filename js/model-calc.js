@@ -6,13 +6,51 @@ const ModelCalculator = {
     document.getElementById('model-estimate')?.addEventListener('click', () => this.estimateFromParams());
   },
   
+  readNum(id, { min, max, integer, label }) {
+    const input = document.getElementById(id);
+    const raw = input?.value?.trim() ?? '';
+    const v = integer ? Number.parseInt(raw, 10) : Number.parseFloat(raw);
+    let msg = '';
+    if (raw === '') msg = `${label} is required.`;
+    else if (!Number.isFinite(v)) msg = `${label} must be a number.`;
+    else if (integer && !Number.isInteger(v)) msg = `${label} must be a whole number.`;
+    else if (min !== undefined && v < min) msg = `${label} must be ≥ ${min}.`;
+    else if (max !== undefined && v > max) msg = `${label} must be ≤ ${max}.`;
+    if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    return { value: v, error: msg };
+  },
+  formError(msg, badId) {
+    const errEl = document.getElementById('model-form-error');
+    if (errEl) errEl.textContent = msg || '';
+    if (msg) {
+      document.getElementById('model-result').innerHTML = '';
+      if (badId) document.getElementById(badId)?.focus();
+      return false;
+    }
+    return true;
+  },
   calculate() {
-    const layers = parseInt(document.getElementById('mc-layers')?.value) || 24;
-    const hidden = parseInt(document.getElementById('mc-hidden')?.value) || 4096;
-    const heads = parseInt(document.getElementById('mc-heads')?.value) || 32;
-    const kvHeads = parseInt(document.getElementById('mc-kv-heads')?.value) || 32;
-    const ffnExpand = parseFloat(document.getElementById('mc-ffn-expand')?.value) || 3;
-    const vocab = parseInt(document.getElementById('mc-vocab')?.value) || 32000;
+    const checks = [
+      ['mc-layers', { min: 1, max: 256, integer: true, label: 'Layers' }],
+      ['mc-hidden', { min: 64, max: 32768, integer: true, label: 'Hidden size' }],
+      ['mc-heads', { min: 1, max: 256, integer: true, label: 'Attention heads' }],
+      ['mc-kv-heads', { min: 1, max: 256, integer: true, label: 'KV heads' }],
+      ['mc-ffn-expand', { min: 0.5, max: 16, label: 'FFN expansion' }],
+      ['mc-vocab', { min: 1000, max: 1000000, integer: true, label: 'Vocabulary size' }]
+    ];
+    const vals = {};
+    for (const [id, opts] of checks) {
+      const r = this.readNum(id, opts);
+      if (r.error) { this.formError(r.error, id); return; }
+      vals[id] = r.value;
+    }
+    this.formError('');
+    const layers = vals['mc-layers'];
+    const hidden = vals['mc-hidden'];
+    const heads = vals['mc-heads'];
+    const kvHeads = vals['mc-kv-heads'];
+    const ffnExpand = vals['mc-ffn-expand'];
+    const vocab = vals['mc-vocab'];
     const tiedEmbed = document.getElementById('mc-tied')?.checked || false;
     const rotary = document.getElementById('mc-rope')?.checked ?? true;
     
@@ -84,10 +122,19 @@ const ModelCalculator = {
   },
   
   estimateFromParams() {
-    const targetParams = parseFloat(document.getElementById('mc-target-params')?.value) || 1;
-    const layers = parseInt(document.getElementById('mc-est-layers')?.value) || 24;
-    const vocab = parseInt(document.getElementById('mc-est-vocab')?.value) || 32000;
-    const ffnExpand = parseFloat(document.getElementById('mc-est-ffn')?.value) || 3;
+    const t = this.readNum('mc-target-params', { min: 0.01, max: 10000, label: 'Target parameters' });
+    if (t.error) { this.formError(t.error, 'mc-target-params'); return; }
+    const l = this.readNum('mc-est-layers', { min: 1, max: 256, integer: true, label: 'Layers' });
+    if (l.error) { this.formError(l.error, 'mc-est-layers'); return; }
+    const v = this.readNum('mc-est-vocab', { min: 1000, max: 1000000, integer: true, label: 'Vocabulary size' });
+    if (v.error) { this.formError(v.error, 'mc-est-vocab'); return; }
+    const f = this.readNum('mc-est-ffn', { min: 0.5, max: 16, label: 'FFN expansion' });
+    if (f.error) { this.formError(f.error, 'mc-est-ffn'); return; }
+    this.formError('');
+    const targetParams = t.value;
+    const layers = l.value;
+    const vocab = v.value;
+    const ffnExpand = f.value;
     const tiedEmbed = document.getElementById('mc-est-tied')?.checked || false;
     
     // Reverse-engineer hidden size from target params

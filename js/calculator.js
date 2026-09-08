@@ -8,24 +8,77 @@ const Calculator = {
   bindEvents() {
     const calcBtn = document.getElementById('vram-calculate');
     if (calcBtn) calcBtn.addEventListener('click', () => this.calculate());
-    
+
     const showCalcBtn = document.getElementById('show-calculations');
     if (showCalcBtn) showCalcBtn.addEventListener('click', () => this.toggleCalculations());
+
+    const resetBtn = document.getElementById('vram-reset');
+    if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
+  },
+
+  reset() {
+    document.querySelectorAll('#plan-form .form-input, .planner-card .form-input').forEach(() => {});
+    const defaults = {
+      'param-count': '1', 'num-layers': '24', 'hidden-size': '4096', 'batch-size': '4',
+      'seq-length': '2048', 'grad-accum': '1', 'quant-bits': '0', 'gpu-count': '1', 'gpu-vram': '0'
+    };
+    Object.entries(defaults).forEach(([id, val]) => {
+      const input = document.getElementById(id);
+      if (input) {
+        input.value = val;
+        input.removeAttribute('aria-invalid');
+      }
+    });
+    const errEl = document.getElementById('vram-form-error');
+    if (errEl) errEl.textContent = '';
+    const resultEl = document.getElementById('vram-result');
+    if (resultEl) resultEl.innerHTML = '';
+    const exp = document.getElementById('vram-export-btns');
+    if (exp) exp.style.display = 'none';
+    this._lastResult = null;
   },
   
   calculate() {
-    const params = parseFloat(document.getElementById('param-count')?.value) || 0;
+    const errEl = document.getElementById('vram-form-error');
+    if (errEl) errEl.textContent = '';
+    const bad = [];
+    const num = (id, { min, max, integer, label, allowZero }) => {
+      const input = document.getElementById(id);
+      const raw = input?.value?.trim() ?? '';
+      const v = integer ? Number.parseInt(raw, 10) : Number.parseFloat(raw);
+      let msg = '';
+      if (raw === '') msg = `${label} is required.`;
+      else if (!Number.isFinite(v)) msg = `${label} must be a number.`;
+      else if (integer && !Number.isInteger(v)) msg = `${label} must be a whole number.`;
+      else if (!allowZero && v <= 0 && min !== 0) msg = `${label} must be > 0.`;
+      else if (min !== undefined && v < min) msg = `${label} must be ≥ ${min}.`;
+      else if (max !== undefined && v > max) msg = `${label} must be ≤ ${max}.`;
+      if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      if (msg) bad.push({ id, msg });
+      return v;
+    };
+    const params = num('param-count', { min: 0.001, max: 10000, label: 'Parameter count' });
+    const batchSize = num('batch-size', { min: 1, max: 65536, integer: true, label: 'Batch size' });
+    const seqLen = num('seq-length', { min: 64, max: 1048576, integer: true, label: 'Sequence length' });
+    const gradAccum = num('grad-accum', { min: 1, max: 4096, integer: true, label: 'Gradient accumulation' });
+    const quantBits = num('quant-bits', { min: 0, max: 8, integer: true, label: 'Quantization bits', allowZero: true });
+    const gpuCount = num('gpu-count', { min: 1, max: 4096, integer: true, label: 'GPU count' });
+    const gpuVram = num('gpu-vram', { min: 0, max: 512, label: 'GPU VRAM', allowZero: true });
+    const layers = num('num-layers', { min: 1, max: 256, integer: true, label: 'Layers' });
+    const hidden = num('hidden-size', { min: 64, max: 32768, integer: true, label: 'Hidden size' });
+    if (bad.length > 0) {
+      if (errEl) errEl.textContent = `Please fix ${bad.length} field${bad.length === 1 ? '' : 's'}: ${bad[0].msg} No calculation was performed.`;
+      document.getElementById(bad[0].id)?.focus();
+      document.getElementById('vram-result').innerHTML = '';
+      const exp = document.getElementById('vram-export-btns');
+      if (exp) exp.style.display = 'none';
+      return;
+    }
     const method = document.getElementById('training-method')?.value || 'pretrain';
     const precision = document.getElementById('precision')?.value || 'bf16';
     const optimizer = document.getElementById('optimizer')?.value || 'adamw';
-    const batchSize = parseInt(document.getElementById('batch-size')?.value) || 4;
-    const seqLen = parseInt(document.getElementById('seq-length')?.value) || 2048;
-    const gradAccum = parseInt(document.getElementById('grad-accum')?.value) || 1;
     const checkpointing = document.getElementById('checkpointing')?.checked || false;
     const lora = document.getElementById('lora')?.checked || false;
-    const quantBits = parseInt(document.getElementById('quant-bits')?.value) || 0;
-    const gpuCount = parseInt(document.getElementById('gpu-count')?.value) || 1;
-    const gpuVram = parseFloat(document.getElementById('gpu-vram')?.value) || 0;
     
     const bytesPerParam = this.getBytesPerParam(precision, quantBits);
     const totalParams = params * 1e9;
@@ -47,8 +100,6 @@ const Calculator = {
     
     // Activation memory (rough estimate)
     const effectiveBatch = batchSize * gradAccum;
-    const layers = parseInt(document.getElementById('num-layers')?.value) || 24;
-    const hidden = parseInt(document.getElementById('hidden-size')?.value) || 4096;
     let activationMem = (effectiveBatch * seqLen * hidden * layers * 2) / 1e9;
     if (checkpointing) activationMem *= 0.1;
     
@@ -79,6 +130,12 @@ const Calculator = {
     }
     
     const resultEl = document.getElementById('vram-result');
+    this._lastResult = {
+      inputs: { paramsB: params, method, precision, optimizer, batchSize, seqLen, gradAccum, checkpointing, lora, quantBits, gpuCount, gpuVram, layers, hidden },
+      estimateGB: { weights: +weightMem.toFixed(2), gradients: +gradMem.toFixed(2), optimizer: +optimizerMem.toFixed(2), activations: +activationMem.toFixed(2), temporaryAndOverhead: +(tempMem + overhead).toFixed(2), total: +totalEstimate.toFixed(2), perGpu: +perGpu.toFixed(2) },
+      status, headroomPct: headroom !== null ? +headroom.toFixed(1) : null,
+      note: 'Estimate only — verify with actual measurements. Not a guarantee.'
+    };
     if (resultEl) {
       resultEl.innerHTML = `
         <div class="planner-result">
@@ -147,7 +204,13 @@ const Calculator = {
   
   toggleCalculations() {
     const panel = document.getElementById('calculations-panel');
-    if (panel) panel.classList.toggle('open');
+    const btn = document.getElementById('show-calculations');
+    if (panel) {
+      const willOpen = panel.style.display === 'none' || !panel.classList.contains('open');
+      panel.style.display = '';
+      panel.classList.toggle('open', willOpen);
+      if (btn) btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    }
   },
   
   getBytesPerParam(precision, quantBits) {
@@ -162,22 +225,28 @@ const Calculator = {
     }
   },
 
-  copyResult() {
-    const resultEl = document.getElementById('vram-result');
-    if (resultEl && navigator.clipboard) {
-      navigator.clipboard.writeText(resultEl.textContent);
+  copyResult(srcEl) {
+    if (!this._lastResult) return;
+    const text = JSON.stringify(this._lastResult, null, 2);
+    const done = (btn) => {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    };
+    const btn = srcEl instanceof HTMLElement ? srcEl : document.activeElement;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => done(btn)).catch(() => done(btn));
     }
   },
 
   downloadJSON() {
-    const resultEl = document.getElementById('vram-result');
-    if (resultEl) {
-      const blob = new Blob([resultEl.textContent], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'vram-estimate.json'; a.click();
-      URL.revokeObjectURL(url);
-    }
+    if (!this._lastResult) return;
+    const blob = new Blob([JSON.stringify(this._lastResult, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'vram-estimate.json'; a.click();
+    URL.revokeObjectURL(url);
   }
 };
 

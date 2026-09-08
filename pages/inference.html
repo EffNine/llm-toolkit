@@ -25,12 +25,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -39,31 +39,31 @@
         <p style="margin-top: var(--space-4);">Generate text from your model. Sampling strategies, KV cache, and optimization techniques.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">GENERATION STRATEGIES</div>
+        <h2 class="section-title">GENERATION STRATEGIES</h2>
         <div class="grid-2 mt-4">
           <div class="expandable-panel">
-            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Greedy Decoding</span><span class="expandable-icon">+</span></div>
+            <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Greedy Decoding</span><span class="expandable-icon">+</span></button>
             <div class="expandable-content"><div class="expandable-body">
               <p>Always pick the token with highest probability. Deterministic, fastest, but often repetitive and boring output.</p>
               <p class="mt-4"><strong>Use when:</strong> You need deterministic output, or evaluating model capability.</p>
             </div></div>
           </div>
           <div class="expandable-panel">
-            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Temperature Sampling</span><span class="expandable-icon">+</span></div>
+            <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Temperature Sampling</span><span class="expandable-icon">+</span></button>
             <div class="expandable-content"><div class="expandable-body">
               <p>Divide logits by temperature before softmax. Low temp (&lt;0.5) = focused/deterministic. High temp (&gt;1.0) = creative/random.</p>
               <p class="mt-4"><strong>Typical range:</strong> 0.7-1.0 for most applications. Below 0.5 risks repetitive output.</p>
             </div></div>
           </div>
           <div class="expandable-panel">
-            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Top-K Sampling</span><span class="expandable-icon">+</span></div>
+            <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Top-K Sampling</span><span class="expandable-icon">+</span></button>
             <div class="expandable-content"><div class="expandable-body">
               <p>Only sample from the K most likely tokens. Prevents low-probability nonsense while maintaining diversity.</p>
               <p class="mt-4"><strong>Typical range:</strong> K=40-100. Combine with temperature for best results.</p>
             </div></div>
           </div>
           <div class="expandable-panel">
-            <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Top-P (Nucleus) Sampling</span><span class="expandable-icon">+</span></div>
+            <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Top-P (Nucleus) Sampling</span><span class="expandable-icon">+</span></button>
             <div class="expandable-content"><div class="expandable-body">
               <p>Sample from the smallest set of tokens whose cumulative probability exceeds P. Adaptive to distribution shape.</p>
               <p class="mt-4"><strong>Typical range:</strong> P=0.9-0.95. Often preferred over top-K for variable-quality text.</p>
@@ -86,19 +86,19 @@
         <div class="section-title mt-8">INFERENCE ENGINES</div>
         <div class="grid-2 mt-4">
           <div class="card">
-            <div class="section-title">vLLM</div>
+            <h2 class="section-title">vLLM</h2>
             <p class="text-sm">PagedAttention, continuous batching, highest throughput. The industry standard for serving.</p>
           </div>
           <div class="card">
-            <div class="section-title">TGI (Text Generation Inference)</div>
+            <h2 class="section-title">TGI (Text Generation Inference)</h2>
             <p class="text-sm">Hugging Face's production server. Good integration with Hugging Face ecosystem.</p>
           </div>
           <div class="card">
-            <div class="section-title">Ollama</div>
+            <h2 class="section-title">Ollama</h2>
             <p class="text-sm">Local inference with GGUF quantized models. Simplest way to run models locally.</p>
           </div>
           <div class="card">
-            <div class="section-title">llama.cpp</div>
+            <h2 class="section-title">llama.cpp</h2>
             <p class="text-sm">CPU + GPU hybrid inference. Best for running large models on limited hardware.</p>
           </div>
         </div>

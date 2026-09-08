@@ -28,15 +28,15 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
       <div class="nav-actions">
-        <button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button>
+        <button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button>
       </div>
     </header>
     <main class="main-content" id="main-content">
@@ -48,27 +48,27 @@
       <div class="page-content">
         <div class="grid-2" style="gap: var(--space-8);">
           <div>
-            <div class="section-title">FILTER</div>
+            <h2 class="section-title">FILTER</h2>
             <div class="flex flex-col gap-4" style="margin-bottom: var(--space-6);">
               <div>
-                <label class="form-label">Vendor</label>
+                <label class="form-label" for="gpu-vendor-filter">Vendor</label>
                 <select id="gpu-vendor-filter" class="form-select">
                   <option value="">All Vendors</option>
                 </select>
               </div>
               <div>
-                <label class="form-label">Architecture</label>
+                <label class="form-label" for="gpu-arch-filter">Architecture</label>
                 <select id="gpu-arch-filter" class="form-select">
                   <option value="">All Architectures</option>
                 </select>
               </div>
               <div>
-                <label class="form-label">Search</label>
+                <label class="form-label" for="gpu-search">Search</label>
                 <input type="text" id="gpu-search" class="form-input" placeholder="e.g., H100, 4090...">
               </div>
             </div>
             
-            <div class="section-title">GPUs</div>
+            <h2 class="section-title">GPUs</h2>
             <div class="scroll-x">
               <table class="data-table">
                 <thead>
@@ -89,8 +89,9 @@
           </div>
           
           <div id="gpu-profile-container">
-            <div class="section-title">GPU PROFILE</div>
-            <div id="gpu-profile" style="color: var(--color-text-tertiary); font-size: var(--text-sm); padding: var(--space-8); text-align: center; border: var(--border); border-radius: var(--radius-lg);">
+            <h2 class="section-title">GPU PROFILE</h2>
+            <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/calculator.html">Estimate VRAM →</a><a class="btn btn-sm btn-secondary" href="/pages/inference-calc.html">Estimate inference memory →</a><a class="btn btn-sm btn-secondary" href="/pages/planner.html">Plan training →</a></div></div>
+          <div id="gpu-profile" style="color: var(--color-text-tertiary); font-size: var(--text-sm); padding: var(--space-8); text-align: center; border: var(--border); border-radius: var(--radius-lg);">
               <div class="empty-state"><div class="empty-state-icon">◈</div><div class="empty-state-text">Select a GPU from the table to see its training profile</div></div>
             </div>
           </div>

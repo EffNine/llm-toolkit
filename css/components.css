@@ -108,13 +108,86 @@
 .empty-state-icon { font-size: var(--text-4xl); margin-bottom: var(--space-4); opacity: 0.5; }
 .empty-state-text { font-size: var(--text-sm); }
 
-[role="button"]:focus-visible,
-.selection-option:focus-visible,
-.troubleshoot-option:focus-visible,
-.decision-branch:focus-visible,
-.graph-card:focus-visible,
-.card-interactive:focus-visible {
+/* Semantic interactive primitives: buttons styled as cards/options.
+   Native <button> gives Enter/Space/tab natively; CSS only preserves visuals. */
+button.selection-option,
+button.decision-branch,
+button.troubleshoot-option,
+button.graph-card {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+  line-height: inherit;
+}
+button.selection-option .selection-option-title,
+button.decision-branch strong,
+button.troubleshoot-option .troubleshoot-title,
+button.graph-card .graph-card-title { color: var(--color-text); }
+button.selection-option:disabled,
+button.decision-branch:disabled { opacity: 0.45; cursor: not-allowed; }
+.selection-option.selected,
+.decision-branch.selected,
+.troubleshoot-option.selected,
+.graph-card.selected { border-color: var(--color-text); }
+.selection-option.selected { background: var(--color-text); color: var(--color-bg); }
+.selection-option.selected .selection-option-title { color: var(--color-bg); }
+.selection-option.selected .selection-option-desc { color: rgba(250,250,250,0.75); }
+a.selection-option,
+a.card { text-decoration: none; color: inherit; }
+a.lesson-card { text-decoration: none; color: inherit; }
+.lesson-card.completed .lesson-title { text-decoration: line-through; text-decoration-thickness: 1px; }
+button.expandable-header {
+  font: inherit;
+  color: inherit;
+  background: var(--color-surface-2);
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+button.expandable-header:hover { background: var(--color-surface-3); }
+.linklike {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--color-link);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.linklike:hover { color: var(--color-link-hover); }
+/* Consistent, always-visible keyboard focus. Never remove without replacement. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
   outline: 2px solid var(--color-text);
   outline-offset: 2px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
 }
+.selection-option:focus-visible,
+.decision-branch:focus-visible,
+.troubleshoot-option:focus-visible,
+.graph-card:focus-visible,
+.card-interactive:focus-visible,
+.lesson-card:focus-visible,
+.expandable-header:focus-visible {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+/* Form validation + states (monochrome, no new palette). */
+.form-input[aria-invalid="true"],
+.form-select[aria-invalid="true"] { border-color: var(--color-error); border-width: 2px; }
+.form-error { font-size: var(--text-xs); color: var(--color-error); margin-top: var(--space-1); min-height: 1.25em; }
+.form-input:disabled, .form-select:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn:disabled { transform: none; }
+.btn-primary:disabled { background: var(--color-text-tertiary); border-color: var(--color-text-tertiary); }
+/* Loading indicator: minimal, monochrome. */
+.loading-dots::after { content: '…'; animation: dots 1.2s steps(4) infinite; }
+@keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+/* Search results as real links. */
+.modal-result-item { text-decoration: none; color: inherit; display: flex; width: 100%; text-align: left; background: none; border: none; font: inherit; }
+.modal-result-item .modal-result-title { color: var(--color-text); }

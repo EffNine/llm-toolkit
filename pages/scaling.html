@@ -26,12 +26,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -40,13 +40,13 @@
         <p style="margin-top: var(--space-4);">Scale from 1 GPU to many. Data parallelism, tensor parallelism, pipeline parallelism, and sharded training.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">HOW SHOULD I SCALE?</div>
+        <h2 class="section-title">HOW SHOULD I SCALE?</h2>
         <div class="decision-node mt-4">
           <div class="planner-config-grid">
-            <div><label class="form-label">Model Size (B)</label><input type="number" id="scale-model" class="form-input" value="7" min="0.1" step="0.1"></div>
-            <div><label class="form-label">GPU VRAM (GB)</label><input type="number" id="scale-vram" class="form-input" value="80" min="4"></div>
-            <div><label class="form-label">GPU Count</label><input type="number" id="scale-count" class="form-input" value="8" min="1"></div>
-            <div><label class="form-label">Interconnect</label>
+            <div><label class="form-label" for="scale-model">Model Size (B)</label><input type="number" id="scale-model" class="form-input" value="7" min="0.1" step="0.1"></div>
+            <div><label class="form-label" for="scale-vram">GPU VRAM (GB)</label><input type="number" id="scale-vram" class="form-input" value="80" min="4"></div>
+            <div><label class="form-label" for="scale-count">GPU Count</label><input type="number" id="scale-count" class="form-input" value="8" min="1"></div>
+            <div><label class="form-label" for="scale-interconnect">Interconnect</label>
               <select id="scale-interconnect" class="form-select">
                 <option value="nvlink">NVLink</option>
                 <option value="pcie">PCIe only</option>
@@ -54,15 +54,15 @@
               </select>
             </div>
           </div>
-          <button class="btn btn-primary mt-6" onclick="Scaling.getRecommendation()">Get Recommendation</button>
-          <div id="scale-result" class="mt-6"></div>
+          <button type="button" class="btn btn-primary mt-6" onclick="Scaling.getRecommendation()">Get Recommendation</button>
+          <div id="scale-result" class="mt-6" role="status" aria-live="polite"></div>
         </div>
         
         <div class="divider mt-8"></div>
         
         <div class="section-title mt-8">SCALING STRATEGIES</div>
         <div class="expandable-panel mt-4">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Data Parallelism (DDP / FSDP)</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Data Parallelism (DDP / FSDP)</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Each GPU gets a copy of the model. Data is split across GPUs. Gradients are averaged via all-reduce.</p>
             <p class="mt-4"><strong>DDP:</strong> Full model on each GPU. Simple but memory-inefficient at scale.</p>
@@ -71,7 +71,7 @@
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Tensor Parallelism</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Tensor Parallelism</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Splits individual layers across GPUs. Each GPU computes a slice of the matrix multiplication.</p>
             <p class="mt-4"><strong>Best for:</strong> Single-GPU OOM situations where the model is too wide for one GPU's memory.</p>
@@ -79,7 +79,7 @@
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Pipeline Parallelism</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Pipeline Parallelism</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Splits layers across GPUs in sequence. GPU 0 processes layer 0-7, GPU 1 processes layer 8-15, etc.</p>
             <p class="mt-4"><strong>Trade-off:</strong> Reduces per-GPU memory but introduces "bubble" time where GPUs wait for activations/grads.</p>
@@ -87,7 +87,7 @@
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">2D / 3D Parallelism</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">2D / 3D Parallelism</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>2D:</strong> Tensor parallelism within a node + data parallelism across nodes. The most common setup for 70B+ models.</p>
             <p class="mt-4"><strong>3D:</strong> Tensor + pipeline + data parallelism. Used for the largest models (400B+ parameters).</p>

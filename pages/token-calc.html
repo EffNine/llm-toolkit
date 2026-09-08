@@ -28,14 +28,14 @@
   <div class="site-wrapper">
     <aside class="sidebar" id="sidebar" aria-label="Main navigation">
       <div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div>
-      <nav class="sidebar-nav" id="sidebar-nav"></nav>
+      <nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav>
       <div class="sidebar-footer"><a href="/pages/reference.html">Reference</a> &middot; <a href="/pages/troubleshooting.html">Troubleshoot</a></div>
     </aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -47,13 +47,13 @@
         <div class="planner-card">
           <div class="planner-card-title">TOKEN CALCULATION</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Dataset Records</label><input type="number" id="tc-records" class="form-input" value="1000000" min="1000" step="1000"></div>
-            <div><label class="form-label">Avg Tokens per Record</label><input type="number" id="tc-avg-tokens" class="form-input" value="500" min="10" step="10"></div>
-            <div><label class="form-label">Epochs</label><input type="number" id="tc-epochs" class="form-input" value="1" min="0.1" step="0.1"></div>
-            <div><label class="form-label">Sequence Length</label><input type="number" id="tc-seq-len" class="form-input" value="2048" min="64" step="64"></div>
-            <div><label class="form-label">Micro Batch Size</label><input type="number" id="tc-micro-batch" class="form-input" value="32" min="1"></div>
-            <div><label class="form-label">Grad Accumulation</label><input type="number" id="tc-grad-accum" class="form-input" value="1" min="1"></div>
-            <div><label class="form-label">GPU Count</label><input type="number" id="tc-gpu-count" class="form-input" value="1" min="1"></div>
+            <div><label class="form-label" for="tc-records">Dataset Records</label><input type="number" id="tc-records" class="form-input" value="1000000" min="1000" step="1000"></div>
+            <div><label class="form-label" for="tc-avg-tokens">Avg Tokens per Record</label><input type="number" id="tc-avg-tokens" class="form-input" value="500" min="10" step="10"></div>
+            <div><label class="form-label" for="tc-epochs">Epochs</label><input type="number" id="tc-epochs" class="form-input" value="1" min="0.1" step="0.1"></div>
+            <div><label class="form-label" for="tc-seq-len">Sequence Length</label><input type="number" id="tc-seq-len" class="form-input" value="2048" min="64" step="64"></div>
+            <div><label class="form-label" for="tc-micro-batch">Micro Batch Size</label><input type="number" id="tc-micro-batch" class="form-input" value="32" min="1"></div>
+            <div><label class="form-label" for="tc-grad-accum">Grad Accumulation</label><input type="number" id="tc-grad-accum" class="form-input" value="1" min="1"></div>
+            <div><label class="form-label" for="tc-gpu-count">GPU Count</label><input type="number" id="tc-gpu-count" class="form-input" value="1" min="1"></div>
           </div>
           <button id="token-calculate" class="btn btn-primary mt-6">Calculate</button>
         </div>
@@ -61,8 +61,8 @@
         <div class="planner-card">
           <div class="planner-card-title">TOKEN TARGET ESTIMATE (from model size)</div>
           <div class="planner-config-grid">
-            <div><label class="form-label">Model Size (B parameters)</label><input type="number" id="tc-model-size" class="form-input" value="1" min="0.01" step="0.01"></div>
-            <div><label class="form-label">Heuristic</label>
+            <div><label class="form-label" for="tc-model-size">Model Size (B parameters)</label><input type="number" id="tc-model-size" class="form-input" value="1" min="0.01" step="0.01"></div>
+            <div><label class="form-label" for="tc-heuristic">Heuristic</label>
               <select id="tc-heuristic" class="form-select">
                 <option value="standard">Standard (Chinchilla-optimal, 20×)</option>
                 <option value="dataLimited">Data-limited (10×)</option>
@@ -74,7 +74,8 @@
           <button id="token-estimate" class="btn btn-secondary mt-6">Estimate Budget</button>
         </div>
         
-        <div id="token-result" class="mt-6"></div>
+        <div id="token-form-error" class="text-sm mt-2" role="alert" style="color:var(--color-error);min-height:1.25em;"></div>
+        <div id="token-result" class="mt-6" role="status" aria-live="polite"></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

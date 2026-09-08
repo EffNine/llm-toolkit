@@ -1,33 +1,42 @@
 const Navigation = {
+  _booted: false,
   init() {
+    if (this._booted) return;
+    this._booted = true;
     this.renderSidebar();
     this.setupMobileMenu();
     this.setupKeyboardShortcuts();
+    // Mark active nav item + persist last page for "continue where you left off".
+    if (window.Router && typeof window.Router.sync === 'function') {
+      window.Router.sync();
+    }
   },
-  
+
   renderSidebar() {
     const nav = document.getElementById('sidebar-nav');
     if (!nav) return;
-    
-    const sections = {
-      'start': APP_ROUTES.filter(r => r.section === 'start'),
-      'tools': APP_ROUTES.filter(r => r.section === 'tools'),
-      'knowledge': APP_ROUTES.filter(r => r.section === 'knowledge')
-    };
-    
+
+    const SECTION_META = [
+      { key: 'start', label: 'Start' },
+      { key: 'plan', label: 'Build / Plan' },
+      { key: 'tools', label: 'Tools' },
+      { key: 'knowledge', label: 'Knowledge' },
+      { key: 'help', label: 'Help' }
+    ];
+
     const icons = {
       '/': '⌂',
       '/pages/learn.html': '▸',
       '/pages/roadmap.html': '↗',
+      '/pages/projects.html': '⊞',
       '/pages/planner.html': '⚙',
+      '/pages/data-planner.html': '◫',
+      '/pages/eval-planner.html': '◆',
       '/pages/calculator.html': '∑',
       '/pages/model-calc.html': '◈',
       '/pages/token-calc.html': 'T',
       '/pages/inference-calc.html': '△',
-      '/pages/data-planner.html': '◫',
-      '/pages/eval-planner.html': '◆',
       '/pages/hardware.html': '◉',
-      '/pages/troubleshooting.html': '!',
       '/pages/data.html': '□',
       '/pages/models.html': '◎',
       '/pages/training.html': '▶',
@@ -36,77 +45,123 @@ const Navigation = {
       '/pages/inference.html': '▷',
       '/pages/deployment.html': '▣',
       '/pages/reference.html': '≡',
-      '/pages/projects.html': '⊞'
+      '/pages/troubleshooting.html': '!'
     };
-    
+
+    const current = (window.Router && typeof window.Router.getCurrent === 'function')
+      ? window.Router.getCurrent()
+      : window.location.pathname;
+
     let html = '';
-    
-    Object.entries(sections).forEach(([section, routes]) => {
+    SECTION_META.forEach(({ key, label }) => {
+      const routes = (window.APP_ROUTES || []).filter((r) => r.section === key);
       if (routes.length === 0) return;
-      html += `<div class="nav-section-label">${section}</div>`;
-      routes.forEach(route => {
+      html += `<div class="nav-section-label" aria-hidden="false">${label}</div>`;
+      routes.forEach((route) => {
         const icon = icons[route.path] || '·';
-        const isActive = route.path === Router.getCurrent();
-        html += `<a href="${route.path}" class="nav-item ${isActive ? 'active' : ''}" data-path="${route.path}">
-          <span class="nav-item-icon">${icon}</span>
-          ${route.label}
-        </a>`;
+        const isActive = route.path === current;
+        html += `<a href="${route.path}" class="nav-item${isActive ? ' active' : ''}" data-path="${route.path}"${isActive ? ' aria-current="page"' : ''}>`
+          + `<span class="nav-item-icon" aria-hidden="true">${icon}</span>`
+          + `${route.label}`
+          + `</a>`;
       });
     });
-    
+
     nav.innerHTML = html;
-    
+
+    // Do NOT preventDefault: these are real links to independent documents.
+    // Only close the mobile drawer (before the browser navigates away).
     nav.addEventListener('click', (e) => {
       const link = e.target.closest('a.nav-item');
-      if (link) {
-        e.preventDefault();
-        Router.navigate(link.dataset.path);
-        this.closeMobileMenu();
-      }
+      if (link) this.closeMobileMenu(false);
     });
   },
-  
+
   setupMobileMenu() {
     const hamburger = document.getElementById('hamburger');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    
+
     if (hamburger && sidebar) {
+      if (!hamburger.hasAttribute('aria-controls')) {
+        hamburger.setAttribute('aria-controls', 'sidebar');
+      }
       hamburger.addEventListener('click', () => this.toggleMobileMenu());
     }
     if (overlay) {
-      overlay.addEventListener('click', () => this.closeMobileMenu());
+      overlay.addEventListener('click', () => this.closeMobileMenu(true));
+    }
+    // Overlay is decorative; hide it from AT when inactive.
+    if (overlay && !overlay.classList.contains('active')) {
+      overlay.setAttribute('aria-hidden', 'true');
     }
   },
-  
-  toggleMobileMenu() {
+
+  toggleMobileMenu(force) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    sidebar?.classList.toggle('open');
-    overlay?.classList.toggle('active');
+    const hamburger = document.getElementById('hamburger');
+    if (!sidebar) return;
+    const willOpen = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+    sidebar.classList.toggle('open', willOpen);
+    overlay?.classList.toggle('active', willOpen);
+    if (willOpen) {
+      overlay?.removeAttribute('aria-hidden');
+    } else {
+      overlay?.setAttribute('aria-hidden', 'true');
+    }
+    if (hamburger) hamburger.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    if (willOpen) {
+      // Move focus into the drawer for keyboard users.
+      const firstLink = sidebar.querySelector('a.nav-item');
+      if (firstLink) firstLink.focus({ preventScroll: true });
+    } else if (document.activeElement && sidebar.contains(document.activeElement)) {
+      // Return focus to the toggle when closing via Escape/overlay.
+      hamburger?.focus({ preventScroll: true });
+    }
   },
-  
-  closeMobileMenu() {
+
+  openMobileMenu() {
+    this.toggleMobileMenu(true);
+  },
+
+  closeMobileMenu(returnFocus) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
+    const hamburger = document.getElementById('hamburger');
+    const wasOpen = sidebar?.classList.contains('open');
     sidebar?.classList.remove('open');
     overlay?.classList.remove('active');
+    overlay?.setAttribute('aria-hidden', 'true');
+    if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+    if (wasOpen && returnFocus) hamburger?.focus({ preventScroll: true });
   },
-  
+
   setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      const inField = document.activeElement && (
+        document.activeElement.tagName === 'INPUT' ||
+        document.activeElement.tagName === 'TEXTAREA' ||
+        document.activeElement.tagName === 'SELECT' ||
+        document.activeElement.isContentEditable
+      );
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        Search.toggle();
+        if (window.Search) window.Search.toggle();
+        return;
       }
       if (e.key === 'Escape') {
-        Search.close();
-        this.closeMobileMenu();
+        // Search handles its own Escape; only close drawer here if search is shut.
+        const searchOpen = document.getElementById('search-modal')?.classList.contains('active');
+        if (!searchOpen) this.closeMobileMenu(true);
+        return;
       }
-      if (e.key === '/' && !e.metaKey && !e.ctrlKey && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey && !inField) {
         e.preventDefault();
-        Search.toggle();
+        if (window.Search) window.Search.open();
       }
     });
   }
 };
+
+window.Navigation = Navigation;

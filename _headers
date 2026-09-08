@@ -5,6 +5,3 @@
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
   Cache-Control: public, max-age=3600
-
-# SPA routing - serve index.html for all paths
-/* /index.html 200

@@ -26,12 +26,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -40,32 +40,32 @@
         <p style="margin-top: var(--space-4);">Data is the most important factor in LLM quality. Learn how to build, clean, and manage datasets.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">DATASET PIPELINE</div>
+        <h2 class="section-title">DATASET PIPELINE</h2>
         <div class="grid-3 mt-4">
-          <div class="card"><div class="section-title">1. Collect</div><p class="text-sm">Web crawling, API access, public datasets (The Pile, C4, Dolma). Track sources and licenses.</p></div>
-          <div class="card"><div class="section-title">2. Clean</div><p class="text-sm">Remove duplicates, filter low-quality text, deduplicate, detect language, remove PII.</p></div>
-          <div class="card"><div class="section-title">3. Format</div><p class="text-sm">Convert to standard format (JSONL), tokenize, pack sequences, create train/val splits.</p></div>
+          <div class="card"><h2 class="section-title">1. Collect</h2><p class="text-sm">Web crawling, API access, public datasets (The Pile, C4, Dolma). Track sources and licenses.</p></div>
+          <div class="card"><h2 class="section-title">2. Clean</h2><p class="text-sm">Remove duplicates, filter low-quality text, deduplicate, detect language, remove PII.</p></div>
+          <div class="card"><h2 class="section-title">3. Format</h2><p class="text-sm">Convert to standard format (JSONL), tokenize, pack sequences, create train/val splits.</p></div>
         </div>
         
         <div class="divider mt-8"></div>
         
         <div class="section-title mt-8">KEY CONCEPTS</div>
         <div class="expandable-panel mt-4">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Contamination</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Contamination</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Contamination occurs when evaluation data appears in your training set. With web-scale pretraining, some contamination is nearly inevitable.</p>
             <p class="mt-4"><strong>Mitigation:</strong> Use dedicated clean test sets. Remove known benchmark sources from training data. Report contamination estimates.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Deduplication</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Deduplication</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Exact deduplication removes identical documents. Near-duplicate detection (MinHash + LSH) removes substantially similar documents.</p>
             <p class="mt-4"><strong>Why it matters:</strong> Duplicate data causes overfitting, inflated benchmark scores, and poor generalization.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')"><span class="expandable-title">Dataset Mixing</span><span class="expandable-icon">+</span></div>
+          <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Dataset Mixing</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Different data sources contribute differently. Web text, books, code, and papers each teach different capabilities.</p>
             <p class="mt-4"><strong>Strategy:</strong> Start with proportional mixing by source quality. Adjust based on which capabilities you want to emphasize.</p>

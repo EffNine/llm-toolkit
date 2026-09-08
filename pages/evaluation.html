@@ -26,12 +26,12 @@
 <body>
   <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
   <div class="site-wrapper">
-    <aside class="sidebar" id="sidebar"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <header class="top-nav">
-      <button class="hamburger" id="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
       <div class="nav-brand">LLM <span>Toolkit</span></div>
-      <div class="nav-actions"><button class="nav-search-btn" id="nav-search-btn"><span>Search</span><kbd>/</kbd></button></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
     </header>
     <main class="main-content" id="main-content">
       <div class="page-header narrow">
@@ -40,56 +40,57 @@
         <p style="margin-top: var(--space-4);">How to measure whether your model is actually good. Benchmarks, metrics, and evaluation design.</p>
       </div>
       <div class="page-content narrow">
-        <div class="section-title">EVALUATION CATEGORIES</div>
+        <h2 class="section-title">EVALUATION CATEGORIES</h2>
         <div class="knowledge-graph mt-4">
-          <div class="graph-card" onclick="Evaluation.showCategory('general')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('general')"><div class="graph-card-title">General Knowledge</div><div class="graph-card-type">MMLU, HellaSwag, TruthfulQA</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('math')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('math')"><div class="graph-card-title">Math &amp; Reasoning</div><div class="graph-card-type">GSM8K, MATH, AIME</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('coding')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('coding')"><div class="graph-card-title">Coding</div><div class="graph-card-type">HumanEval, MBPP, SWE-bench</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('instruction')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('instruction')"><div class="graph-card-title">Instruction Following</div><div class="graph-card-type">IFEval, BEAVERTAILS</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('safety')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('safety')"><div class="graph-card-title">Safety</div><div class="graph-card-type">RealToxicity, Jailbreak</div></div>
-          <div class="graph-card" onclick="Evaluation.showCategory('domain')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')Evaluation.showCategory('domain')"><div class="graph-card-title">Domain Specific</div><div class="graph-card-type">Build your own</div></div>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('general', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">General Knowledge</span><span class="graph-card-type" style="display:block;">MMLU, HellaSwag, TruthfulQA</span></button>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('math', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">Math &amp; Reasoning</span><span class="graph-card-type" style="display:block;">GSM8K, MATH, AIME</span></button>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('coding', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">Coding</span><span class="graph-card-type" style="display:block;">HumanEval, MBPP, SWE-bench</span></button>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('instruction', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">Instruction Following</span><span class="graph-card-type" style="display:block;">IFEval, BEAVERTAILS</span></button>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('safety', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">Safety</span><span class="graph-card-type" style="display:block;">RealToxicity, Jailbreak</span></button>
+          <button type="button" class="graph-card" onclick="Evaluation.showCategory('domain', this)" aria-pressed="false"><span class="graph-card-title" style="display:block;">Domain Specific</span><span class="graph-card-type" style="display:block;">Build your own</span></button>
         </div>
         
-        <div id="eval-content" class="mt-8"></div>
+        <div id="eval-content" class="mt-8" role="status" aria-live="polite"></div>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/eval-planner.html">Plan an evaluation →</a><a class="btn btn-sm btn-secondary" href="/pages/training.html">Compare training methods →</a></div></div>
         
         <div class="divider mt-8"></div>
         
         <div class="section-title mt-8">EVALUATION PRINCIPLES</div>
         <div class="expandable-panel mt-4">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+          <button type="button" class="expandable-header" aria-expanded="false">
             <span class="expandable-title">Training Loss vs Validation Loss</span>
             <span class="expandable-icon">+</span>
-          </div>
+          </button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Training loss should decrease monotonically. Validation loss should decrease then plateau. If validation loss starts increasing while training loss continues decreasing, you are overfitting.</p>
             <p class="mt-4"><strong>What to watch:</strong> A gap of more than 0.1-0.2 between train and val loss is a warning sign. The gap should narrow with more data or stronger regularization.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+          <button type="button" class="expandable-header" aria-expanded="false">
             <span class="expandable-title">Contamination</span>
             <span class="expandable-icon">+</span>
-          </div>
+          </button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Contamination occurs when test data appears in the training set. This inflates benchmark scores artificially. With web-scale pretraining, some contamination is nearly unavoidable.</p>
             <p class="mt-4"><strong>How to detect:</strong> Exact n-gram matching, fuzzy matching, and checking known benchmark sources against your training data. Tools like <code>lm-evaluation-harness</code> include contamination detection.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+          <button type="button" class="expandable-header" aria-expanded="false">
             <span class="expandable-title">Benchmark Design</span>
             <span class="expandable-icon">+</span>
-          </div>
+          </button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Good benchmarks are: (1) hard for humans to game, (2) aligned with the capability you want to measure, (3) large enough for statistical significance, and (4) resistant to contamination.</p>
             <p class="mt-4"><strong>Common pitfalls:</strong> Multiple-choice formats can be gamed by memorization. Few-shot prompts can leak into training. Always report zero-shot and few-shot results separately.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
-          <div class="expandable-header" onclick="this.closest('.expandable-panel').classList.toggle('open')">
+          <button type="button" class="expandable-header" aria-expanded="false">
             <span class="expandable-title">Qualitative Evaluation</span>
             <span class="expandable-icon">+</span>
-          </div>
+          </button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Numerical benchmarks miss a lot. Systematically evaluate outputs by reading them. Check for: coherence, factual accuracy, instruction following, safety, and style consistency.</p>
             <p class="mt-4"><strong>Technique:</strong> Create a diverse set of 50-100 evaluation prompts spanning your target capabilities. Have humans rate outputs on a 1-5 scale across multiple dimensions.</p>
@@ -152,7 +153,8 @@
         }
       },
       
-      showCategory(key) {
+      showCategory(key, srcEl) {
+        if (srcEl) { document.querySelectorAll('.graph-card').forEach((b) => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); }); srcEl.classList.add('selected'); srcEl.setAttribute('aria-pressed', 'true'); }
         const cat = this.categories[key];
         if (!cat) return;
         

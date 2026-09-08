@@ -2,15 +2,15 @@ window.APP_ROUTES = [
   { path: '/', label: 'Home', section: 'start' },
   { path: '/pages/learn.html', label: 'Learn', section: 'start' },
   { path: '/pages/roadmap.html', label: 'Roadmap', section: 'start' },
-  { path: '/pages/planner.html', label: 'Training Planner', section: 'tools' },
+  { path: '/pages/projects.html', label: 'Projects', section: 'start' },
+  { path: '/pages/planner.html', label: 'Training Planner', section: 'plan' },
+  { path: '/pages/data-planner.html', label: 'Data Planner', section: 'plan' },
+  { path: '/pages/eval-planner.html', label: 'Eval Planner', section: 'plan' },
   { path: '/pages/calculator.html', label: 'VRAM Calculator', section: 'tools' },
   { path: '/pages/model-calc.html', label: 'Model Calculator', section: 'tools' },
   { path: '/pages/token-calc.html', label: 'Token Budget', section: 'tools' },
   { path: '/pages/inference-calc.html', label: 'Inference Memory', section: 'tools' },
-  { path: '/pages/data-planner.html', label: 'Data Planner', section: 'tools' },
-  { path: '/pages/eval-planner.html', label: 'Eval Planner', section: 'tools' },
   { path: '/pages/hardware.html', label: 'Hardware', section: 'tools' },
-  { path: '/pages/troubleshooting.html', label: 'Troubleshooting', section: 'tools' },
   { path: '/pages/data.html', label: 'Data', section: 'knowledge' },
   { path: '/pages/models.html', label: 'Models', section: 'knowledge' },
   { path: '/pages/training.html', label: 'Training', section: 'knowledge' },
@@ -19,47 +19,67 @@ window.APP_ROUTES = [
   { path: '/pages/inference.html', label: 'Inference', section: 'knowledge' },
   { path: '/pages/deployment.html', label: 'Deployment', section: 'knowledge' },
   { path: '/pages/reference.html', label: 'Reference', section: 'knowledge' },
-  { path: '/pages/projects.html', label: 'Projects', section: 'knowledge' }
+  { path: '/pages/troubleshooting.html', label: 'Troubleshooting', section: 'help' }
 ];
 
+// Lightweight current-path utilities for a static multi-page site.
+// This module intentionally does NOT intercept navigation, does NOT call
+// preventDefault on normal links, and does NOT use history.pushState.
+// Every page is an independent HTML document loaded via normal <a href>.
 const Router = {
-  currentPage: '/',
-  
-  init() {
-    this.handleRoute();
-    window.addEventListener('popstate', () => this.handleRoute());
+  // Normalise a pathname: '/' stays '/', '/pages/x.html' stays as-is.
+  normalize(path) {
+    if (!path) return '/';
+    // Strip trailing slash except for root.
+    if (path.length > 1 && path.endsWith('/')) return path.slice(0, -1);
+    return path;
   },
-  
-  navigate(path) {
-    window.history.pushState({}, '', path);
-    this.currentPage = path;
-    this.handleRoute();
-  },
-  
-  handleRoute() {
-    const path = window.location.pathname;
-    this.currentPage = path;
-    Progress.setPreference('lastPage', path);
-    
-    document.querySelectorAll('.nav-item').forEach(item => {
-      item.classList.toggle('active', item.dataset.path === path);
-    });
-    
-    const pageContent = document.getElementById('page-content');
-    if (pageContent) {
-      pageContent.scrollTop = 0;
-    }
-    
-    if (window.App) {
-      window.App.route(path);
-    }
-  },
-  
+
   getCurrent() {
-    return window.location.pathname;
+    return this.normalize(window.location.pathname);
   },
-  
+
   getNavItems() {
-    return APP_ROUTES;
+    return window.APP_ROUTES;
+  },
+
+  isActive(path) {
+    return this.normalize(path) === this.getCurrent();
+  },
+
+  // Sync visual active state + persist last visited page.
+  // Safe to call on every static page load. No routing, no rendering.
+  sync() {
+    const current = this.getCurrent();
+    document.querySelectorAll('.nav-item').forEach((item) => {
+      const target = item.getAttribute('data-path') || item.getAttribute('href');
+      item.classList.toggle('active', this.normalize(target) === current);
+      if (this.normalize(target) === current) {
+        item.setAttribute('aria-current', 'page');
+      } else {
+        item.removeAttribute('aria-current');
+      }
+    });
+    try {
+      if (window.Progress && typeof window.Progress.setPreference === 'function') {
+        window.Progress.setPreference('lastPage', current);
+      }
+    } catch { /* private-mode localStorage may throw; ignore */ }
+    return current;
+  },
+
+  // Back-compat: some inline handlers may still call Router.navigate().
+  // Perform a normal full-page navigation so back/forward/reload,
+  // middle-click, open-in-new-tab, and copy-link all behave natively.
+  navigate(path) {
+    window.location.assign(path);
+  },
+
+  // Back-compat no-op: previously attempted SPA-style rendering.
+  // Kept so old call sites do not throw; does not render anything.
+  handleRoute() {
+    return this.sync();
   }
 };
+
+window.Router = Router;

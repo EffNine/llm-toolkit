@@ -6,5 +6,5 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Cache-Control: public, max-age=3600
 
-# SPA routing
+# SPA routing - serve index.html for all paths
 /* /index.html 200

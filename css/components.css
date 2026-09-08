@@ -72,6 +72,12 @@
 .expandable-panel.open .expandable-icon { transform: rotate(45deg); }
 .expandable-content { max-height: 0; overflow: hidden; transition: max-height var(--transition-slow); }
 .expandable-panel.open .expandable-content { max-height: 2000px; }
+/* Guide steps hold long code listings that exceed the animated height. */
+.guide-step.open > .expandable-content { max-height: none; }
+.guide-step-done > .expandable-header .expandable-title { color: var(--color-text-tertiary); }
+.guide-code { border: var(--border); border-radius: var(--radius-md); overflow: hidden; margin: var(--space-3) 0 var(--space-4); }
+.guide-code-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) var(--space-3); background: var(--color-surface-2); border-bottom: var(--border); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-secondary); }
+.guide-code pre { margin: 0; padding: var(--space-4); overflow-x: auto; background: var(--color-surface); font-family: var(--font-mono); font-size: var(--text-xs); line-height: 1.65; color: var(--color-text); }
 .expandable-body { padding: 0 var(--space-5) var(--space-5); font-size: var(--text-sm); color: var(--color-text-secondary); line-height: var(--leading-relaxed); }
 .callout { padding: var(--space-4) var(--space-5); border-radius: var(--radius-lg); border-left: 3px solid; margin-bottom: var(--space-4); font-size: var(--text-sm); }
 .callout-warning { background: #fefce8; border-color: var(--color-warning); color: #854d0e; }

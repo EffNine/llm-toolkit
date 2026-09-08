@@ -3,6 +3,7 @@
     "id": "tiny-lm",
     "title": "Train a Tiny Language Model",
     "difficulty": "L1",
+    "guide": "/pages/guide-tiny-lm.html",
     "prerequisites": [
       "python-fundamentals",
       "numpy",

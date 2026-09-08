@@ -175,6 +175,37 @@ for p in projects:
             fail(f"project {p['id']}: tool anchor '#{anchor}' is not a topic")
 ok(f"projects: {len(projects)} schema-valid, references resolve")
 
+# --- 5b. guides --------------------------------------------------------------
+guides = load("guides.json")
+guides = guides if isinstance(guides, list) else guides.get("guides", [])
+gids = [g["id"] for g in guides]
+if len(gids) != len(set(gids)):
+    fail("duplicate guide ids")
+for g in guides:
+    for k in ("id", "title", "objective", "prerequisites", "steps"):
+        if k not in g:
+            fail(f"guide {g.get('id')}: missing field '{k}'")
+    for pr in g.get("prerequisites", []):
+        if pr not in tset:
+            fail(f"guide {g['id']}: prerequisite '{pr}' not a topic")
+    for s in g.get("steps", []):
+        for k in ("id", "title", "goal"):
+            if k not in s:
+                fail(f"guide {g['id']}: step missing field '{k}'")
+    for href in [g.get("next", {}).get("href", "")]:
+        if href.startswith("/pages/") and not os.path.exists(os.path.join(ROOT, href.lstrip("/").split("#")[0].split("?")[0])):
+            fail(f"guide {g['id']}: next href missing '{href}'")
+for p in projects:
+    if p.get("guide", ""):
+        if not os.path.exists(os.path.join(ROOT, p["guide"].lstrip("/"))):
+            fail(f"project {p['id']}: guide page missing '{p['guide']}'")
+for src in ("js/learning.js",):
+    body = open(os.path.join(ROOT, src), encoding="utf-8").read()
+    for ref in set(re.findall(r"/pages/(guide-[\w-]+\.html)", body)):
+        if not os.path.exists(os.path.join(ROOT, "pages", ref)):
+            fail(f"{src}: guide ref '{ref}' missing on disk")
+ok(f"guides: {len(guides)} valid, guide links resolve")
+
 # --- 6. lesson refs in reference data --------------------------------------
 for fn in ("training-methods.json", "distributed-methods.json", "optimizers.json"):
     for x in load(fn):

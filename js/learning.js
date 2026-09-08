@@ -477,7 +477,7 @@ const Learning = {
       'continued-pretraining': [['/pages/planner.html', 'Plan continued pretraining →'], ['/pages/data-planner.html', 'Plan the data mix →']],
       'dpo': [['/pages/planner.html', 'Try it in Training Planner →']],
       'rlhf': [['/pages/planner.html', 'Try it in Training Planner →']],
-      'pretraining': [['/pages/planner.html', 'Plan a pretraining run →'], ['/pages/calculator.html', 'Estimate VRAM →']],
+      'pretraining': [['/pages/guide-tiny-lm.html', 'Build it: tiny-LM guide →'], ['/pages/planner.html', 'Plan a pretraining run →'], ['/pages/calculator.html', 'Estimate VRAM →']],
       'effective-batch-size': [['/pages/calculator.html', 'Estimate VRAM →'], ['/pages/learn.html#gradient-accumulation', 'Learn accumulation →']],
       'gradient-accumulation': [['/pages/calculator.html', 'Estimate VRAM →']],
       'tokenizers': [['/pages/token-calc.html', 'Open Token Budget calculator →']],
@@ -527,7 +527,8 @@ const Learning = {
       'learning-rate': [['/pages/learn.html#schedulers', 'Pair with a schedule →'], ['/pages/calculator.html', 'Check the batch budget →']],
       'schedulers': [['/pages/learn.html#learning-rate', 'Pair with the LR →']],
       'optimization': [['/pages/learn.html#learning-rate', 'LR matters most →']],
-      'weight-decay': [['/pages/learn.html#learning-rate', 'Pair with the LR →']]
+      'weight-decay': [['/pages/learn.html#learning-rate', 'Pair with the LR →']],
+      'training-loops': [['/pages/guide-tiny-lm.html', 'Build it: tiny-LM guide →'], ['/pages/projects.html', 'Browse hands-on projects →']],
     };
     let links = byId[id];
     if (!links) {

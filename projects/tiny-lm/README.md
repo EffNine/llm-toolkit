@@ -1,18 +1,11 @@
-# Project README
+# Tiny-LM Project
 
-This project directory contains starter code and templates for the associated LLM training project.
+Follow the full step-by-step walkthrough here:
 
-See the project details in `/pages/projects.html` for full instructions, configuration, and troubleshooting guidance.
+**https://llm.effnine.dev/pages/guide-tiny-lm.html**
 
-## Files
+It covers setup, data, tokenizer, model, training, sampling, evaluation,
+and fixes for common failures — with copy-paste commands and checkpoints.
 
-- `train.py` - Training script template
-- `config.yaml` - Configuration file
-- `requirements.txt` - Python dependencies
-- `README.md` - This file
-
-## Getting Started
-
-1. Review the project specifications
-2. Clone this template into your workspace
-3. Follow the implementation steps in the project guide
+See the project outline in `/pages/projects.html` for configuration and
+grading criteria.

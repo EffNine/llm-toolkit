@@ -24,7 +24,7 @@ llm-toolkit/
 ├── css/                    # 8 stylesheets
 ├── js/                     # 14 ES module scripts
 ├── data/                   # 13 JSON data files
-├── pages/                  # 23 HTML pages
+├── pages/                  # 24 HTML pages
 └── projects/               # 6 project directories
 ```
 
@@ -65,7 +65,7 @@ After deployment completes:
 
 1. Visit https://llm.effnine.dev
 2. Check that homepage loads
-3. Test navigation between all 23 pages
+3. Test navigation between all 24 pages
 4. Verify search works (press `/`)
 5. Test mobile layout (resize browser to 375px, 768px)
 6. Check 404 page (`https://llm.effnine.dev/nonexistent`)
@@ -84,7 +84,7 @@ After deployment completes:
 - [ ] Google Fonts load (Inter + JetBrains Mono)
 - [ ] Favicon displays
 - [ ] Search modal opens with `/` key
-- [ ] All 23 pages return HTTP 200
+- [ ] All 24 pages return HTTP 200
 - [ ] 404 page returns HTTP 404 for unknown paths
 - [ ] All JSON data files are valid
 

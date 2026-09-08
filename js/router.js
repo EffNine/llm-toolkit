@@ -3,6 +3,7 @@ window.APP_ROUTES = [
   { path: '/pages/learn.html', label: 'Learn', section: 'start' },
   { path: '/pages/roadmap.html', label: 'Roadmap', section: 'start' },
   { path: '/pages/projects.html', label: 'Projects', section: 'start' },
+  { path: '/pages/guide-tiny-lm.html', label: 'Tiny-LM Guide', section: 'start' },
   { path: '/pages/planner.html', label: 'Training Planner', section: 'plan' },
   { path: '/pages/data-planner.html', label: 'Data Planner', section: 'plan' },
   { path: '/pages/eval-planner.html', label: 'Eval Planner', section: 'plan' },

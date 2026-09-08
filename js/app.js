@@ -171,6 +171,12 @@ const App = {
       if (typeof window.renderLibrary === 'function') call(() => window.renderLibrary());
       return;
     }
+    // Guide pages are data-driven: the shell declares its guide id via
+    // data-guide and js/guide.js renders it. No per-guide code needed.
+    if (document.body.getAttribute('data-guide')) {
+      if (window.Guide && typeof window.Guide.init === 'function') call(() => window.Guide.init());
+      return;
+    }
     // Other static pages expose a renderX stub or need no JS.
     const stub = this.stubFor(path);
     if (stub && typeof window[stub] === 'function') call(() => window[stub]());

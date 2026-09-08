@@ -29,6 +29,7 @@ const Navigation = {
       '/pages/learn.html': '▸',
       '/pages/roadmap.html': '↗',
       '/pages/projects.html': '⊞',
+      '/pages/guide-tiny-lm.html': '✎',
       '/pages/planner.html': '⚙',
       '/pages/data-planner.html': '◫',
       '/pages/eval-planner.html': '◆',

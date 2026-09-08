@@ -123,6 +123,13 @@
             <span class="difficulty-badge difficulty-${p.difficulty}">${p.difficulty}</span>
             <span class="badge">${p.estimatedHours} hours</span>
           </div>
+          ${p.guide ? `
+          <div class="callout callout-info mt-4">
+            <div class="callout-title">Full walkthrough available</div>
+            <div class="flex gap-3" style="flex-wrap:wrap;">
+              <a class="btn btn-sm btn-primary" href="${p.guide}">Open step-by-step guide →</a>
+            </div>
+          </div>` : ''}
           
           <div class="grid-2 mt-6" style="gap: var(--space-6);">
             <div>

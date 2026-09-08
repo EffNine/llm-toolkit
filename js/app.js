@@ -150,6 +150,11 @@ const App = {
       else if (typeof window.renderFitCheck === 'function') call(() => window.renderFitCheck());
       return;
     }
+    if (path.endsWith('/pages/compare.html')) {
+      if (window.Compare) call(() => window.Compare.init());
+      else if (typeof window.renderCompare === 'function') call(() => window.renderCompare());
+      return;
+    }
     if (path.endsWith('/pages/training.html')) {
       if (typeof window.renderTraining === 'function') call(() => window.renderTraining());
       return;

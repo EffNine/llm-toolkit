@@ -37,6 +37,7 @@ const Navigation = {
       '/pages/token-calc.html': 'T',
       '/pages/inference-calc.html': '△',
       '/pages/fit-check.html': '✓',
+      '/pages/compare.html': '⇄',
       '/pages/hardware.html': '◉',
       '/pages/data.html': '□',
       '/pages/models.html': '◎',

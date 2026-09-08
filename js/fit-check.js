@@ -23,7 +23,61 @@ const FitChecker = {
     } catch { this._models = []; this._gpus = []; }
     this.fillSelects();
     document.getElementById('fit-calculate')?.addEventListener('click', () => this.calculate());
+    document.getElementById('fit-share')?.addEventListener('click', (e) => this.share(e.currentTarget));
+    this.applyShare();
     if (this._models.length > 0) this.calculate();
+  },
+
+  // Shareable verdicts: the full configuration round-trips through ?params
+  // so a fit check can be pasted into an issue or chat and reproduce exactly.
+  shareSpec() {
+    return {
+      nums: ['fit-context', 'fit-batch', 'fit-gpu-count'],
+      selects: ['fit-model', 'fit-gpu', 'fit-precision', 'fit-kv-precision'],
+      checks: []
+    };
+  },
+
+  applyShare() {
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const spec = this.shareSpec();
+      spec.nums.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) el.value = q.get(id); }
+      });
+      spec.selects.forEach((id) => {
+        if (!q.has(id)) return;
+        const el = document.getElementById(id);
+        if (el && [...el.options].some((o) => o.value === q.get(id))) el.value = q.get(id);
+      });
+    } catch { /* location unavailable; ignore */ }
+  },
+
+  shareURL() {
+    const url = new URL(window.location.href);
+    url.search = '';
+    const spec = this.shareSpec();
+    spec.nums.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el && el.value !== '') url.searchParams.set(id, el.value.trim());
+    });
+    spec.selects.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) url.searchParams.set(id, el.value);
+    });
+    return url.toString();
+  },
+
+  share(btn) {
+    const link = this.shareURL();
+    const done = () => {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done).catch(() => done(btn));
+    else done(btn);
   },
 
   fillSelects() {

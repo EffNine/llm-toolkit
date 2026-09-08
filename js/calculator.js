@@ -14,6 +14,69 @@ const Calculator = {
 
     const resetBtn = document.getElementById('vram-reset');
     if (resetBtn) resetBtn.addEventListener('click', () => this.reset());
+
+    const shareBtn = document.getElementById('vram-share');
+    if (shareBtn) shareBtn.addEventListener('click', () => this.share(shareBtn));
+    if (this.applyShare()) this.calculate();
+  },
+
+  // Shareable estimates: inputs round-trip through ?params so a result can
+  // be pasted into an issue or chat and reproduce exactly.
+  shareSpec() {
+    return {
+      nums: ['param-count', 'batch-size', 'seq-length', 'grad-accum', 'quant-bits', 'gpu-count', 'gpu-vram', 'num-layers', 'hidden-size'],
+      selects: ['training-method', 'precision', 'optimizer'],
+      checks: ['checkpointing', 'lora']
+    };
+  },
+
+  applyShare() {
+    let found = false;
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const spec = this.shareSpec();
+      spec.nums.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.value = q.get(id); found = true; } }
+      });
+      spec.selects.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.value = q.get(id); found = true; } }
+      });
+      spec.checks.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.checked = q.get(id) === '1'; found = true; } }
+      });
+    } catch { /* location unavailable; ignore */ }
+    return found;
+  },
+
+  shareURL() {
+    const url = new URL(window.location.href);
+    url.search = '';
+    const spec = this.shareSpec();
+    spec.nums.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el && el.value !== '') url.searchParams.set(id, el.value.trim());
+    });
+    spec.selects.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) url.searchParams.set(id, el.value);
+    });
+    spec.checks.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) url.searchParams.set(id, el.checked ? '1' : '0');
+    });
+    return url.toString();
+  },
+
+  share(btn) {
+    const link = this.shareURL();
+    const done = () => {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done).catch(() => done(btn));
+    else done(btn);
   },
 
   reset() {
@@ -36,6 +99,7 @@ const Calculator = {
     const exp = document.getElementById('vram-export-btns');
     if (exp) exp.style.display = 'none';
     this._lastResult = null;
+    try { window.history.replaceState(null, '', window.location.pathname); } catch { /* ignore */ }
   },
   
   calculate() {

@@ -4,6 +4,70 @@ const TokenCalculator = {
     this._bound = true;
     document.getElementById('token-calculate')?.addEventListener('click', () => this.calculate());
     document.getElementById('token-estimate')?.addEventListener('click', () => this.estimateBudget());
+    document.getElementById('token-share')?.addEventListener('click', (e) => this.share(e.currentTarget));
+    const shared = this.applyShare();
+    if (shared === 'calculate') this.calculate();
+    else if (shared === 'estimate') this.estimateBudget();
+  },
+
+  // Shareable estimates: both forms round-trip through ?params so a budget
+  // can be pasted into an issue or chat and reproduce exactly.
+  shareSpec() {
+    return {
+      nums: ['tc-records', 'tc-avg-tokens', 'tc-epochs', 'tc-seq-len', 'tc-micro-batch', 'tc-grad-accum', 'tc-gpu-count', 'tc-model-size'],
+      selects: ['tc-heuristic'],
+      checks: []
+    };
+  },
+
+  applyShare() {
+    let main = false, est = false;
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const spec = this.shareSpec();
+      spec.nums.forEach((id) => {
+        if (q.has(id)) {
+          const el = document.getElementById(id);
+          if (el) {
+            el.value = q.get(id);
+            if (id === 'tc-model-size') est = true; else main = true;
+          }
+        }
+      });
+      spec.selects.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.value = q.get(id); est = true; } }
+      });
+    } catch { /* location unavailable; ignore */ }
+    if (main) return 'calculate';
+    if (est) return 'estimate';
+    return null;
+  },
+
+  shareURL() {
+    const url = new URL(window.location.href);
+    url.search = '';
+    const spec = this.shareSpec();
+    spec.nums.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el && el.value !== '') url.searchParams.set(id, el.value.trim());
+    });
+    spec.selects.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) url.searchParams.set(id, el.value);
+    });
+    return url.toString();
+  },
+
+  share(btn) {
+    const link = this.shareURL();
+    const done = () => {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done).catch(() => done(btn));
+    else done(btn);
   },
   
   readNum(id, { min, max, integer, label }) {

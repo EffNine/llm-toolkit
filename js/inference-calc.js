@@ -3,6 +3,60 @@ const InferenceCalculator = {
     if (this._bound) return;
     this._bound = true;
     document.getElementById('infer-calculate')?.addEventListener('click', () => this.calculate());
+    document.getElementById('infer-share')?.addEventListener('click', (e) => this.share(e.currentTarget));
+    if (this.applyShare()) this.calculate();
+  },
+
+  // Shareable estimates: inputs round-trip through ?params so a result can
+  // be pasted into an issue or chat and reproduce exactly.
+  shareSpec() {
+    return {
+      nums: ['infer-model-size', 'infer-quant', 'infer-context', 'infer-batch', 'infer-layers', 'infer-hidden', 'infer-heads', 'infer-kv-heads', 'infer-gpu-vram'],
+      selects: ['infer-precision', 'infer-kv-precision'],
+      checks: []
+    };
+  },
+
+  applyShare() {
+    let found = false;
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const spec = this.shareSpec();
+      spec.nums.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.value = q.get(id); found = true; } }
+      });
+      spec.selects.forEach((id) => {
+        if (q.has(id)) { const el = document.getElementById(id); if (el) { el.value = q.get(id); found = true; } }
+      });
+    } catch { /* location unavailable; ignore */ }
+    return found;
+  },
+
+  shareURL() {
+    const url = new URL(window.location.href);
+    url.search = '';
+    const spec = this.shareSpec();
+    spec.nums.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el && el.value !== '') url.searchParams.set(id, el.value.trim());
+    });
+    spec.selects.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) url.searchParams.set(id, el.value);
+    });
+    return url.toString();
+  },
+
+  share(btn) {
+    const link = this.shareURL();
+    const done = () => {
+      if (!btn) return;
+      const orig = btn.textContent;
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = orig; }, 1500);
+    };
+    if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(done).catch(() => done(btn));
+    else done(btn);
   },
   
   readNum(id, { min, max, integer, label, allowZero }) {

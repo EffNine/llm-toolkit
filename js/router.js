@@ -11,6 +11,7 @@ window.APP_ROUTES = [
   { path: '/pages/token-calc.html', label: 'Token Budget', section: 'tools' },
   { path: '/pages/inference-calc.html', label: 'Inference Memory', section: 'tools' },
   { path: '/pages/fit-check.html', label: 'Fit Checker', section: 'tools' },
+  { path: '/pages/compare.html', label: 'Compare', section: 'tools' },
   { path: '/pages/hardware.html', label: 'Hardware', section: 'tools' },
   { path: '/pages/data.html', label: 'Data', section: 'knowledge' },
   { path: '/pages/models.html', label: 'Models', section: 'knowledge' },

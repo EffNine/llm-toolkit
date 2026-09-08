@@ -1,0 +1,8 @@
+[
+  {"date": "2026-09-08", "title": "Fit Checker, Compare page, and shareable calculator links", "detail": "New Model-GPU Fit Checker with verdicts and one-click what-if fixes, side-by-side GPU/model Compare page, and copy-link sharing on all five calculators."},
+  {"date": "2026-09-08", "title": "Source Library launch: 178 curated, verified sources", "detail": "Papers, official docs, model cards, hardware specs, software, datasets, benchmarks, and courses — every entry mapped to curriculum topics, link-rot checked."},
+  {"date": "2026-09-08", "title": "Hardware and model database corrections", "detail": "Dense (not sparse) TFLOPS throughout, corrected Tensor Core generations, RTX 5090 and B200 entries, vocab sizes, Phi-3 configs, and MoE fields — all cross-checked against the calculators."},
+  {"date": "2026-09-08", "title": "Calculator accuracy fixes", "detail": "VRAM activations now use micro-batch (accumulation adds steps, not memory), model calculator includes the final norm and validates head divisibility, inference calculator gains an independent KV-cache precision selector."},
+  {"date": "2026-09-08", "title": "Five worked examples", "detail": "End-to-end guided examples: 7B QLoRA on 12GB, 100M from scratch, 100GB dataset pipeline, eval regression triage, and 8B inference scale-out — all numbers reproducible in the calculators."},
+  {"date": "2026-09-08", "title": "v0.1.0: complete interactive toolkit", "detail": "84-topic curriculum across 4 layers, planners, projects, troubleshooting flows, and reference — first tagged release."}
+]

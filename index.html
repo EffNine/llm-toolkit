@@ -253,6 +253,12 @@
           </div>
         </section>
         
+        <!-- Recent Updates -->
+        <section class="page-content" aria-labelledby="home-updates" style="padding-top: var(--space-8); border-top: var(--border);">
+          <h2 id="home-updates" class="section-title">RECENT UPDATES</h2>
+          <div id="home-changelog" class="mt-4"></div>
+        </section>
+        
         <!-- Footer -->
         <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
           <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
@@ -298,6 +304,20 @@
           banner.style.display = '';
           banner.innerHTML = `<div class="callout-title">Continue where you left off</div><a href="${href}">Resume: ${label} →</a>`;
         }
+      } catch { /* ignore */ }
+      // Recent updates feed (best-effort; the page works without it).
+      try {
+        fetch('/data/changelog.json', { headers: { Accept: 'application/json' } })
+          .then((res) => (res.ok ? res.json() : []))
+          .then((items) => {
+            const box = document.getElementById('home-changelog');
+            if (!box || !Array.isArray(items) || items.length === 0) return;
+            const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            box.innerHTML = `<div class="vram-breakdown">` + items.slice(0, 5).map((e) =>
+              `<div class="vram-row"><span class="vram-row-label"><strong>${esc(e.title)}</strong><br><span class="text-sm text-muted">${esc(e.detail || '')}</span></span><span class="vram-row-value" style="font-size:var(--text-xs); white-space:nowrap;">${esc(e.date || '')}</span></div>`
+            ).join('') + `</div>`;
+          })
+          .catch(() => {});
       } catch { /* ignore */ }
     };
   </script>

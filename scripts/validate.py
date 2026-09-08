@@ -219,6 +219,39 @@ from collections import Counter as _Counter
 _sc = _Counter(s["type"] for s in sources)
 ok(f"library: {len(sources)} entries valid ({dict(_sc)}) + hardware spine intact")
 
+# --- 6c. changelog -------------------------------------------------------------
+clog = load("changelog.json")
+if not isinstance(clog, list) or len(clog) == 0:
+    fail("changelog.json: empty or not a list")
+else:
+    dates = []
+    for e in clog:
+        if "date" not in e or "title" not in e:
+            fail(f"changelog: entry missing date/title: {str(e)[:80]}")
+        if not re.match(r"^\d{4}-\d{2}-\d{2}$", e.get("date", "")):
+            fail(f"changelog: bad date '{e.get('date')}'")
+        dates.append(e.get("date", ""))
+    if dates != sorted(dates, reverse=True):
+        fail("changelog.json: entries must be newest-first")
+ok(f"changelog: {len(clog)} entries, newest-first")
+
+# --- 6d. share-link wiring -----------------------------------------------------
+for jsf, htmlf, btns in (
+    ("js/calculator.js", "pages/calculator.html", ["vram-share"]),
+    ("js/inference-calc.js", "pages/inference-calc.html", ["infer-share"]),
+    ("js/model-calc.js", "pages/model-calc.html", ["model-share"]),
+    ("js/token-calc.js", "pages/token-calc.html", ["token-share"]),
+    ("js/fit-check.js", "pages/fit-check.html", ["fit-share"]),
+):
+    jsbody = open(os.path.join(ROOT, jsf), encoding="utf-8").read()
+    htmlbody = open(os.path.join(ROOT, htmlf), encoding="utf-8").read()
+    for b in btns:
+        if f'id="{b}"' not in htmlbody:
+            fail(f"{htmlf}: missing share button '{b}'")
+        if b not in jsbody or "shareURL" not in jsbody or "applyShare" not in jsbody:
+            fail(f"{jsf}: share round-trip incomplete (button binding / shareURL / applyShare)")
+ok("share-link wiring present on all 5 calculators")
+
 # --- 7. calculator/HTML key agreement --------------------------------------
 tc_js = open(os.path.join(ROOT, "js/token-calc.js"), encoding="utf-8").read()
 tc_html = open(os.path.join(ROOT, "pages/token-calc.html"), encoding="utf-8").read()

@@ -12,6 +12,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 8192,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3 Community License",
     "licenseUrl": "https://llama.meta.com/llama3/license/",
@@ -20,7 +22,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "8B fits in 24GB VRAM for inference (BF16). QLoRA fine-tuning possible on single RTX 4090.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3-8B",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "llama3-70b",
@@ -35,15 +37,17 @@
     "numHeads": 64,
     "numKVHeads": 8,
     "contextLength": 8192,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3 Community License",
     "licenseUrl": "https://llama.meta.com/llama3/license/",
     "intendedUse": "Higher capability. Requires multi-GPU for fine-tuning or quantized inference.",
     "trainingSuitability": "experimental",
     "finetuningSuitability": "possible",
-    "hardwareConsiderations": "BF16 weights: ~140GB. Needs 8×H100 for training. QLoRA on 4×A100-80GB or 8×4090.",
+    "hardwareConsiderations": "BF16 weights: ~140GB. Needs 8\u00d7H100 for training. QLoRA on 4\u00d7A100-80GB or 8\u00d74090.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3-70B",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "llama3-8b-instruct",
@@ -58,6 +62,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 8192,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3 Community License",
     "licenseUrl": "https://llama.meta.com/llama3/license/",
@@ -66,7 +72,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "Same as Llama 3 8B base. Good starting point for SFT/LoRA projects.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "llama3.1-8b",
@@ -81,6 +87,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 128000,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3.1 Community License",
     "licenseUrl": "https://llama.meta.com/llama31/license/",
@@ -89,7 +97,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "Same weights as Llama 3 8B (~16GB BF16). Longer context increases KV cache memory.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "llama3.1-70b",
@@ -104,15 +112,17 @@
     "numHeads": 64,
     "numKVHeads": 8,
     "contextLength": 128000,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3.1 Community License",
     "licenseUrl": "https://llama.meta.com/llama31/license/",
     "intendedUse": "High-capability model with 128K context. Requires significant hardware for fine-tuning.",
     "trainingSuitability": "experimental",
     "finetuningSuitability": "possible",
-    "hardwareConsiderations": "~140GB BF16 weights. QLoRA on 4×A100-80GB or 8×RTX 4090.",
+    "hardwareConsiderations": "~140GB BF16 weights. QLoRA on 4\u00d7A100-80GB or 8\u00d7RTX 4090.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "llama3.1-405b",
@@ -128,15 +138,17 @@
     "numHeads": 128,
     "numKVHeads": 8,
     "contextLength": 128000,
+    "vocabSize": 128256,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "Llama 3.1 Community License",
     "licenseUrl": "https://llama.meta.com/llama31/license/",
     "intendedUse": "Largest open Llama model. State-of-the-art capability. Research-grade hardware required.",
     "trainingSuitability": "experimental",
     "finetuningSuitability": "not-recommended",
-    "hardwareConsiderations": "~810GB BF16. Requires 8×H100-80GB minimum for inference. Not feasible for fine-tuning.",
+    "hardwareConsiderations": "~810GB BF16. Requires 8\u00d7H100-80GB minimum for inference. Not feasible for fine-tuning.",
     "source": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "mistral-7b",
@@ -151,6 +163,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 32768,
+    "vocabSize": 32000,
+    "tiedEmbeddings": false,
     "tokenizer": "SentencePiece (BPE)",
     "license": "Apache 2.0",
     "licenseUrl": "https://huggingface.co/mistralai/Mistral-7B-v0.3",
@@ -159,7 +173,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "Similar to Llama 3 8B but with longer context. 7B in BF16 = ~14GB weights.",
     "source": "https://huggingface.co/mistralai/Mistral-7B-v0.3",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "mistral-7b-instruct",
@@ -174,6 +188,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 32768,
+    "vocabSize": 32000,
+    "tiedEmbeddings": false,
     "tokenizer": "SentencePiece (BPE)",
     "license": "Apache 2.0",
     "licenseUrl": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3",
@@ -182,7 +198,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "Same as Mistral 7B base.",
     "source": "https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.3",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "mixtral-8x7b",
@@ -191,22 +207,26 @@
     "type": "decoder-only",
     "variant": "base",
     "parameters": 46.7,
-    "denseParameters": 12.4,
+    "denseParameters": 12.9,
     "layers": 32,
     "hiddenSize": 4096,
     "ffnHiddenSize": 14336,
+    "numExperts": 8,
+    "expertsPerToken": 2,
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 32768,
+    "vocabSize": 32000,
+    "tiedEmbeddings": false,
     "tokenizer": "SentencePiece (BPE)",
     "license": "Apache 2.0",
     "licenseUrl": "https://huggingface.co/mistralai/Mixtral-8x7B-v0.1",
     "intendedUse": "MoE model. 8 experts, 12.4B active params. Good for learning MoE architecture.",
     "trainingSuitability": "experimental",
     "finetuningSuitability": "possible",
-    "hardwareConsiderations": "Dense inference: ~94GB BF16. MoE fine-tuning requires expert parallelism or careful sharding.",
+    "hardwareConsiderations": "~94GB BF16 total weights (46.7B). Needs multi-GPU or offload for full weights; ~26GB active per forward pass (12.9B). Expert parallelism when total exceeds one GPU but active does not.",
     "source": "https://huggingface.co/mistralai/Mixtral-8x7B-v0.1",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "qwen2.5-7b",
@@ -221,7 +241,9 @@
     "numHeads": 28,
     "numKVHeads": 4,
     "contextLength": 131072,
-    "tokenizer": "SentencePiece (BPE)",
+    "vocabSize": 152064,
+    "tiedEmbeddings": false,
+    "tokenizer": "BPE (Qwen, ~152K vocab)",
     "license": "Apache 2.0",
     "licenseUrl": "https://huggingface.co/Qwen/Qwen2.5-7B",
     "intendedUse": "Strong multilingual model with 128K context. Excellent for coding and reasoning.",
@@ -229,7 +251,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "~14GB BF16. GQA with 4 KV heads reduces KV cache memory significantly.",
     "source": "https://huggingface.co/Qwen/Qwen2.5-7B",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "qwen2.5-72b",
@@ -244,15 +266,17 @@
     "numHeads": 64,
     "numKVHeads": 8,
     "contextLength": 131072,
-    "tokenizer": "SentencePiece (BPE)",
+    "vocabSize": 152064,
+    "tiedEmbeddings": false,
+    "tokenizer": "BPE (Qwen, ~152K vocab)",
     "license": "Apache 2.0",
     "licenseUrl": "https://huggingface.co/Qwen/Qwen2.5-72B",
     "intendedUse": "Large-capability model. Comparable to Llama 3 70B with better multilingual support.",
     "trainingSuitability": "experimental",
     "finetuningSuitability": "possible",
-    "hardwareConsiderations": "~144GB BF16. Multi-GPU required. QLoRA on 4×A100-80GB.",
+    "hardwareConsiderations": "~144GB BF16. Multi-GPU required. QLoRA on 4\u00d7A100-80GB.",
     "source": "https://huggingface.co/Qwen/Qwen2.5-72B",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "gemma2-9b",
@@ -263,19 +287,21 @@
     "parameters": 9.2,
     "layers": 42,
     "hiddenSize": 3584,
-    "ffnHiddenSize": 27648,
+    "ffnHiddenSize": 14336,
     "numHeads": 16,
     "numKVHeads": 8,
     "contextLength": 8192,
+    "vocabSize": 256128,
+    "tiedEmbeddings": false,
     "tokenizer": "SentencePiece (BPE)",
     "license": "Gemini License",
     "licenseUrl": "https://ai.google.dev/gemma/license",
     "intendedUse": "Google's open model. Efficient architecture with high performance for size. Good for learning.",
     "trainingSuitability": "recommended",
     "finetuningSuitability": "recommended",
-    "hardwareConsiderations": "~18GB BF16. Fits on single 24GB GPU for inference. QLoRA possible on 12GB+ GPUs.",
+    "hardwareConsiderations": "~18GB BF16 weights. QLoRA on a single 24GB GPU. Note: Gemma2 uses head_dim 256 (16 heads x 256 = 4096 Q-proj, wider than hidden 3584), so generic head-dim math undercounts attention slightly.",
     "source": "https://huggingface.co/google/gemma-2-9b",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "phi3-mini",
@@ -288,8 +314,10 @@
     "hiddenSize": 3072,
     "ffnHiddenSize": 8192,
     "numHeads": 32,
-    "numKVHeads": 4,
+    "numKVHeads": 32,
     "contextLength": 128000,
+    "vocabSize": 32064,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "MIT",
     "licenseUrl": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
@@ -298,7 +326,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "~7.6GB in BF16. Can run inference on a single 8GB GPU (quantized). Great learning model.",
     "source": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "phi3-medium",
@@ -309,19 +337,21 @@
     "parameters": 14,
     "layers": 40,
     "hiddenSize": 5120,
-    "ffnHiddenSize": 13670,
+    "ffnHiddenSize": 17920,
     "numHeads": 40,
-    "numKVHeads": 8,
+    "numKVHeads": 10,
     "contextLength": 128000,
+    "vocabSize": 32064,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "MIT",
     "licenseUrl": "https://huggingface.co/microsoft/Phi-3-medium-128k-instruct",
     "intendedUse": "14B model with excellent reasoning. Good target for multi-GPU fine-tuning experiments.",
     "trainingSuitability": "recommended",
     "finetuningSuitability": "recommended",
-    "hardwareConsiderations": "~28GB BF16. Needs 2×24GB GPUs or 1×40GB+ GPU for full FT. QLoRA on single 24GB.",
+    "hardwareConsiderations": "~28GB BF16. Needs 2\u00d724GB GPUs or 1\u00d740GB+ GPU for full FT. QLoRA on single 24GB.",
     "source": "https://huggingface.co/microsoft/Phi-3-medium-128k-instruct",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "deepseek-coder-6.7b",
@@ -336,6 +366,8 @@
     "numHeads": 32,
     "numKVHeads": 8,
     "contextLength": 16000,
+    "vocabSize": 32000,
+    "tiedEmbeddings": false,
     "tokenizer": "tiktoken (BPE)",
     "license": "DeepSeek License",
     "licenseUrl": "https://huggingface.co/deepseek-ai/DeepSeek-Coder-6.7B-base",
@@ -344,7 +376,7 @@
     "finetuningSuitability": "recommended",
     "hardwareConsiderations": "~13.4GB BF16. Similar footprint to 7B models.",
     "source": "https://huggingface.co/deepseek-ai/DeepSeek-Coder-6.7B-base",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "gpt2",
@@ -354,19 +386,21 @@
     "variant": "base",
     "parameters": 1.5,
     "layers": 48,
-    "hiddenSize": 4096,
-    "ffnHiddenSize": 16384,
+    "hiddenSize": 1600,
+    "ffnHiddenSize": 6400,
     "numHeads": 25,
     "numKVHeads": 25,
-    "contextLength": 4096,
+    "contextLength": 1024,
+    "vocabSize": 50257,
+    "tiedEmbeddings": true,
     "tokenizer": "BPE (custom)",
     "license": "MIT",
     "licenseUrl": "https://huggingface.co/openai-community/gpt2",
     "intendedUse": "Historical reference. Small enough to run anywhere. Good for understanding the original architecture.",
     "trainingSuitability": "recommended",
     "finetuningSuitability": "recommended",
-    "hardwareConsiderations": "~3GB BF16. Runs on any GPU, even integrated graphics for inference.",
+    "hardwareConsiderations": "~3GB BF16 (GPT-2 XL 1.5B). MHA: KV heads equal query heads. Runs on any GPU, even integrated graphics for inference.",
     "source": "https://huggingface.co/openai-community/gpt2",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   }
 ]

@@ -5,6 +5,7 @@ const Navigation = {
     this._booted = true;
     this.renderSidebar();
     this.setupMobileMenu();
+    this.setupScrollPersistence();
     this.setupKeyboardShortcuts();
     // Mark active nav item + persist last page for "continue where you left off".
     if (window.Router && typeof window.Router.sync === 'function') {
@@ -15,7 +16,6 @@ const Navigation = {
   renderSidebar() {
     const nav = document.getElementById('sidebar-nav');
     if (!nav) return;
-
     const SECTION_META = [
       { key: 'start', label: 'Start' },
       { key: 'plan', label: 'Build / Plan' },
@@ -45,6 +45,7 @@ const Navigation = {
       '/pages/inference.html': '▷',
       '/pages/deployment.html': '▣',
       '/pages/reference.html': '≡',
+      '/pages/library.html': '❖',
       '/pages/troubleshooting.html': '!'
     };
 
@@ -75,10 +76,52 @@ const Navigation = {
       const link = e.target.closest('a.nav-item');
       if (link) this.closeMobileMenu(false);
     });
+    this.restoreSidebarScroll();
   },
 
-  setupMobileMenu() {
-    const hamburger = document.getElementById('hamburger');
+  // The sidebar scrolls independently and every navigation is a full page
+  // load, so without this the menu jumps back to the top on every click.
+  // Persist per-tab (sessionStorage): a new tab starts at the top.
+  saveSidebarScroll() {
+    try {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar) sessionStorage.setItem('llm-toolkit:sidebar-scroll', String(sidebar.scrollTop || 0));
+    } catch { /* private-mode storage may throw; ignore */ }
+  },
+
+  restoreSidebarScroll() {
+    let y = 0;
+    try {
+      y = parseInt(sessionStorage.getItem('llm-toolkit:sidebar-scroll') || '0', 10) || 0;
+    } catch { y = 0; }
+    if (y <= 0) return;
+    const apply = () => {
+      const sidebar = document.getElementById('sidebar');
+      if (sidebar && sidebar.scrollHeight > sidebar.clientHeight) sidebar.scrollTop = y;
+    };
+    apply();
+    // Layout (fonts/images) can shift heights after first paint; re-apply once.
+    if (typeof requestAnimationFrame === 'function') requestAnimationFrame(apply);
+  },
+
+  setupScrollPersistence() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && !sidebar.dataset.scrollPersist) {
+      sidebar.dataset.scrollPersist = '1';
+      let ticking = false;
+      sidebar.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+        const done = () => { ticking = false; this.saveSidebarScroll(); };
+        if (typeof requestAnimationFrame === 'function') requestAnimationFrame(done);
+        else setTimeout(done, 100);
+      }, { passive: true });
+    }
+    // Covers link clicks and tab closes between scroll events.
+    window.addEventListener('pagehide', () => this.saveSidebarScroll());
+  },
+
+  setupMobileMenu() {    const hamburger = document.getElementById('hamburger');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
 

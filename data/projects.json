@@ -3,8 +3,16 @@
     "id": "tiny-lm",
     "title": "Train a Tiny Language Model",
     "difficulty": "L1",
-    "prerequisites": ["python-fundamentals", "numpy", "tensors", "neural-networks", "training-loops"],
-    "related": ["10m-transformer"],
+    "prerequisites": [
+      "python-fundamentals",
+      "numpy",
+      "tensors",
+      "neural-networks",
+      "training-loops"
+    ],
+    "related": [
+      "10m-transformer"
+    ],
     "estimatedHours": 12,
     "objective": "Build and train a character-level or tiny word-level language model from scratch. Understand the complete training loop end-to-end.",
     "hardware": "Any GPU with 4GB+ VRAM, or CPU with 8GB+ RAM",
@@ -30,16 +38,43 @@
       "epochs": 10
     },
     "expectedResults": "Loss should decrease consistently. Model should generate coherent short text after training.",
-    "troubleshooting": "If loss is NaN, check learning rate. If not decreasing, verify data pipeline. If OOM, reduce batch size or seq length.",
+    "troubleshooting": "NaN loss: cut LR 10x and check for division by zero. Loss flat: overfit one batch first to verify the loop. OOM: batch 32->8, seq 256->128. Gibberish samples early are normal; worry only if loss never falls.",
     "nextProject": "10m-transformer",
-    "source": "Based on Andrej Karpathy's 'nanoGPT' tutorial"
+    "source": "Based on Andrej Karpathy's 'nanoGPT' tutorial",
+    "measures": [
+      "Train/val loss curves (overfitting gap?)",
+      "Perplexity on held-out text",
+      "Tokens/sec and step time"
+    ],
+    "outcomes": [
+      "Run an end-to-end training loop you fully understand",
+      "Read a loss curve and diagnose basic failure",
+      "Sample from your own trained model"
+    ],
+    "tools": [
+      {
+        "label": "Token calculator",
+        "href": "/pages/token-calc.html"
+      },
+      {
+        "label": "Learn: training loops",
+        "href": "/pages/learn.html#training-loops"
+      }
+    ]
   },
   {
     "id": "10m-transformer",
     "title": "Train a 10M Parameter Transformer",
     "difficulty": "L1",
-    "prerequisites": ["tiny-lm", "transformer-block", "tokenizers"],
-    "related": ["tiny-lm", "100m-llm"],
+    "prerequisites": [
+      "tiny-lm",
+      "transformer-block",
+      "tokenizers"
+    ],
+    "related": [
+      "tiny-lm",
+      "100m-llm"
+    ],
     "estimatedHours": 16,
     "objective": "Train a proper word-piece tokenized transformer with ~10M parameters on a real dataset.",
     "hardware": "GPU with 8GB+ VRAM",
@@ -65,16 +100,47 @@
       "warmupRatio": 0.1
     },
     "expectedResults": "Perplexity should reach ~15-25 on natural text. Model generates readable but imperfect text.",
-    "troubleshooting": "Watch for NaN during warmup. If tokenizer is too small, vocabulary will have too many OOV tokens.",
+    "troubleshooting": "NaN during warmup: extend warmup, verify mask dtype in FP16. Perplexity stuck high: check the data pipeline (decode samples) before blaming the model. OOV explosion: vocab too small for the corpus.",
     "nextProject": "100m-llm",
-    "source": "Extended nanoGPT approach with proper tokenization"
+    "source": "Extended nanoGPT approach with proper tokenization",
+    "measures": [
+      "Validation perplexity (target ~15-25 on natural text)",
+      "Tokens/word (fertility) of your tokenizer",
+      "Train/val loss gap"
+    ],
+    "outcomes": [
+      "Train and use a subword tokenizer",
+      "Build RoPE + causal-mask transformer blocks",
+      "Run a cosine schedule with warmup"
+    ],
+    "tools": [
+      {
+        "label": "Token calculator",
+        "href": "/pages/token-calc.html"
+      },
+      {
+        "label": "Learn: tokenization",
+        "href": "/pages/learn.html#tokenizers"
+      },
+      {
+        "label": "Learn: RoPE",
+        "href": "/pages/learn.html#rope"
+      }
+    ]
   },
   {
     "id": "100m-llm",
     "title": "Train a 100M Parameter Language Model",
     "difficulty": "L2",
-    "prerequisites": ["10m-transformer", "mixed-precision", "gradient-checkpointing"],
-    "related": ["10m-transformer", "1b-finetuning"],
+    "prerequisites": [
+      "10m-transformer",
+      "mixed-precision",
+      "gradient-checkpointing"
+    ],
+    "related": [
+      "10m-transformer",
+      "1b-finetuning"
+    ],
     "estimatedHours": 20,
     "objective": "Scale up to a 100M parameter model. Learn mixed precision and gradient checkpointing.",
     "hardware": "GPU with 24GB+ VRAM (RTX 3090/4090)",
@@ -103,19 +169,51 @@
       "precision": "bf16"
     },
     "expectedResults": "Perplexity ~8-12 on natural text. Model should handle longer coherent passages.",
-    "troubleshooting": "OOM: enable gradient checkpointing. NaN: check loss scaling. Slow training: verify BF16 is active.",
+    "troubleshooting": "OOM: enable gradient checkpointing, then accumulate; verify the 16 bytes/param + activations budget first. NaN: switch FP16->BF16, confirm warmup ran. Slow: profile dataloader before buying GPUs.",
     "nextProject": "1b-finetuning",
-    "source": "Scaling up from 10M with proper engineering practices"
+    "source": "Scaling up from 10M with proper engineering practices",
+    "measures": [
+      "Validation perplexity (target ~8-12)",
+      "MFU / tokens/sec per GPU (target 30%+)",
+      "Peak VRAM (torch.cuda.max_memory_allocated)",
+      "Loss-curve shape vs Chinchilla expectation"
+    ],
+    "outcomes": [
+      "Train in BF16 mixed precision with AdamW",
+      "Use gradient checkpointing deliberately (measure the trade)",
+      "Compare two model scales on the same eval"
+    ],
+    "tools": [
+      {
+        "label": "VRAM calculator",
+        "href": "/pages/calculator.html"
+      },
+      {
+        "label": "Model calculator",
+        "href": "/pages/model-calc.html"
+      },
+      {
+        "label": "Learn: mixed precision",
+        "href": "/pages/learn.html#mixed-precision"
+      }
+    ]
   },
   {
     "id": "1b-finetuning",
     "title": "Fine-Tune a 1B Parameter Model",
     "difficulty": "L2",
-    "prerequisites": ["100m-llm", "fine-tuning", "lora"],
-    "related": ["100m-llm", "7b-qlora"],
+    "prerequisites": [
+      "100m-llm",
+      "fine-tuning",
+      "lora"
+    ],
+    "related": [
+      "100m-llm",
+      "7b-qlora"
+    ],
     "estimatedHours": 12,
     "objective": "Take an existing 1B parameter model and fine-tune it on a domain-specific dataset.",
-    "hardware": "GPU with 24GB+ VRAM, or 2×12GB GPUs",
+    "hardware": "GPU with 24GB+ VRAM, or 2\u00d712GB GPUs",
     "software": "PyTorch, Hugging Face Transformers, peft",
     "dataset": "Domain-specific instruction dataset (~10K samples)",
     "architecture": "Use existing 1B model (e.g., Phi-3-mini)",
@@ -136,16 +234,46 @@
       "gradAccum": 8
     },
     "expectedResults": "Model should follow domain instructions better than base. Watch for catastrophic forgetting of general capabilities.",
-    "troubleshooting": "Forgetting: reduce LR, add regularisation. OOM: use QLoRA instead.",
+    "troubleshooting": "Forgetting: cut LR/epochs, mix 5-20% general data. Format leakage: check template consistency train vs serve. OOM on full FT: drop to QLoRA and compare quality.",
     "nextProject": "7b-qlora",
-    "source": "Following standard SFT pipeline with a 1B model"
+    "source": "Following standard SFT pipeline with a 1B model",
+    "measures": [
+      "Task win rate vs base (held-out instructions)",
+      "General-benchmark delta (MMLU within ~1-2%)",
+      "Forgetting check: base capabilities spot test"
+    ],
+    "outcomes": [
+      "Format SFT data with chat templates + response masking",
+      "Detect and fix catastrophic forgetting (LR/epochs/replay)",
+      "Run a before/after evaluation with baselines"
+    ],
+    "tools": [
+      {
+        "label": "Training planner",
+        "href": "/pages/planner.html"
+      },
+      {
+        "label": "Learn: SFT formatting",
+        "href": "/pages/learn.html#sft-formatting"
+      },
+      {
+        "label": "Learn: continued pretraining",
+        "href": "/pages/learn.html#continued-pretraining"
+      }
+    ]
   },
   {
     "id": "7b-qlora",
     "title": "QLoRA Fine-Tune a 7B Model",
     "difficulty": "L2",
-    "prerequisites": ["1b-finetuning", "qlora", "quantization"],
-    "related": ["1b-finetuning"],
+    "prerequisites": [
+      "1b-finetuning",
+      "qlora",
+      "quantization"
+    ],
+    "related": [
+      "1b-finetuning"
+    ],
     "estimatedHours": 8,
     "objective": "Fine-tune a 7B parameter model using QLoRA on a single consumer GPU.",
     "hardware": "Single GPU with 24GB VRAM (RTX 4090/3090)",
@@ -170,16 +298,174 @@
       "epochs": 3
     },
     "expectedResults": "Should achieve comparable performance to full fine-tuning at ~60% less GPU memory. Fits on single 24GB GPU.",
-    "troubleshooting": "Quality gap vs full FT: increase rank or use more data. OOM: reduce batch size or enable CPU offload.",
-    "nextProject": null,
-    "source": "Based on QLoRA paper (Dettmers et al., 2023)"
+    "troubleshooting": "Quality gap vs full FT: raise rank to 32-64, target all linear layers, check data quality first. OOM: smaller micro-batch + more accumulation. Bad math/code: verify 8-bit/BF16 before blaming QLoRA.",
+    "nextProject": "eval-pipeline",
+    "source": "Based on QLoRA paper (Dettmers et al., 2023)",
+    "measures": [
+      "Task quality vs full-FT/LoRA probe (gap on math/code slices)",
+      "Peak VRAM (<12GB achievable)",
+      "Adapter size and merge verification"
+    ],
+    "outcomes": [
+      "Run NF4 QLoRA end-to-end on one consumer GPU",
+      "Choose rank/alpha/targets from measurements",
+      "Merge (or serve unmerged) correctly"
+    ],
+    "tools": [
+      {
+        "label": "VRAM calculator",
+        "href": "/pages/calculator.html"
+      },
+      {
+        "label": "Learn: QLoRA",
+        "href": "/pages/learn.html#qlora"
+      },
+      {
+        "label": "Learn: quantization",
+        "href": "/pages/learn.html#quantization"
+      }
+    ]
+  },
+  {
+    "id": "eval-pipeline",
+    "title": "Build an Evaluation Pipeline",
+    "difficulty": "L2",
+    "prerequisites": [
+      "1b-finetuning",
+      "evaluation",
+      "eval-design"
+    ],
+    "related": [
+      "1b-finetuning",
+      "7b-qlora"
+    ],
+    "estimatedHours": 8,
+    "objective": "Build a reusable eval harness: task set, baselines, regression gates, and contamination screening for your fine-tunes.",
+    "hardware": "Same GPU you fine-tune on (eval is cheaper than training)",
+    "software": "Python, lm-evaluation-harness or a small custom runner, your fine-tuned checkpoints",
+    "dataset": "200+ held-out task samples mirroring your use case (locked before training)",
+    "architecture": "N/A (harness around any causal LM)",
+    "steps": [
+      "Collect and lock a held-out task set (PII-scrubbed, dated)",
+      "Add baselines: base model, prior checkpoint, trivial heuristic",
+      "Fix protocol: shots, decoding (greedy), template, harness version",
+      "Screen train-vs-eval overlap (exact + 13-gram + paraphrase probes)",
+      "Add a regression gate (metric + threshold) runnable per checkpoint",
+      "Report with error bars, not single numbers"
+    ],
+    "config": {
+      "minItems": 200,
+      "decoding": "greedy",
+      "templates": 2,
+      "seeds": 2
+    },
+    "measures": [
+      "Task score + confidence interval",
+      "Baseline deltas (base, prior, heuristic)",
+      "Contamination screen pass/fail",
+      "General-suite delta (forgetting check)"
+    ],
+    "outcomes": [
+      "Size an eval for statistical power",
+      "Separate regressions from noise",
+      "Gate checkpoint promotion on evals"
+    ],
+    "tools": [
+      {
+        "label": "Evaluation planner",
+        "href": "/pages/eval-planner.html"
+      },
+      {
+        "label": "Learn: eval design",
+        "href": "/pages/learn.html#eval-design"
+      },
+      {
+        "label": "Benchmarks",
+        "href": "/pages/evaluation.html"
+      }
+    ],
+    "expectedResults": "Every fine-tune gets a scorecard: task delta, general delta, contamination status. Promotion decisions become mechanical.",
+    "troubleshooting": "Noisy verdicts: add items (n~400 for +/-5%), average seeds/templates. Harness drift: pin versions, re-baseline on change. Judge evals: calibrate vs 50+ human grades first.",
+    "nextProject": "serve-quantized",
+    "source": "Toolkit eval-design curriculum + lm-evaluation-harness practice"
+  },
+  {
+    "id": "serve-quantized",
+    "title": "Quantize and Serve a Model",
+    "difficulty": "L2",
+    "prerequisites": [
+      "7b-qlora",
+      "quantization",
+      "inference-batching"
+    ],
+    "related": [
+      "7b-qlora",
+      "eval-pipeline"
+    ],
+    "estimatedHours": 8,
+    "objective": "Take a fine-tuned 7B model to a production-shaped endpoint: quantize, serve with batching, load-test, and observe.",
+    "hardware": "Single 24GB GPU (or 2x for 70B-quantized stretch goal)",
+    "software": "vLLM or TGI, Docker, a load generator (simple concurrent client)",
+    "dataset": "Your eval prompts (p95 mix for load testing)",
+    "architecture": "7B instruct + INT8/INT4 weights, continuous batching",
+    "steps": [
+      "Quantize the fine-tuned model (INT8 first, then 4-bit; eval each)",
+      "Serve behind vLLM/TGI with continuous batching",
+      "Verify quality delta on your eval pipeline (gate the deploy)",
+      "Load-test with p95 prompt mix; find max concurrency by KV budget",
+      "Add health checks, structured logs, and a rollback path",
+      "Record cost/token and latency (TTFT/ITL) SLOs"
+    ],
+    "config": {
+      "quantFirst": "INT8",
+      "quantStretch": "INT4",
+      "server": "vLLM",
+      "slo": "p99 TTFT + ITL"
+    },
+    "measures": [
+      "Quality delta per quantization level (task eval)",
+      "Tokens/sec/GPU and $/1k tokens",
+      "p50/p99 TTFT and inter-token latency",
+      "Max concurrency before KV-pressure collapse"
+    ],
+    "outcomes": [
+      "Choose quantization from measurements, not defaults",
+      "Size serving from the KV budget",
+      "Ship with rollback and observability, not hope"
+    ],
+    "tools": [
+      {
+        "label": "Inference memory",
+        "href": "/pages/inference-calc.html"
+      },
+      {
+        "label": "Learn: inference batching",
+        "href": "/pages/learn.html#inference-batching"
+      },
+      {
+        "label": "Troubleshooting",
+        "href": "/pages/troubleshooting.html"
+      }
+    ],
+    "expectedResults": "A load-tested endpoint with known cost, latency SLOs, eval-gated deploys, and one-command rollback.",
+    "troubleshooting": "Quality cliff at 4-bit: check math/code slices, try INT8 or per-group scales. Latency spikes: KV pressure - cap concurrency, chunk prefills. Cold starts: prewarm the engine.",
+    "nextProject": "distributed-training",
+    "source": "Toolkit inference + deployment curriculum"
   },
   {
     "id": "distributed-training",
     "title": "Multi-GPU Distributed Training",
     "difficulty": "L3",
-    "prerequisites": ["100m-llm", "ddp", "fsdp", "memory-optimization"],
-    "related": ["100m-llm", "7b-qlora"],
+    "prerequisites": [
+      "100m-llm",
+      "ddp",
+      "fsdp",
+      "memory-optimization"
+    ],
+    "related": [
+      "100m-llm",
+      "7b-qlora"
+    ],
     "estimatedHours": 16,
     "objective": "Scale training across multiple GPUs using data parallelism and FSDP.",
     "hardware": "2+ GPUs (preferably same model with NVLink)",
@@ -203,8 +489,391 @@
       "batchSize": 8
     },
     "expectedResults": "Near-linear speedup with 2 GPUs, diminishing returns with 4+. Target MFU > 40%.",
-    "troubleshooting": "NCCL errors: check GPU connectivity. Slow scaling: verify all-reduce overhead. OOM: enable CPU offload in FSDP.",
+    "troubleshooting": "NCCL errors: NCCL_DEBUG=INFO, pin versions, check fabric. Slow scaling: no_sync on accum steps, NVLink groups for TP. OOM: FSDP FULL_SHARD + CPU offload before adding GPUs.",
     "nextProject": null,
-    "source": "PyTorch FSDP documentation and best practices"
+    "source": "PyTorch FSDP documentation and best practices",
+    "measures": [
+      "Scaling efficiency (2 GPUs vs 1, 4 vs 1)",
+      "MFU per GPU (target 40%+)",
+      "All-reduce/all-gather time share (profiler)",
+      "NCCL bandwidth (nccl-tests)"
+    ],
+    "outcomes": [
+      "Launch multi-GPU jobs with torchrun + FSDP",
+      "Diagnose comm-bound vs compute-bound scaling",
+      "Save/load sharded checkpoints across world sizes"
+    ],
+    "tools": [
+      {
+        "label": "Scaling guide",
+        "href": "/pages/scaling.html"
+      },
+      {
+        "label": "Learn: FSDP",
+        "href": "/pages/learn.html#fsdp"
+      },
+      {
+        "label": "Learn: throughput",
+        "href": "/pages/learn.html#throughput"
+      }
+    ]
+  },
+  {
+    "id": "wx-qlora-7b",
+    "title": "Worked Example: 7B QLoRA on a 12GB GPU",
+    "difficulty": "L2",
+    "prerequisites": [
+      "qlora",
+      "lora",
+      "quantization",
+      "vram-memory"
+    ],
+    "related": [
+      "7b-qlora"
+    ],
+    "estimatedHours": 3,
+    "objective": "INPUT: one RTX 3060 12GB and LLaMA-3-8B (8.03B params). Decide whether QLoRA fine-tuning fits, with numbers reproduced in the toolkit calculators \u2014 not vibes.",
+    "hardware": "12GB VRAM (tight), 16GB (comfortable), or 24GB (headroom for bigger batches)",
+    "software": "PyTorch, bitsandbytes (NF4), peft (LoRA r=32, alpha=64, all-linear), transformers, BF16 compute",
+    "dataset": "10-50K instruction pairs, chat-templated, response-masked",
+    "architecture": "Frozen NF4 base (8.03B) + 83.9M trainable adapter params (1.04%)",
+    "steps": [
+      "INPUT: record the budget \u2014 12GB VRAM, 8.03B-param base, micro-batch 1 x seq 2048, grad accumulation to effective batch >= 32 sequences.",
+      "REASONING: full BF16 fine-tuning costs ~16 bytes/param (2 weight + 4 master + 2 grad + 8 Adam states) = ~128GB for 8B. Impossible here. QLoRA pays 4-bit storage on the frozen base and the 16-byte rate only on ~1% adapter params.",
+      "TOOL: VRAM calculator \u2014 8B params, NF4-equivalent base (~0.55 bytes/param with scales = ~4.4GB) + LoRA + BF16 + AdamW + batch 1 x 2048. Read the breakdown, not just the total.",
+      "RESULT: base ~4.4GB + adapters/optimizer ~1.3GB + activations ~0.5GB + runtime/CUDA context ~2-4GB = ~9-10GB estimated. Fits 12GB tight; 16/24GB comfortable.",
+      "ASSUMPTIONS: check the assumptions list below \u2014 NF4 never means exactly 0.5 bytes/param; activation figure is a lower bound (no FlashAttention credit taken).",
+      "VALIDATION: run 50 steps, compare torch.cuda.max_memory_allocated() against the estimate. If peak exceeds it by >20%, the excess is fragmentation or dataloader workers \u2014 profile before shrinking the batch.",
+      "NEXT STEP: train 1 epoch, evaluate on a held-out set plus one math/code slice (where 4-bit degradation concentrates), then do the full 7b-qlora project."
+    ],
+    "config": {
+      "method": "QLoRA",
+      "baseModel": "LLaMA-3-8B (8.03B)",
+      "quantization": "NF4 (~0.55 B/param effective)",
+      "loraRank": 32,
+      "loraAlpha": 64,
+      "targetModules": "all-linear",
+      "precision": "bf16",
+      "microBatch": 1,
+      "seqLength": 2048,
+      "gradAccum": 32,
+      "lr": 0.0002,
+      "estimatedPeakGB": "~9-10"
+    },
+    "assumptions": [
+      "Frozen base at ~0.55 bytes/param (NF4 + group scales, not raw 0.5)",
+      "Adapters 83.9M params (r=32, all-linear) at the full 16 bytes/param mixed-Adam rate",
+      "Activations are a lower bound for micro-batch 1 x 2048 without FlashAttention savings",
+      "Theoretical estimate: keep ~20% headroom, verify with max_memory_allocated()"
+    ],
+    "expectedResults": "Peak allocated memory lands within ~20% of the ~9-10GB estimate on a 12GB card with micro-batch 1-2. Larger deviation means an unmodeled tenant (dataloader RAM, fragmentation, second process on the GPU) \u2014 not a wrong method.",
+    "troubleshooting": "OOM at step 0: base + optimizer don't fit \u2014 drop to micro-batch 1, seq 1024, or offload. OOM at step N: leak (retained graph/history), not sizing. Quality gap on math/code: verify 8-bit/BF16 baseline before blaming QLoRA; raise rank to 64 on knowledge-heavy tasks.",
+    "nextProject": "eval-pipeline",
+    "source": "QLoRA paper accounting (Dettmers et al., 2023); figures reproduced with this toolkit's VRAM calculator",
+    "measures": [
+      "Peak allocated vs estimated GB (within ~20%?)",
+      "Held-out loss + one math/code slice vs base",
+      "Tokens/sec and step time"
+    ],
+    "outcomes": [
+      "Size a QLoRA run from first principles",
+      "Read a VRAM breakdown instead of trusting totals",
+      "Distinguish sizing errors from leaks"
+    ],
+    "tools": [
+      {
+        "label": "VRAM calculator",
+        "href": "/pages/calculator.html"
+      },
+      {
+        "label": "Learn: QLoRA",
+        "href": "/pages/learn.html#qlora"
+      },
+      {
+        "label": "Learn: GPU memory",
+        "href": "/pages/learn.html#vram-memory"
+      }
+    ]
+  },
+  {
+    "id": "wx-100m-scratch",
+    "title": "Worked Example: Sizing a 100M Model From Scratch",
+    "difficulty": "L1",
+    "prerequisites": [
+      "transformer-block",
+      "pretraining",
+      "effective-batch-size"
+    ],
+    "related": [
+      "100m-llm"
+    ],
+    "estimatedHours": 2,
+    "objective": "INPUT: a from-scratch pretraining idea and one 24GB GPU. Derive a ~100M architecture, its token budget, step count, and memory \u2014 all reproducible in the Model and VRAM calculators.",
+    "hardware": "Single 24GB GPU (fits easily; the point is the method, which scales to 1B+)",
+    "software": "PyTorch, a BPE tokenizer with 32000 vocabulary",
+    "dataset": "~2B tokens (Chinchilla ~20 tokens/param x 100M), cleaned and deduplicated",
+    "architecture": "12 layers, hidden 640, 8 heads, non-gated FFN (GPT-2 style, 4x = 2560)",
+    "steps": [
+      "INPUT: fix the budget first \u2014 100M params, ~2B tokens (Chinchilla minimum ~20 tok/param), seq 1024, single GPU.",
+      "REASONING: parameters set memory and data needs; tokens/step sets the schedule. Architecture follows from the param target, not taste.",
+      "TOOL: Model Calculator \u2014 12 layers, hidden 640, 8 heads, 8 KV heads, vocab 32000, FFN expansion 4.0. The SwiGLU default reads ~120M: that is the 3x-vs-2x FFN difference, so mentally use 2x for this non-gated design = 100.0M. Hidden (640) must stay divisible by heads (8).",
+      "RESULT: 100.0M params (embeddings ~41M + attention ~20M + FFN ~39M). Token budget 2B / tokens-per-step (batch x 1024) = step count for the cosine schedule horizon.",
+      "TOOL: VRAM calculator \u2014 0.1B params, full BF16 + AdamW, batch 8 x seq 1024: weights 0.2GB + master 0.4 + grads 0.2 + states 0.8 = ~1.6GB before activations. Trivially fits; the same math at 1B says 16GB+ (needs 24GB).",
+      "ASSUMPTIONS: see list \u2014 Chinchilla 20 tok/param is a minimum for compute-optimality, not a quality guarantee; small models want more.",
+      "VALIDATION: overfit one batch to ~0 loss (loop check), then train 1% of steps and confirm the loss curve sits in the expected band before committing to the full run.",
+      "NEXT STEP: run the full 100m-llm project with this config."
+    ],
+    "config": {
+      "layers": 12,
+      "hiddenSize": 640,
+      "numHeads": 8,
+      "numKVHeads": 8,
+      "vocabSize": 32000,
+      "ffnStyle": "non-gated 4x (2560)",
+      "exactParamsM": 100.0,
+      "tokenBudgetB": 2,
+      "seqLength": 1024,
+      "precision": "bf16",
+      "optimizer": "adamw"
+    },
+    "assumptions": [
+      "Non-gated FFN: calculator shows the SwiGLU 3x figure (~120M) \u2014 the 2x adjustment to 100.0M is exact for this design",
+      "Chinchilla ~20 tok/param is a compute-optimal minimum; quality keeps improving past it with good data",
+      "Untied embeddings (2 x vocab x hidden); tied would save ~20M here"
+    ],
+    "expectedResults": "Model Calculator (with the documented 2x adjustment) agrees with the 100.0M derivation to <1%. VRAM estimate ~2-4GB total \u2014 any 8GB+ GPU trains this. Loss on the 1% probe falls fast early (11.7 -> ~4-5) exactly like larger runs.",
+    "troubleshooting": "Calculator reads ~120M not 100M: you forgot the SwiGLU-vs-non-gated adjustment \u2014 the tool assumes gated FFN. Loss flat from step 0: LR ~10x too small or frozen graph, not architecture. NaN at step 0: missing warmup or FP16 without scaling.",
+    "nextProject": "100m-llm",
+    "source": "Chinchilla scaling (Hoffmann et al., 2022) for the token budget; parameter math reproduced with this toolkit's Model Calculator",
+    "measures": [
+      "Calculator-vs-derivation param agreement (<1%?)",
+      "1%-probe loss band",
+      "Tokens/sec to forecast full-run wall time"
+    ],
+    "outcomes": [
+      "Derive architecture from a parameter target",
+      "Convert token budgets to schedules",
+      "Know when a result fits one GPU vs needs sharding"
+    ],
+    "tools": [
+      {
+        "label": "Model calculator",
+        "href": "/pages/model-calc.html"
+      },
+      {
+        "label": "VRAM calculator",
+        "href": "/pages/calculator.html"
+      },
+      {
+        "label": "Learn: pretraining",
+        "href": "/pages/learn.html#pretraining"
+      }
+    ]
+  },
+  {
+    "id": "wx-dataset-pipeline",
+    "title": "Worked Example: 100GB Raw Text to Training Dataset",
+    "difficulty": "L2",
+    "prerequisites": [
+      "dataset-engineering",
+      "data-cleaning",
+      "deduplication",
+      "contamination",
+      "tokenizers"
+    ],
+    "related": [
+      "100m-llm"
+    ],
+    "estimatedHours": 4,
+    "objective": "INPUT: 100GB of raw web text. Produce a versioned, tokenized, decontaminated training set with known token count \u2014 and know what was thrown away and why.",
+    "hardware": "CPU machine with 64GB+ RAM for dedup/tokenization; storage ~200GB working space",
+    "software": "Python, HF tokenizers/datasets, MinHash/LSH dedup, a tokenizer matching the target model",
+    "dataset": "100GB raw web text (the input itself)",
+    "architecture": "Not a model project: pipeline is clean -> filter -> dedup -> decontaminate -> tokenize -> chunk/pack -> split -> version",
+    "steps": [
+      "INPUT: 100GB raw text. Estimate yield first: English averages ~4 bytes/token, so ~25B tokens, ~12.2M sequences at seq 2048. Tokenized storage ~50GB as uint16 (vocab < 65536) or ~100GB as uint32.",
+      "REASONING: quality beats quantity \u2014 a smaller clean set beats a larger dirty one. Every filter stage deletes data for a stated reason; log the retention rate at each stage.",
+      "TOOL: Token calculator \u2014 confirm the bytes-to-tokens estimate on a 1GB sample with the actual target tokenizer before extrapolating (tokenizer fertility varies 2-3x across languages).",
+      "RESULT: staged retention log (e.g., boilerplate removal, perplexity/quality filtering, MinHash near-dedup, eval decontamination), then tokenize -> chunk to seq 2048 -> 99/1 train/val split with the test set locked before training.",
+      "ASSUMPTIONS: see list \u2014 the 4-bytes/token figure is English-centric; dedup thresholds and contamination windows are choices, not constants.",
+      "VALIDATION: detokenize 20 random samples and read them; verify zero n-gram overlap between train and eval above the chosen threshold; confirm the val set was never used for any decision.",
+      "NEXT STEP: feed the dataset into wx-100m-scratch sizing, then the 100m-llm training project."
+    ],
+    "config": {
+      "rawGB": 100,
+      "bytesPerToken": "~4 (measure on sample)",
+      "estimatedTokensB": 25,
+      "seqLength": 2048,
+      "estimatedSequencesM": 12.2,
+      "tokenizedGB": "~50 (uint16)",
+      "split": "99/1 train/val, test locked"
+    },
+    "assumptions": [
+      "~4 bytes/token holds for clean English; code/multilingual text differs \u2014 always measure on a sample",
+      "Dedup (MinHash Jaccard ~0.8) and contamination (13-gram overlap) thresholds follow common practice, not law",
+      "Packing without document masks leaks context across examples \u2014 mask or pad"
+    ],
+    "expectedResults": "A versioned dataset (hash + config recorded) with a retention log per stage, ~20-30B tokens depending on filtering aggressiveness, and a provably disjoint eval split. Token estimate from the 1GB sample extrapolates within ~10%.",
+    "troubleshooting": "Yield far below estimate: boilerplate-heavy crawl (fix extraction) or over-aggressive filters (relax one stage at a time). Eval scores suspiciously high later: contamination leaked \u2014 re-check overlap with the benchmark sets. Tokenizer mismatch errors at train time: the dataset was built with a different tokenizer than the model.",
+    "nextProject": "100m-llm",
+    "source": "Standard pretraining data practice (RefinedWeb, Dolma pipelines); quantities reproduced with this toolkit's token calculator",
+    "measures": [
+      "Per-stage retention rates",
+      "Sample-extrapolated vs actual token count (within ~10%?)",
+      "Train/eval n-gram overlap (= 0 above threshold)"
+    ],
+    "outcomes": [
+      "Budget a data pipeline by measurement, not hope",
+      "Apply dedup and decontamination correctly",
+      "Version datasets so runs are reproducible"
+    ],
+    "tools": [
+      {
+        "label": "Token calculator",
+        "href": "/pages/token-calc.html"
+      },
+      {
+        "label": "Learn: dataset engineering",
+        "href": "/pages/learn.html#dataset-engineering"
+      },
+      {
+        "label": "Learn: contamination",
+        "href": "/pages/learn.html#contamination"
+      }
+    ]
+  },
+  {
+    "id": "wx-eval-regression",
+    "title": "Worked Example: Chasing an Evaluation Regression",
+    "difficulty": "L2",
+    "prerequisites": [
+      "evaluation",
+      "eval-design",
+      "perplexity",
+      "contamination"
+    ],
+    "related": [
+      "eval-pipeline"
+    ],
+    "estimatedHours": 3,
+    "objective": "INPUT: training loss falls, but your benchmark dashboard drops after a fine-tune. Run the diagnostic protocol that separates real regressions from harness artifacts and noise.",
+    "hardware": "Same GPU used for training (eval is cheap next to training)",
+    "software": "Pinned eval harness version, fixed seeds, the pre-fine-tune checkpoint as baseline",
+    "dataset": "Your held-out eval set (never trained on) + one production-sample slice",
+    "architecture": "Not a model change: a measurement protocol applied to two checkpoints (before/after)",
+    "steps": [
+      "INPUT: write down the claim precisely \u2014 which metric, which split, which decoding, which harness version, both checkpoints. Suppose MMLU-style accuracy reads 62% -> 59% after SFT. Do not act on the headline yet.",
+      "REASONING: a score is metric + protocol + noise. Suspects in order: (1) measurement noise, (2) protocol drift (template/shots/harness), (3) contamination shift, (4) real capability loss (forgetting).",
+      "TOOL: sizing rule from eval-design \u2014 margin of error needs n ~= 16*p*(1-p)/d^2 items; a 3-point move on a 200-item slice is noise, on 2000 items it is signal. Compute the interval before concluding anything.",
+      "RESULT: re-run both checkpoints under one pinned protocol (same template, shots, greedy decoding, seeds). If the gap survives, slice it: which subjects/tasks moved? Uniform drops smell like template/format damage; concentrated drops smell like forgetting.",
+      "ASSUMPTIONS: see list \u2014 greedy, fixed-template evals measure one operating point, not general quality; LLM-judge scores add judge noise.",
+      "VALIDATION: confirm train/val overlap is still zero for both runs; confirm the production-sample slice agrees in direction with the benchmark before shipping or reverting.",
+      "NEXT STEP: if real \u2014 shorten SFT, add general-replay mix, or lower LR; if artifact \u2014 pin the protocol in CI so it cannot drift again (the eval-pipeline project)."
+    ],
+    "config": {
+      "protocol": "greedy, fixed template, fixed shots, pinned harness, 2-3 seeds",
+      "baseline": "pre-fine-tune checkpoint + trivial heuristic",
+      "sizingRule": "n ~= 16*p*(1-p)/d^2",
+      "slices": "per-subject/task, not just the mean"
+    },
+    "assumptions": [
+      "Illustrative 62%-to-59% move is hypothetical method demonstration, not a measured result",
+      "Benchmark scores are not universal quality \u2014 they answer 'did this benchmark move', not 'did the model improve'",
+      "Contamination cuts both ways: a drop can mean the new run is honestly cleaner"
+    ],
+    "expectedResults": "A verdict in one of three bins \u2014 noise (intervals overlap), artifact (gap vanishes under pinned protocol), or real regression (survives pinning, visible in slices) \u2014 each with a prescribed next action. No verdict without the interval calculation.",
+    "troubleshooting": "Gap vanishes on re-run: protocol drift was the bug \u2014 diff harness versions, templates, and chat markers. Everything flat including baseline: harness broken, not the model. Production slice disagrees with benchmark: trust production, the benchmark is off-distribution.",
+    "nextProject": "eval-pipeline",
+    "source": "Eval-design sizing and protocol guidance from this toolkit's evaluation curriculum",
+    "measures": [
+      "Confidence interval around each delta",
+      "Per-slice movement (uniform vs concentrated)",
+      "Production-slice agreement (same direction?)"
+    ],
+    "outcomes": [
+      "Never ship or revert on a headline number",
+      "Separate noise, artifact, and real regression",
+      "Pin eval protocols in CI"
+    ],
+    "tools": [
+      {
+        "label": "Learn: designing evaluations",
+        "href": "/pages/learn.html#eval-design"
+      },
+      {
+        "label": "Learn: perplexity",
+        "href": "/pages/learn.html#perplexity"
+      }
+    ]
+  },
+  {
+    "id": "wx-inference-opt",
+    "title": "Worked Example: 8B Inference From 6 to 32 Concurrent Users",
+    "difficulty": "L2",
+    "prerequisites": [
+      "inference-basic",
+      "kv-cache",
+      "inference-batching",
+      "quantization"
+    ],
+    "related": [
+      "serve-quantized"
+    ],
+    "estimatedHours": 3,
+    "objective": "INPUT: LLaMA-3-8B on one 24GB card, users complain about latency at 6 concurrent chats with 8k context. Engineer the memory budget to 32 concurrent without new hardware.",
+    "hardware": "Single 24GB GPU (RTX 4090-class); vLLM-style server with paged KV management",
+    "software": "Continuous-batching inference server, FP8/INT8 KV support, 4-bit weight option, prefix caching",
+    "dataset": "Production chat sample: measure real prompt/completion length distribution first",
+    "architecture": "LLaMA-3-8B: 32 layers, 8 KV heads, head dim 128 (131 KB/token BF16)",
+    "steps": [
+      "INPUT: baseline budget \u2014 weights BF16 16GB + KV per request (2 x 8192 x 32 x 8 x 128 x 2B) ~= 1.07GB x 6 = 6.4GB + runtime ~1.5GB ~= 24GB. Saturated: the 7th concurrent request OOMs or queues.",
+      "REASONING: weights are fixed cost; KV is per-request cost. Concurrency = (VRAM - weights - runtime) / KV-per-request. Shrink either term deliberately, measuring quality at each step.",
+      "TOOL: Inference Memory calculator \u2014 enter 8B, 32 layers, hidden 4096, 32 heads, 8 KV heads, batch 6, context 8192. Confirm ~24GB, then change one knob at a time.",
+      "RESULT: cap effective context to 4k for this workload (halves KV to ~0.54GB/req), switch KV cache to FP8/INT8 (~0.27-0.54GB/req \u2014 verify quality on evals), quantize weights to 4-bit (~4.4GB), enable prefix caching for the shared system prompt. New budget: 4.4 + 32 x ~0.5 + runtime ~= ~22GB for 32 concurrent.",
+      "ASSUMPTIONS: see list \u2014 KV quantization and context caps trade quality/capability for capacity; the production length distribution decides whether the cap is safe.",
+      "VALIDATION: load-test at 32 concurrent with real prompt shapes; watch p99 latency (queueing explodes past ~70% sustained utilization without admission control) and KV-hit rate; re-run quality evals on the quantized + capped configuration.",
+      "NEXT STEP: productionize with concurrency caps, observability (KV pressure, queue depth, TTFT/TPOT), and the full serve-quantized project."
+    ],
+    "config": {
+      "model": "LLaMA-3-8B (8.03B)",
+      "baseline": "BF16 weights 16GB + BF16 KV 1.07GB/req x 6 ~= 24GB",
+      "optimized": "4-bit weights ~4.4GB + FP8/INT8 KV ~0.5GB/req x 32 + prefix caching",
+      "contextCap": "4096 (from measured distribution)",
+      "target": "32 concurrent in 24GB"
+    },
+    "assumptions": [
+      "Per-request KV figures are theoretical (paged allocation fragments less than naive contiguous math)",
+      "8-bit KV is frequently near-free on quality but must be verified per workload \u2014 4-bit KV needs evals",
+      "Context caps are safe only if the measured production distribution fits; long-tail users need a separate tier",
+      "Decode is bandwidth-bound: batching multiplies throughput until KV traffic competes"
+    ],
+    "expectedResults": "Calculator-predicted ~22GB at 32 concurrent; load test confirms p50 latency near single-request levels with bounded p99 under admission control. Quality evals on the final (quantized + capped) config show no regression beyond the pre-agreed threshold.",
+    "troubleshooting": "Still OOMing: fragmentation from a non-paged allocator (looks like a leak \u2014 switch to paged), or one giant prompt blowing the cap (enforce max length server-side). p99 explosion: utilization too high \u2014 cap concurrency, add replicas. Quality drop on math/code: KV/weight quantization bites there first \u2014 test 8-bit before 4-bit.",
+    "nextProject": "serve-quantized",
+    "source": "KV-cache formula and batching guidance from this toolkit's inference curriculum; figures reproduced with the Inference Memory calculator",
+    "measures": [
+      "Calculator prediction vs nvidia-smi at 32 concurrent",
+      "p50/p99 latency and queue depth",
+      "Quality evals on the exact serving config (weights + KV + cap)"
+    ],
+    "outcomes": [
+      "Budget inference as weights + KV x concurrency",
+      "Apply KV quantization and context caps deliberately",
+      "Load-test with admission control before declaring victory"
+    ],
+    "tools": [
+      {
+        "label": "Inference memory calculator",
+        "href": "/pages/inference-calc.html"
+      },
+      {
+        "label": "Learn: KV cache",
+        "href": "/pages/learn.html#kv-cache"
+      },
+      {
+        "label": "Learn: inference batching",
+        "href": "/pages/learn.html#inference-batching"
+      }
+    ]
   }
 ]

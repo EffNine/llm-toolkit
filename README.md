@@ -226,6 +226,17 @@ Edit `data/models.json`. Include source URL and last verified date.
 ### Add a Project
 Edit `data/projects.json`. Include all fields for the best experience.
 
+### Add a Library Source
+Edit `data/sources.json`. Required: `id`, `title`, `type` (paper/docs/model-card/hardware-spec/software/dataset/benchmark/course), `tier` (1 = primary, 2 = reputable, 3 = quality explainer), `url`, one-line `why`, at least one `topics` id from `data/topics.json`, `lastVerified` date, `status` (`verified` only with evidence: arXiv API match, HTTP 200, or a fetched primary page — otherwise `unverified`).
+
+### Keep the Library Updated
+```
+python3 scripts/validate.py               # full content + math + link-shape checks
+python3 scripts/validate.py --strict      # warnings fail (use before releases)
+python3 scripts/validate.py --check-links # monthly link-rot sweep (read-only report)
+```
+Fix moved URLs to their canonical targets, drop dead ones, and never bump `lastVerified` without re-checking the page. Every GPU/hardware `source` URL must also exist in `data/sources.json` (the validator enforces the spine).
+
 ## Quality Standards
 
 - All technical claims include source URLs

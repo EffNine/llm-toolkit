@@ -57,6 +57,18 @@ const Learning = {
     return window.TOPICS;
   },
 
+  async loadSources() {
+    // Best-effort: the curriculum works without the library; sources only
+    // feed the "Primary Sources" block on topic pages.
+    if (Array.isArray(window.SOURCES) && window.SOURCES.length > 0) return window.SOURCES;
+    try {
+      const res = await fetch('/data/sources.json', { headers: { Accept: 'application/json' } });
+      const data = res.ok ? await res.json() : [];
+      window.SOURCES = Array.isArray(data) ? data : [];
+    } catch { window.SOURCES = []; }
+    return window.SOURCES;
+  },
+
   renderLessonList() {
     const container = document.getElementById('lesson-list');
     const progressEl = document.getElementById('learning-progress');
@@ -228,6 +240,8 @@ const Learning = {
         </div>
       ` : ''}
 
+      <div id="topic-sources" class="mt-8"></div>
+
       <div class="topic-nav">
         <button type="button" class="topic-nav-btn prev" id="topic-prev-btn"${prev ? '' : ' disabled'}>
           <span class="topic-nav-prev-label">← Previous</span>
@@ -257,6 +271,8 @@ const Learning = {
 
     // Refresh the list behind the detail so progress stays consistent.
     this.renderLessonList();
+    // Fill the Primary Sources block (async; never blocks the lesson).
+    this.renderTopicSources(id);
     // Move focus to the lesson heading for keyboard/screen-reader users.
     const h1 = container.querySelector('h1');
     if (h1) {
@@ -265,8 +281,26 @@ const Learning = {
     }
   },
 
-  layerBlock(topic, layer, title, contentHtml, collapsed) {
-    const contentId = `layer-${this.escapeAttr(topic.id)}-${layer}`;
+  async renderTopicSources(id) {
+    const box = document.getElementById('topic-sources');
+    if (!box) return;
+    const sources = await this.loadSources();
+    // The user may have navigated away while sources loaded.
+    if (this._currentId !== id || !document.getElementById('topic-sources')) return;
+    const mine = sources
+      .filter((s) => (s.topics || []).includes(id))
+      .sort((a, b) => (a.tier - b.tier) || a.title.localeCompare(b.title))
+      .slice(0, 6);
+    if (mine.length === 0) return;
+    box.innerHTML = `
+      <div class="section-title">Primary Sources</div>
+      <div class="vram-breakdown mt-4">
+        ${mine.map((s) => `<div class="vram-row"><span class="vram-row-label"><a href="${this.escapeHtml(s.url)}" target="_blank" rel="noopener">${this.escapeHtml(s.title)} ↗</a></span><span class="vram-row-value" style="font-size:var(--text-xs);">Tier ${s.tier}</span></div>`).join('')}
+      </div>
+      <div class="mt-2"><a class="btn btn-sm btn-secondary" href="/pages/library.html?topic=${this.escapeAttr(id)}">All sources for this topic →</a></div>`;
+  },
+
+  layerBlock(topic, layer, title, contentHtml, collapsed) {    const contentId = `layer-${this.escapeAttr(topic.id)}-${layer}`;
     const btnId = `${contentId}-btn`;
     return `
       <div class="expert-layer" data-layer="${layer}">
@@ -324,30 +358,98 @@ const Learning = {
   nextActionsBlock(topic) {
     // Contextual cross-links: only where they genuinely help.
     const id = (topic.id || '').toLowerCase();
-    const links = [];
-    if (id.includes('lora') || id.includes('fine-tun') || id.includes('sft') || id.includes('dpo')) {
-      links.push({ href: '/pages/planner.html', label: 'Try it in Training Planner →' });
-      links.push({ href: '/pages/calculator.html', label: 'Estimate VRAM →' });
-    } else if (id.includes('token')) {
-      links.push({ href: '/pages/token-calc.html', label: 'Open Token Budget calculator →' });
-    } else if (id.includes('eval')) {
-      links.push({ href: '/pages/eval-planner.html', label: 'Plan an evaluation →' });
-    } else if (id.includes('data')) {
-      links.push({ href: '/pages/data-planner.html', label: 'Open Data Planner →' });
-    } else if (id.includes('infer') || id.includes('deploy') || id.includes('quant')) {
-      links.push({ href: '/pages/inference-calc.html', label: 'Estimate inference memory →' });
-    } else if (id.includes('gpu') || id.includes('hardware') || id.includes('memory') || id.includes('optim')) {
-      links.push({ href: '/pages/hardware.html', label: 'Check GPUs →' });
-      links.push({ href: '/pages/calculator.html', label: 'Estimate VRAM →' });
-    } else if (id.includes('distributed') || id.includes('parallel') || id.includes('scal')) {
-      links.push({ href: '/pages/scaling.html', label: 'Read the Scaling guide →' });
+    const byId = {
+      'lora': [['/pages/planner.html', 'Try it in Training Planner →'], ['/pages/calculator.html', 'Estimate VRAM →']],
+      'qlora': [['/pages/calculator.html', 'Estimate QLoRA VRAM →'], ['/pages/planner.html', 'Plan the run →']],
+      'fine-tuning': [['/pages/planner.html', 'Try it in Training Planner →'], ['/pages/calculator.html', 'Estimate VRAM →']],
+      'sft-formatting': [['/pages/planner.html', 'Try it in Training Planner →'], ['/pages/learn.html#tokenizers', 'Review tokenization →']],
+      'continued-pretraining': [['/pages/planner.html', 'Plan continued pretraining →'], ['/pages/data-planner.html', 'Plan the data mix →']],
+      'dpo': [['/pages/planner.html', 'Try it in Training Planner →']],
+      'rlhf': [['/pages/planner.html', 'Try it in Training Planner →']],
+      'pretraining': [['/pages/planner.html', 'Plan a pretraining run →'], ['/pages/calculator.html', 'Estimate VRAM →']],
+      'effective-batch-size': [['/pages/calculator.html', 'Estimate VRAM →'], ['/pages/learn.html#gradient-accumulation', 'Learn accumulation →']],
+      'gradient-accumulation': [['/pages/calculator.html', 'Estimate VRAM →']],
+      'tokenizers': [['/pages/token-calc.html', 'Open Token Budget calculator →']],
+      'tokenizer-bpe': [['/pages/token-calc.html', 'Open Token Budget calculator →']],
+      'sentencepiece': [['/pages/token-calc.html', 'Open Token Budget calculator →']],
+      'embeddings': [['/pages/model-calc.html', 'Open Model Calculator →']],
+      'attention': [['/pages/model-calc.html', 'Open Model Calculator →']],
+      'multi-head-attention': [['/pages/model-calc.html', 'Open Model Calculator →']],
+      'gqa': [['/pages/inference-calc.html', 'See KV-cache savings →']],
+      'mqa': [['/pages/inference-calc.html', 'See KV-cache savings →']],
+      'kv-cache': [['/pages/inference-calc.html', 'Estimate inference memory →']],
+      'inference-basic': [['/pages/inference-calc.html', 'Estimate inference memory →']],
+      'inference-batching': [['/pages/inference-calc.html', 'Estimate inference memory →']],
+      'sampling': [['/pages/learn.html#inference-basic', 'Review inference basics →']],
+      'quantization': [['/pages/inference-calc.html', 'Estimate quantized inference →']],
+      'evaluation': [['/pages/eval-planner.html', 'Plan an evaluation →'], ['/pages/evaluation.html', 'Browse benchmarks →']],
+      'eval-design': [['/pages/eval-planner.html', 'Plan an evaluation →'], ['/pages/evaluation.html', 'Browse benchmarks →']],
+      'perplexity': [['/pages/learn.html#loss-curves', 'Learn to read curves →']],
+      'loss-curves': [['/pages/learn.html#overfitting-underfitting', 'Diagnose over/underfit →']],
+      'overfitting-underfitting': [['/pages/learn.html#eval-design', 'Design the eval →']],
+      'contamination': [['/pages/learn.html#eval-design', 'Design clean evals →']],
+      'deduplication': [['/pages/data-planner.html', 'Open Data Planner →']],
+      'dataset-engineering': [['/pages/data-planner.html', 'Open Data Planner →']],
+      'data-cleaning': [['/pages/data-planner.html', 'Open Data Planner →']],
+      'data-mixing-splits': [['/pages/data-planner.html', 'Open Data Planner →']],
+      'licensing': [['/pages/data-planner.html', 'Open Data Planner →']],
+      'vram-memory': [['/pages/calculator.html', 'Estimate VRAM →'], ['/pages/hardware.html', 'Check GPUs →']],
+      'memory-optimization': [['/pages/calculator.html', 'Estimate VRAM →'], ['/pages/hardware.html', 'Check GPUs →']],
+      'gradient-checkpointing': [['/pages/calculator.html', 'Estimate VRAM →']],
+      'mixed-precision': [['/pages/calculator.html', 'Estimate VRAM →']],
+      'bf16': [['/pages/calculator.html', 'Estimate VRAM →']],
+      'precision-fp16': [['/pages/learn.html#bf16', 'Why BF16 instead →']],
+      'fp8': [['/pages/hardware.html', 'Check FP8 support →']],
+      'ddp': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'fsdp': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'zero': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'tensor-parallelism': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'pipeline-parallelism': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'expert-parallelism': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'moe': [['/pages/scaling.html', 'Read the Scaling guide →']],
+      'throughput': [['/pages/scaling.html', 'Read the Scaling guide →'], ['/pages/calculator.html', 'Estimate VRAM →']],
+      'profiling': [['/pages/learn.html#throughput', 'Understand MFU first →']],
+      'reproducibility': [['/pages/learn.html#eval-design', 'Lock evals too →']],
+      'deployment-basics': [['/pages/inference-calc.html', 'Size the deployment →'], ['/pages/troubleshooting.html', 'Know the failure modes →']],
+      'serving-observability': [['/pages/inference-calc.html', 'Size the deployment →'], ['/pages/troubleshooting.html', 'Know the failure modes →']],
+      'checkpoints': [['/pages/learn.html#reproducibility', 'Track runs too →']],
+      'learning-rate': [['/pages/learn.html#schedulers', 'Pair with a schedule →'], ['/pages/calculator.html', 'Check the batch budget →']],
+      'schedulers': [['/pages/learn.html#learning-rate', 'Pair with the LR →']],
+      'optimization': [['/pages/learn.html#learning-rate', 'LR matters most →']],
+      'weight-decay': [['/pages/learn.html#learning-rate', 'Pair with the LR →']]
+    };
+    let links = byId[id];
+    if (!links) {
+      if (id.includes('lora') || id.includes('fine-tun') || id.includes('sft') || id.includes('dpo')) {
+        links = [{ href: '/pages/planner.html', label: 'Try it in Training Planner →' }, { href: '/pages/calculator.html', label: 'Estimate VRAM →' }];
+      } else if (id.includes('token')) {
+        links = [{ href: '/pages/token-calc.html', label: 'Open Token Budget calculator →' }];
+      } else if (id.includes('eval')) {
+        links = [{ href: '/pages/eval-planner.html', label: 'Plan an evaluation →' }];
+      } else if (id.includes('data')) {
+        links = [{ href: '/pages/data-planner.html', label: 'Open Data Planner →' }];
+      } else if (id.includes('infer') || id.includes('deploy') || id.includes('quant')) {
+        links = [{ href: '/pages/inference-calc.html', label: 'Estimate inference memory →' }];
+      } else if (id.includes('gpu') || id.includes('hardware') || id.includes('memory') || id.includes('optim')) {
+        links = [{ href: '/pages/hardware.html', label: 'Check GPUs →' }, { href: '/pages/calculator.html', label: 'Estimate VRAM →' }];
+      } else if (id.includes('distributed') || id.includes('parallel') || id.includes('scal')) {
+        links = [{ href: '/pages/scaling.html', label: 'Read the Scaling guide →' }];
+      } else {
+        return '';
+      }
+      return `
+        <div class="callout callout-info mt-8">
+          <div class="callout-title">Next actions</div>
+          <div class="flex gap-3" style="flex-wrap:wrap;">
+            ${links.map((l) => `<a class="btn btn-sm btn-secondary" href="${l.href}">${this.escapeHtml(l.label)}</a>`).join('')}
+          </div>
+        </div>`;
     }
-    if (links.length === 0) return '';
     return `
       <div class="callout callout-info mt-8">
         <div class="callout-title">Next actions</div>
         <div class="flex gap-3" style="flex-wrap:wrap;">
-          ${links.map((l) => `<a class="btn btn-sm btn-secondary" href="${l.href}">${this.escapeHtml(l.label)}</a>`).join('')}
+          ${links.map(([href, label]) => `<a class="btn btn-sm btn-secondary" href="${href}">${this.escapeHtml(label)}</a>`).join('')}
         </div>
       </div>`;
   },

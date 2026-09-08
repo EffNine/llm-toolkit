@@ -108,6 +108,14 @@
                 <option value="fp32">FP32</option>
               </select>
             </div>
+            <div>
+              <label class="form-label" for="train-batch">Per-GPU Batch (seqs)</label>
+              <input type="number" id="train-batch" class="form-input" value="4" min="1">
+            </div>
+            <div>
+              <label class="form-label" for="train-seq">Seq Length</label>
+              <input type="number" id="train-seq" class="form-input" value="2048" min="64">
+            </div>
           </div>
           <button type="button" class="btn btn-primary mt-6" onclick="Training.generatePlan()">Generate Training Plan</button>
           <div id="training-plan-result" class="mt-6" role="status" aria-live="polite"></div>
@@ -228,9 +236,15 @@
                 <p>${m.description}</p>
                 <p><strong>When to use:</strong> ${m.whenToUse}</p>
                 <p><strong>Why not others:</strong> ${m.whyNotOthers}</p>
+                ${m.steps ? `<p><strong>Steps:</strong></p><ol style="padding-left: var(--space-6); font-size: var(--text-sm);">${m.steps.map(s => `<li style="margin-bottom: var(--space-1);">${s}</li>`).join('')}</ol>` : ''}
+                ${m.typicalLR ? `<p><strong>Typical LR:</strong> ${m.typicalLR}</p>` : ''}
+                ${m.expectedResult ? `<p><strong>Expected result:</strong> ${m.expectedResult}</p>` : ''}
+                ${m.failureModes ? `<p><strong>Failure modes:</strong> ${m.failureModes}</p>` : ''}
+                ${m.vramNote ? `<p><strong>Memory:</strong> ${m.vramNote}</p>` : ''}
                 <p><strong>Data required:</strong> ${m.dataRequired}</p>
                 <p><strong>Hardware:</strong> ${m.hardware}</p>
                 <p><strong>Cost:</strong> ${m.cost} &middot; <strong>Complexity:</strong> ${m.complexity}</p>
+                ${m.lesson ? `<p><a href="/pages/learn.html#${m.lesson}">Learn: ${m.lesson} →</a></p>` : ''}
               </div>
             </div>
           </div>
@@ -270,34 +284,30 @@
         const gpuVram = parseFloat(document.getElementById('train-gpu-vram')?.value) || 24;
         const gpuCount = parseInt(document.getElementById('train-gpu-count')?.value) || 1;
         const precision = document.getElementById('train-precision')?.value || 'bf16';
+        const perGpuBatch = parseInt(document.getElementById('train-batch')?.value) || 4;
+        const seqLen = parseInt(document.getElementById('train-seq')?.value) || 2048;
         
-        const bytesPerParam = precision === 'bf16' || precision === 'fp16' ? 2 : 4;
+        const bytesPerParam = precision === 'fp32' ? 4 : 2;
         const params = modelSize * 1e9;
         
-        let methodMethod = goal;
-        let memMultiplier = 1;
-        
-        if (goal === 'pretrain' || goal === 'cpt') {
-          memMultiplier = 4; // weights + grads + optimizer
-        } else if (goal === 'lora') {
-          memMultiplier = 0.2; // only adapters
-        } else if (goal === 'qlora') {
-          memMultiplier = 0.15; // quantized + adapters
-        } else if (goal === 'dpo') {
-          memMultiplier = 3;
-        }
+        // Rough weight+grad+optimizer multiplier in units of (params x stored bytes).
+        // Full training: weights 1 + grads 1 + Adam states 2 = 4. Excludes FP32
+        // master copy and activations - use the VRAM calculator for the full budget.
+        let memMultiplier = 4;
+        if (goal === 'lora') memMultiplier = 1.05; // frozen base + small adapters
+        else if (goal === 'qlora') memMultiplier = 0.3; // 4-bit base + adapters
+        else if (goal === 'dpo') memMultiplier = 5; // policy + reference + grads + states
         
         const totalMemGB = (params * bytesPerParam * memMultiplier / 1e9);
         const perGpu = totalMemGB / gpuCount;
-        const tokens = datasetSize;
-        const tokensPerStep = 32 * 2048 * gpuCount; // rough estimate
-        const steps = Math.ceil(tokens / tokensPerStep);
-        const epochs = Math.ceil(tokens / (datasetSize > 0 ? datasetSize : 1));
+        const tokensPerStep = perGpuBatch * seqLen * gpuCount;
+        const steps = Math.ceil(datasetSize / tokensPerStep);
         
         let lr = 0.0001;
-        if (goal === 'pretrain' || goal === 'cpt') lr = 0.0001;
+        if (goal === 'pretrain' || goal === 'cpt') lr = 0.0003;
+        else if (goal === 'sft') lr = 0.0001;
         else if (goal === 'lora' || goal === 'qlora') lr = 0.0002;
-        else lr = 0.0001;
+        else if (goal === 'dpo') lr = 0.000005;
         
         const resultEl = document.getElementById('training-plan-result');
         if (resultEl) {
@@ -314,7 +324,7 @@
               </div>
               <div class="callout callout-info mt-4">
                 <div class="callout-title">Notes</div>
-                <p>This is an estimate. Actual memory varies by framework, activation checkpointing, and GPU architecture. Verify with the VRAM calculator.</p>
+                <p>Rough plan only: memory excludes the FP32 master copy and activations, and per-GPU assumes replication (FSDP shards). Steps assume one dataset pass at the batch above - scale by epochs. Verify with the VRAM calculator and keep ~20% headroom.</p>
               </div>
             </div>
           `;

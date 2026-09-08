@@ -19,6 +19,7 @@ window.APP_ROUTES = [
   { path: '/pages/inference.html', label: 'Inference', section: 'knowledge' },
   { path: '/pages/deployment.html', label: 'Deployment', section: 'knowledge' },
   { path: '/pages/reference.html', label: 'Reference', section: 'knowledge' },
+  { path: '/pages/library.html', label: 'Library', section: 'knowledge' },
   { path: '/pages/troubleshooting.html', label: 'Troubleshooting', section: 'help' }
 ];
 

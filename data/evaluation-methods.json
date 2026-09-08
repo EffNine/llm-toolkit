@@ -4,55 +4,99 @@
     "title": "Accuracy",
     "category": "evaluation",
     "description": "Simple correctness rate on classification or multiple-choice tasks.",
-    "whenToUse": "Multiple choice benchmarks, factual QA."
+    "whenToUse": "Multiple choice benchmarks, factual QA.",
+    "metric": "Correct / total",
+    "protocol": "Fixed shots, greedy decoding, pinned harness version.",
+    "limitations": "Says nothing about calibration, reasoning, or open-ended quality. Gameable by memorization."
   },
   {
     "id": "perplexity-eval",
     "title": "Perplexity",
     "category": "evaluation",
     "description": "Exp(mean cross-entropy loss)). Lower is better. Standard for language modeling.",
-    "whenToUse": "Measuring language modeling quality. Comparing models on the same test set."
+    "whenToUse": "Measuring language modeling quality. Comparing models on the same test set.",
+    "metric": "exp(mean cross-entropy). Lower is better.",
+    "protocol": "Same tokenizer and test set for every comparison; report train and val separately.",
+    "limitations": "Weights all tokens equally; correlates imperfectly with task success. Never sufficient alone."
   },
   {
     "id": "mmlu",
     "title": "MMLU",
     "category": "evaluation",
     "description": "Measurements of 57 subjects (math, history, law, medicine, etc.) in multiple-choice format.",
-    "whenToUse": "Broad knowledge assessment. The most commonly reported benchmark."
+    "whenToUse": "Broad knowledge assessment. The most commonly reported benchmark.",
+    "metric": "Mean accuracy over 57 subjects.",
+    "protocol": "Standard 5-shot; report per-subject slices, not just the mean.",
+    "limitations": "Widely contaminated (web text includes test items); saturated at the top; multiple-choice format rewards memorization."
   },
   {
     "id": "gsm8k",
     "title": "GSM8K",
     "category": "evaluation",
     "description": "8.5K grade-school math word problems. Tests mathematical reasoning.",
-    "whenToUse": "Evaluating mathematical reasoning ability."
+    "whenToUse": "Evaluating mathematical reasoning ability.",
+    "metric": "Exact-match on final numeric answer.",
+    "protocol": "8-shot chain-of-thought or strict exact-match; extract the last number.",
+    "limitations": "Small (8.5k items, test 1.3k) - noisy deltas; heavily represented in web data (contamination risk)."
   },
   {
     "id": "hellaswag",
     "title": "HellaSwag",
     "category": "evaluation",
     "description": "Commonsense reasoning: complete the sentence given a context from activity descriptions.",
-    "whenToUse": "Evaluating commonsense and procedural reasoning."
+    "whenToUse": "Evaluating commonsense and procedural reasoning.",
+    "metric": "Accuracy picking the right ending.",
+    "protocol": "Zero/few-shot fixed; watch for length-bias artifacts.",
+    "limitations": "Nearing saturation; adversarial filtering artifacts; weak signal for instruction-tuned models."
   },
   {
     "id": "truthfulqa",
     "title": "TruthfulQA",
     "category": "evaluation",
     "description": "Tests whether models reproduce common misconceptions or provide truthful answers.",
-    "whenToUse": "Evaluating truthfulness and resistance to misinformation."
+    "whenToUse": "Evaluating truthfulness and resistance to misinformation.",
+    "metric": "Truthfulness + informativeness (MC + generation tracks).",
+    "protocol": "Zero-shot; both multiple-choice and open generation.",
+    "limitations": "Small; measures misconception avoidance, not general honesty; judge-dependent on the generation track."
   },
   {
     "id": "ifeval",
     "title": "IFEval",
     "category": "evaluation",
     "description": "Instruction following evaluation: can the model follow exact constraints in prompts?",
-    "whenToUse": "Evaluating instruction-following capability."
+    "whenToUse": "Evaluating instruction-following capability.",
+    "metric": "Strict + loose instruction-level accuracy.",
+    "protocol": "Verifiable constraints (length, format, keywords); deterministic checking.",
+    "limitations": "Covers only mechanically verifiable instructions - a slice of real instruction following."
   },
   {
     "id": "human-eval",
     "title": "HumanEval",
     "category": "evaluation",
     "description": "Python coding tasks. Measure pass@k: can the model generate correct code?",
-    "whenToUse": "Evaluating code generation capability."
+    "whenToUse": "Evaluating code generation capability.",
+    "metric": "pass@k (usually pass@1).",
+    "protocol": "Greedy or low-temp samples; sandboxed execution of hidden tests.",
+    "limitations": "164 tasks - high variance; Python-only; execution environment must be sandboxed and pinned."
+  },
+  {
+    "id": "custom-task-eval",
+    "title": "Custom Task Evaluation",
+    "category": "evaluation",
+    "description": "Your own held-out set mirroring production traffic - the only eval that measures your claim.",
+    "whenToUse": "Every project, alongside public benchmarks.",
+    "metric": "Task-defined (rubric score, exact match, win rate vs baseline).",
+    "protocol": "Locked before training; 200+ items for reasonable error bars; baselines included.",
+    "limitations": "Incomparable externally; costs effort to build and label. Worth it anyway."
+  },
+  {
+    "id": "llm-judge",
+    "title": "LLM-as-Judge",
+    "category": "evaluation",
+    "description": "A strong model scores outputs against a rubric for open-ended quality.",
+    "whenToUse": "Summarization, chat quality, style - where exact match fails.",
+    "metric": "Rubric score or pairwise win rate.",
+    "protocol": "Fixed rubric + few-shot anchors; calibrate against 50+ human grades (target kappa 0.7+); cross-family judges.",
+    "limitations": "Self-preference, length bias, and prompt sensitivity. A noisy instrument - report agreement, never trust raw."
   }
 ]

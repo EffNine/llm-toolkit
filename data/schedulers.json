@@ -4,27 +4,43 @@
     "name": "Cosine Annealing",
     "type": "scheduler",
     "description": "Smoothly decreases learning rate from peak to minimum following a cosine curve.",
-    "commonUse": "Default choice for most LLM training. Works well with warmup."
+    "commonUse": "Default choice for most LLM training. Works well with warmup.",
+    "lesson": "schedulers",
+    "rule": "Peak LR then decay to ~10% over the full token horizon.",
+    "whenToUse": "Default for pretraining and most fine-tuning.",
+    "failureModes": "Wrong horizon (schedule ends before/after training does)."
   },
   {
     "id": "warmup",
     "name": "Linear Warmup",
     "type": "scheduler",
     "description": "Ramps learning rate from 0 to target over the first N steps.",
-    "commonUse": "Almost always used at the start of LLM training. Prevents early instability."
+    "commonUse": "Almost always used at the start of LLM training. Prevents early instability.",
+    "lesson": "schedulers",
+    "rule": "1-3% of total steps, linear ramp from 0.",
+    "whenToUse": "Start of essentially every LLM run (lets Adam stats stabilize).",
+    "failureModes": "Skipped warmup + large batch = NaN at step ~0."
   },
   {
     "id": "constant",
     "name": "Constant",
     "type": "scheduler",
     "description": "Keeps learning rate fixed throughout training.",
-    "commonUse": "Rarely used for pretraining. Sometimes used for fine-tuning."
+    "commonUse": "Rarely used for pretraining. Sometimes used for fine-tuning.",
+    "lesson": "schedulers",
+    "rule": "Only with early stopping; never for pretraining.",
+    "whenToUse": "Short fine-tunes with explicit step budgets.",
+    "failureModes": "No settling phase - final weights noisier."
   },
   {
     "id": "one-cycle",
     "name": "One-Cycle",
     "type": "scheduler",
     "description": "Ramps up then down in a single cycle. Combines warmup and decay.",
-    "commonUse": "Sometimes used for fine-tuning. Less common for pretraining."
+    "commonUse": "Sometimes used for fine-tuning. Less common for pretraining.",
+    "lesson": "schedulers",
+    "rule": "Peak at ~30% of the run, anneal after.",
+    "whenToUse": "Fast fine-tuning sprints.",
+    "failureModes": "Restart spikes wiping fine-tuned behavior on short runs."
   }
 ]

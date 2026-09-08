@@ -162,6 +162,42 @@
             <div class="section-title">EXPECTED RESULTS</div>
             <p class="text-sm">${p.expectedResults}</p>
           </div>
+
+          ${p.assumptions ? `
+          <div class="mt-6">
+            <div class="section-title">ASSUMPTIONS</div>
+            <ul style="padding-left: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+              ${p.assumptions.map(m => `<li style="margin-bottom: var(--space-1);">${m}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+          ${p.measures ? `
+          <div class="mt-6">
+            <div class="section-title">WHAT TO MEASURE</div>
+            <ul style="padding-left: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+              ${p.measures.map(m => `<li style="margin-bottom: var(--space-1);">${m}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+          ${p.outcomes ? `
+          <div class="mt-6">
+            <div class="section-title">YOU WILL LEARN</div>
+            <ul style="padding-left: var(--space-4); font-size: var(--text-sm); color: var(--color-text-secondary);">
+              ${p.outcomes.map(m => `<li style="margin-bottom: var(--space-1);">${m}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+          ${p.tools ? `
+          <div class="mt-6">
+            <div class="section-title">RELEVANT TOOLS</div>
+            <div class="flex gap-3" style="flex-wrap:wrap;">
+              ${p.tools.map(t => `<a class="btn btn-sm btn-secondary" href="${t.href}">${t.label} →</a>`).join('')}
+            </div>
+          </div>
+          ` : ''}
           
           <div class="mt-6">
             <div class="section-title">TROUBLESHOOTING</div>

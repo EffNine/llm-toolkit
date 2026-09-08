@@ -51,7 +51,14 @@
         </div>
         
         <div id="eval-content" class="mt-8" role="status" aria-live="polite"></div>
-        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/eval-planner.html">Plan an evaluation →</a><a class="btn btn-sm btn-secondary" href="/pages/training.html">Compare training methods →</a></div></div>
+
+        <div class="divider mt-8"></div>
+
+        <div class="section-title mt-8">BENCHMARK REFERENCE</div>
+        <p class="text-sm text-muted mt-2">What each metric measures, the protocol that makes it comparable, and its limits. Scores without protocol are rumors.</p>
+        <div id="eval-methods-list" class="mt-4"></div>
+
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/eval-planner.html">Plan an evaluation →</a><a class="btn btn-sm btn-secondary" href="/pages/training.html">Compare training methods →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#eval-design">Learn eval design →</a></div></div>
         
         <div class="divider mt-8"></div>
         
@@ -181,7 +188,38 @@
       }
     };
     window.Evaluation = Evaluation;
-    window.renderEvaluation = () => {};
+    window.renderEvaluation = async () => {
+      const el = document.getElementById('eval-methods-list');
+      if (!el) return;
+      el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">Loading benchmarks…</div></div>';
+      try {
+        const res = await fetch('/data/evaluation-methods.json', { headers: { Accept: 'application/json' } });
+        const methods = res.ok ? await res.json() : [];
+        if (!Array.isArray(methods) || methods.length === 0) {
+          el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">No benchmark data found.</div></div>';
+          return;
+        }
+        el.innerHTML = methods.map(m => `
+          <div class="expandable-panel">
+            <button type="button" class="expandable-header" aria-expanded="false">
+              <span class="expandable-title">${m.title}</span>
+              <span class="expandable-icon">+</span>
+            </button>
+            <div class="expandable-content">
+              <div class="expandable-body">
+                <p>${m.description}</p>
+                <p><strong>When to use:</strong> ${m.whenToUse}</p>
+                ${m.metric ? `<p><strong>Metric:</strong> ${m.metric}</p>` : ''}
+                ${m.protocol ? `<p><strong>Protocol:</strong> ${m.protocol}</p>` : ''}
+                ${m.limitations ? `<p><strong>Limitations:</strong> ${m.limitations}</p>` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">Could not load benchmark data.</div></div>';
+      }
+    };
   </script>
 </body>
 </html>

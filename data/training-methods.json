@@ -10,7 +10,23 @@
     "hardware": "Multi-GPU (8+ H100/A100) for models >1B. Single GPU for <100M parameter models.",
     "cost": "High. $10K-$1M+ depending on scale.",
     "complexity": "High. Requires distributed training expertise.",
-    "relatedMethods": ["continued-pretraining", "fine-tuning"]
+    "relatedMethods": [
+      "continued-pretraining",
+      "fine-tuning"
+    ],
+    "lesson": "pretraining",
+    "typicalLR": "3e-4 peak (7B scale), 1-3% warmup, cosine decay to 10%",
+    "steps": [
+      "Fix token budget (Chinchilla ~20 tok/param minimum)",
+      "Set tokens/step from hardware (batch x seq x GPUs)",
+      "LR warmup then cosine decay over the full horizon",
+      "Train with BF16 + AdamW + grad clip 1.0",
+      "Checkpoint regularly; watch loss curve + MFU",
+      "Evaluate on downstream suites, not just perplexity"
+    ],
+    "expectedResult": "Smoothly falling loss following a power-law trend; downstream capability grows with tokens.",
+    "failureModes": "Loss spikes (LR/batch too aggressive); silent divergence (loss falls, evals flat - data mix issue); NaN (precision/warmup).",
+    "vramNote": "Full Adam training ~16 bytes/param + activations. 7B needs ~8x80GB class hardware. Verify with the VRAM calculator."
   },
   {
     "id": "continued-pretraining",
@@ -23,7 +39,22 @@
     "hardware": "Similar to pretraining but can start with fewer GPUs if model is frozen except last layers.",
     "cost": "Medium to high.",
     "complexity": "Medium.",
-    "relatedMethods": ["pretraining", "fine-tuning"]
+    "relatedMethods": [
+      "pretraining",
+      "fine-tuning"
+    ],
+    "lesson": "continued-pretraining",
+    "typicalLR": "~10% of pretrain peak (e.g., 3e-5 for a 7B)",
+    "steps": [
+      "Curate domain corpus (millions+ tokens, quality-filtered)",
+      "Mix 5-20% general replay data",
+      "Train at low LR with short warmup",
+      "Monitor domain PPL + general benchmarks jointly",
+      "SFT after CPT for instruction behavior"
+    ],
+    "expectedResult": "Domain perplexity falls with general scores roughly preserved (small measured trade acceptable).",
+    "failureModes": "Catastrophic forgetting (LR too high, no replay); SFT-format damage (CPT raw text degrades instruction manners - re-SFT after).",
+    "vramNote": "Same as pretraining for the model size. LoRA-CPT hybrids exist but lag full CPT on heavy domain shifts."
   },
   {
     "id": "sft",
@@ -36,7 +67,23 @@
     "hardware": "Single GPU (with LoRA) to multi-GPU (full fine-tuning).",
     "cost": "Low to medium.",
     "complexity": "Low to medium.",
-    "relatedMethods": ["lora", "qlora", "dpo"]
+    "relatedMethods": [
+      "lora",
+      "qlora",
+      "dpo"
+    ],
+    "lesson": "sft-formatting",
+    "typicalLR": "1e-5 to 2e-4, 1-3 epochs",
+    "steps": [
+      "Format data with the model's chat template",
+      "Mask prompt tokens from the loss (train on responses)",
+      "Train 1-3 epochs with warmup",
+      "Evaluate on held-out instructions + general benchmarks",
+      "Check for forgetting before shipping"
+    ],
+    "expectedResult": "Instruction following improves; general capability roughly preserved (within ~1-2%).",
+    "failureModes": "Forgetting (too much LR/epochs); format leakage (everything answered in template style); verbosity bias from long chosen responses.",
+    "vramNote": "Full SFT same cost as pretraining per token; LoRA-SFT a fraction (see LoRA)."
   },
   {
     "id": "lora",
@@ -49,7 +96,22 @@
     "hardware": "Single consumer GPU (24GB) for 7B models. Multi-GPU for larger models.",
     "cost": "Low.",
     "complexity": "Low.",
-    "relatedMethods": ["sft", "qlora"]
+    "relatedMethods": [
+      "sft",
+      "qlora"
+    ],
+    "lesson": "lora",
+    "typicalLR": "1e-4 to 2e-4, rank 16-32, alpha 2x rank",
+    "steps": [
+      "Choose rank (16-32 start) and target all linear layers",
+      "Format data as for SFT (template + masking)",
+      "Train adapters, base frozen",
+      "Evaluate vs base and vs full-FT probe",
+      "Merge for single-task serving, or serve unmerged multi-adapter"
+    ],
+    "expectedResult": "Near full-FT quality on near-domain tasks at ~1% trainable params.",
+    "failureModes": "Underfitting at low rank on knowledge-heavy shifts (raise rank or CPT first); merged dtype mismatch; evaluating with adapter detached.",
+    "vramNote": "Gradients + Adam states on adapters only. 7B LoRA fits 24GB; see VRAM calculator with LoRA enabled."
   },
   {
     "id": "qlora",
@@ -62,7 +124,22 @@
     "hardware": "Single 8GB+ GPU.",
     "cost": "Very low.",
     "complexity": "Low.",
-    "relatedMethods": ["lora", "sft"]
+    "relatedMethods": [
+      "lora",
+      "sft"
+    ],
+    "lesson": "qlora",
+    "typicalLR": "~2e-4, NF4 base, BF16 compute, rank 32",
+    "steps": [
+      "Load base in NF4 4-bit (keep compute BF16)",
+      "Attach LoRA adapters (r=32, alpha=64 typical)",
+      "Train with gradient accumulation to effective batch 32+",
+      "Evaluate quality gap vs full LoRA on your evals",
+      "Serve unmerged or dequantize-merge-requantize"
+    ],
+    "expectedResult": "~99% of SFT quality on instruction tasks at <10GB for 7B.",
+    "failureModes": "Quality gap concentrates on math/code/rare languages (verify, don't assume); OOM from batch (accumulate more); quantizing adapters too.",
+    "vramNote": "Frozen base ~0.55 bytes/param effective (NF4 + group scales, not raw 0.5). Full-precision training on adapters only. 7B QLoRA fits 8-12GB GPUs."
   },
   {
     "id": "dpo",
@@ -75,7 +152,22 @@
     "hardware": "Same as SFT/LoRA.",
     "cost": "Low.",
     "complexity": "Medium.",
-    "relatedMethods": ["sft", "rlhf"]
+    "relatedMethods": [
+      "sft",
+      "rlhf"
+    ],
+    "lesson": "dpo",
+    "typicalLR": "5e-7 to 5e-6 typical (lower than SFT), beta 0.05-0.5, 1 epoch",
+    "steps": [
+      "Collect chosen/rejected pairs differing in target behavior",
+      "Start from the SFT model (+ frozen reference copy)",
+      "Train ~1 epoch watching the chosen-rejected margin",
+      "Evaluate alignment + capability retention",
+      "Length-normalize or balance pair lengths"
+    ],
+    "expectedResult": "Preference alignment improves without capability loss; margin rises while both likelihoods stay healthy.",
+    "failureModes": "Likelihood collapse (both fall - raise beta, shorten run); verbosity hacking (chosen longer on average); noisy pairs teaching noise.",
+    "vramNote": "Needs policy + reference model in memory (~2x SFT inference footprint during training)."
   },
   {
     "id": "rlhf",
@@ -88,6 +180,21 @@
     "hardware": "More GPUs than DPO (need room for reward model + reference model).",
     "cost": "High.",
     "complexity": "High.",
-    "relatedMethods": ["dpo", "sft"]
+    "relatedMethods": [
+      "dpo",
+      "sft"
+    ],
+    "lesson": "rlhf",
+    "typicalLR": "PPO LR ~1e-6 to 1e-5, KL coeff 0.01-0.1",
+    "steps": [
+      "SFT baseline first",
+      "Train reward model (validate pairwise accuracy 65%+)",
+      "PPO with KL anchor to the SFT model",
+      "Monitor proxy reward AND held-out human judgment",
+      "Stop on reward over-optimization, not max reward"
+    ],
+    "expectedResult": "Best alignment quality when done well; requires the full pipeline firing.",
+    "failureModes": "Reward hacking (proxy up, humans down); PPO collapse (clip/KL mis-tuning); forgetting (KL too loose). Try DPO first.",
+    "vramNote": "Policy + reference + reward + value models live during PPO - the most memory-hungry alignment method."
   }
 ]

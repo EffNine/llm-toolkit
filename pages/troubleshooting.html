@@ -52,6 +52,9 @@
           <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('dist', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">⬡</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Distributed Training Failure</span><span class="troubleshoot-desc" style="display:block;">NCCL errors, scaling issues</span></span></button>
           <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('poor', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">◐</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Poor Evaluation</span><span class="troubleshoot-desc" style="display:block;">Model scores lower than expected</span></span></button>
           <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('badoutputs', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">○</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Model Outputs Are Bad</span><span class="troubleshoot-desc" style="display:block;">Generated text is incoherent or off-target</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('cpuoom', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">▤</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">CPU RAM OOM</span><span class="troubleshoot-desc" style="display:block;">Killed process, dataloader or preprocessing blowup</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('tokmismatch', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">⬔</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Tokenizer / Template Mismatch</span><span class="troubleshoot-desc" style="display:block;">Right model, wrong format, bad behavior</span></span></button>
+          <button type="button" class="troubleshoot-option" onclick="Troubleshoot.show('inferoom', this)" aria-pressed="false"><span class="troubleshoot-icon" aria-hidden="true">⬣</span><span style="text-align:left;"><span class="troubleshoot-title" style="display:block;">Inference OOM</span><span class="troubleshoot-desc" style="display:block;">OOM during generation, not training</span></span></button>
         </div>
         
         <div id="troubleshoot-result" class="mt-8" style="display:none;" role="status" aria-live="polite"></div>
@@ -79,78 +82,87 @@
   <script type="module" src="/js/app.js"></script>
   <script>
     const Troubleshoot = {
+      relatedLinks: {
+        oom: [['VRAM calculator', '/pages/calculator.html'], ['GPU memory anatomy', '/pages/learn.html#vram-memory'], ['Memory optimization', '/pages/learn.html#memory-optimization']],
+        slow: [['Throughput & MFU', '/pages/learn.html#throughput'], ['Profiling', '/pages/learn.html#profiling']],
+        nan: [['Mixed precision', '/pages/learn.html#mixed-precision'], ['Gradient clipping', '/pages/learn.html#gradient-clipping'], ['Learning rates', '/pages/learn.html#learning-rate']],
+        nostep: [['Reading loss curves', '/pages/learn.html#loss-curves'], ['Training loops', '/pages/learn.html#training-loops']],
+        nogpu: [['Reference commands', '/pages/reference.html']],
+        dataset: [['Dataset engineering', '/pages/learn.html#dataset-engineering'], ['Data planner', '/pages/data-planner.html']],
+        checkpoint: [['Checkpoints', '/pages/learn.html#checkpoints']],
+        dist: [['Scaling guide', '/pages/scaling.html'], ['FSDP', '/pages/learn.html#fsdp']],
+        poor: [['Eval design', '/pages/learn.html#eval-design'], ['Overfitting vs underfitting', '/pages/learn.html#overfitting-underfitting'], ['Contamination', '/pages/learn.html#contamination']],
+        badoutputs: [['SFT formatting', '/pages/learn.html#sft-formatting'], ['Sampling', '/pages/learn.html#sampling']],
+        cpuoom: [['Dataset engineering', '/pages/learn.html#dataset-engineering']],
+        tokmismatch: [['Tokenization', '/pages/learn.html#tokenizers'], ['SFT formatting', '/pages/learn.html#sft-formatting']],
+        inferoom: [['Inference memory', '/pages/inference-calc.html'], ['KV cache', '/pages/learn.html#kv-cache'], ['Inference batching', '/pages/learn.html#inference-batching']]
+      },
       solutions: {
         oom: {
           title: 'CUDA Out of Memory',
-          causes: ['Batch size too large', 'Sequence length too long', 'Model too large for GPU', 'Memory leak in DataLoader'],
-          checks: ['Check torch.cuda.memory_allocated()', 'Profile with nvidia-smi', 'Check for detached tensors accumulating'],
+          causes: ['Batch/sequence too large (activations overflow)', 'Optimizer states for full fine-tuning (16 bytes/param with Adam)', 'Memory leak: retained graph or accumulating tensors', 'Fragmentation: reserved far above allocated'],
+          checks: ['When: step 0 (weights+optim do not fit) vs step N (leak - fix code, not batch)', 'torch.cuda.memory_allocated() vs memory_reserved() (gap = fragmentation)', 'nvidia-smi during the run (which phase peaks: forward/backward/optim)', 'Per-tenant estimate from the VRAM calculator (which tenant overflows?)'],
           fixes: [
-            'Reduce batch size (try 1, then increase)',
-            'Enable gradient checkpointing: torch.utils.checkpoint.checkpoint()',
-            'Reduce sequence length',
-            'Use mixed precision (BF16/FP16)',
-            'Enable FSDP for multi-GPU: FSDP(model, shard_state_in_grad=False)',
-            'Offload activations to CPU: fsdp_config={cpu_offload: OffloadConfig(offload_activations=True)}', 
-            "Check for tensor leaks: detach() intermediates you don't need gradients for"
+            'Activations overflowing: enable gradient checkpointing, or cut micro-batch and add gradient accumulation to hold the effective batch constant',
+            'Full-FT optimizer too big: switch to LoRA/QLoRA (states on ~1% of params), or 8-bit Adam, or shard with FSDP',
+            'Weights too big: quantize the base (QLoRA NF4) or shard across GPUs (FSDP/ZeRO-3)',
+            'Fragmentation: stabilize shapes (no variable-length spikes), set PYTORCH_CUDA_ALLOC_CONF=expandable_segments',
+            "Leak: detach() logged tensors, use loss.item(), don't retain the graph across steps"
           ],
-          prevention: 'Always profile memory before training. Set a memory budget and stay 20% below it.'
+          prevention: 'Budget with the VRAM calculator before launching, keep ~20% headroom, and profile peak with torch.cuda.max_memory_allocated() on a short probe.'
         },
         slow: {
           title: 'Training Too Slow',
-          causes: ['Data loading bottleneck', 'Small batch size', 'Gradient accumulation overhead', 'Communication overhead in distributed'],
+          causes: ['Data loading bottleneck (most common: too few workers, per-sample tokenization)', 'Batch too small to fill the GPU (low MFU)', 'Communication overhead in distributed (sync per micro-batch)', 'Wrong attention backend or missing torch.compile'],
           checks: [
-            'Check GPU utilization: nvidia-smi dmon -s u',
-            'Profile with torch.profiler',
-            'Check DataLoader num_workers',
-            'Measure step time breakdown (forward/backward/optim)'
+            'MFU first: tokens/sec x 6N flops/token vs peak. Below 20% = stop and profile',
+            'Step-time split: data vs forward vs backward vs optim vs comm (torch.profiler)',
+            'nvidia-smi dmon: low util + slow steps = CPU/data starvation, not a weak GPU',
+            'DataLoader: num_workers, pin_memory, batched tokenizer calls'
           ],
           fixes: [
-            'Increase num_workers in DataLoader (try 4-8)',
-            'Use pin_memory=True in DataLoader',
-            'Increase batch size to fill GPU memory',
-            'Enable Flash Attention: attn_impl="flash"',
-            'Use torch.compile() for JIT compilation',
-            'For distributed: check NCCL bandwidth, use NVLink',
-            'Profile to find the actual bottleneck (CPU vs GPU vs network)'
+            'Data-bound: raise num_workers (4-8), pin_memory=True, batch tokenization, pre-tokenize to disk',
+            'GPU-starved: raise micro-batch to saturation, then accumulate for the effective batch',
+            'Enable FlashAttention/SDPA backend + torch.compile() for fusion',
+            'Distributed: no_sync on accumulation micro-batches, check NCCL bandwidth (nccl-tests), prefer NVLink groups',
+            'Profile to find the actual bottleneck (CPU vs GPU vs network) - fix in that order'
           ],
-          prevention: 'Profile early and often. Know your MFU target (40%+ for training).'
+          prevention: 'Profile early and often. Know your MFU target (40%+ for training). A model can fit in VRAM and still train slowly - fit is memory, speed is utilization.'
         },
         nan: {
           title: 'Loss is NaN',
-          causes: ['Learning rate too high', 'Numerical instability in mixed precision', 'Bad data (extreme values)', 'Gradient explosion'],
+          causes: ['Learning rate too high (most common at step ~0 without warmup)', 'FP16 overflow (activations exceed 65,504)', 'Bad data (extreme values, corrupt samples)', 'Gradient explosion / division by zero in custom loss'],
           checks: [
-            'Check if NaN appears immediately or after some steps',
-            'Inspect loss value history',
-            'Check data for extreme outliers',
-            'Verify mixed precision is configured correctly'
+            'When: step ~0 (LR/warmup/precision) vs mid-run (spike cascade - check batch hashes)',
+            'Precision: FP16 without GradScaler, or clipping scaled grads with unscaled threshold',
+            'Data: scan recent batches for outliers, extreme lengths, NaN inputs',
+            'Grad norms history: explosion precedes NaN by steps'
           ],
           fixes: [
-            'Reduce learning rate (try 1/10th)',
-            'Add gradient clipping: torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)',
-            'Use BF16 instead of FP16 (more stable)',
-            'Add loss scaling if using FP16: GradScaler',
-            'Check for division by zero in custom loss functions',
-            'Inspect dataset for pathological samples'
+            'Add/extend warmup (1-3% of steps) and cut LR (try 1/10th) to isolate',
+            'Switch FP16 to BF16 (same memory, FP32-like range - the most common NaN fix)',
+            'Add gradient clipping on unscaled grads: torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)',
+            'Skip-and-log single-spike steps; rollback to last good checkpoint on cascades',
+            'Inspect dataset for pathological samples; quarantine batch hashes that spike'
           ],
-          prevention: 'Always use gradient clipping. Start with BF16. Validate your data.'
+          prevention: 'Always use gradient clipping. Start with BF16. Validate your data. Save the GradScaler state in checkpoints.'
         },
         nostep: {
           title: 'Loss Not Decreasing',
-          causes: ['Learning rate too low', 'Model capacity issues', 'Data problems', 'Implementation bug'],
+          causes: ['Learning rate too low (looks flat, is just slow)', 'Frozen graph: no grads flowing (detached tensors, eval mode, zero_grad misplacement)', 'Data problems (all padding, wrong labels, unreadable pipeline)', 'LR schedule horizon mismatch'],
           checks: [
-            'Verify loss is computed correctly',
-            'Check that gradients are flowing (inspect grad attributes)',
-            'Try a single batch to verify the model can learn',
-            'Check learning rate schedule'
+            'Overfit-one-batch test: can the model memorize 8 samples? No = model/loop bug, yes = data/scale issue',
+            'Inspect .grad attributes (None everywhere = frozen graph)',
+            'Decode actual training batches (padding? template applied? labels = -100 everywhere?)',
+            'LR schedule: current LR value vs intended; warmup stuck?'
           ],
           fixes: [
-            'Increase learning rate',
-            'Add warmup if not present',
-            'Verify optimizer is actually updating parameters',
-            'Check that your model receives gradients (no detached tensors)',
-            'Try a simpler dataset first to verify the pipeline works'
+            'Raise LR (10x probe on a branch) or fix the schedule horizon',
+            'Add warmup if missing; verify optimizer.step() runs after backward with nonzero grads',
+            'Fix data pipeline: masking, template, label alignment - decode and eyeball samples',
+            'Try a simpler dataset first to verify the pipeline works end-to-end'
           ],
-          prevention: 'Always test your training loop on a tiny subset first.'
+          prevention: 'Always test your training loop on a tiny subset first (overfit-one-batch before any real run).'
         },
         nogpu: {
           title: 'GPU Not Detected',
@@ -207,60 +219,109 @@
         },
         dist: {
           title: 'Distributed Training Failure',
-          causes: ['NCCL communication errors', 'Uneven data across GPUs', 'GPU visibility issues', 'Network problems'],
+          causes: ['NCCL communication errors (fabric, versions, firewall)', 'Uneven data across GPUs / month-long hangs on stragglers', 'GPU visibility issues (CUDA_VISIBLE_DEVICES per rank)', 'Checkpoint/world-size skew on resume'],
           checks: [
-            'Check NCCL logs: NCCL_DEBUG=INFO',
-            'Verify all GPUs visible: nvidia-smi on each node',
-            'Check GPU assignment: CUDA_VISIBLE_DEVICES',
-            'Test NCCL connectivity: nccl-tests'
+            'NCCL_DEBUG=INFO logs (which collective, which rank pair fails)',
+            'nvidia-smi on each node + nccl-tests all_reduce/alltoall bandwidth',
+            'One-rank and one-node runs first (isolate fabric vs code)',
+            'Rank timelines: max vs p50 step time (straggler = skew, all-slow = systemic)'
           ],
           fixes: [
-            'Set NCCL_DEBUG=INFO for detailed error messages',
-            'Ensure equal GPU count on all nodes',
-            'Check NVLink/PCIe connectivity between GPUs',
-            'Set correct CUDA_VISIBLE_DEVICES per process',
-            'Use torchrun instead of manual multiprocessing',
-            'For multi-node: verify network bandwidth and latency'
+            'Use torchrun (rendezvous, rank env) instead of manual multiprocessing',
+            'Pin NCCL versions across nodes; set NCCL_SOCKET_IFNAME on multi-NIC hosts',
+            'Ensure equal data per rank (distributed sampler, drop_last); pad uneven batches',
+            'For hangs: NCCL_TIMEOUT + async error handling to get a stack, not silence',
+            'For multi-node: verify IB/RoCE bandwidth; fall back to HYBRID_SHARD across slow links'
           ],
-          prevention: 'Test distributed training on a small model first.'
+          prevention: 'Test distributed training on a small model first. Record fabric topology with every large-run result.'
         },
         poor: {
           title: 'Poor Evaluation',
-          causes: ['Insufficient training data', 'Overfitting to training set', 'Wrong training objective', 'Contamination in test set'],
+          causes: ['Overfitting to training set (train down, val/eval worse)', 'Wrong objective or template mismatch vs eval harness', 'Contaminated or leaky eval (scores measured memorization)', 'Sub-threshold sample size (noise, not regression)'],
           checks: [
-            'Compare train vs validation loss',
-            'Check for data leakage in evaluation',
-            'Review training data quality',
-            'Evaluate on held-out test set'
+            'Train vs validation loss gap (overfit signature?)',
+            'Harness protocol: shots, decoding, template - identical to baseline runs?',
+            'Train-vs-eval overlap screen (n-gram + fuzzy); paraphrase probes',
+            'Error bars: is the delta bigger than binomial noise + seed variance?'
           ],
           fixes: [
-            'Increase training data quantity and quality',
-            'Add regularization if overfitting',
-            'Extend training (more tokens)',
-            ' Tune hyperparameters (LR, batch size)',
-            'Verify evaluation is not contaminated',
-            'Try different model architecture or larger model'
+            'Overfit: stop earlier, regularize, add data, mix in general replay',
+            'Template: use the same chat template in train, eval, and serve',
+            'Extend training on the right data (more tokens) vs tune hyperparameters - decide from curves, not hope',
+            'Verify evaluation is not contaminated; re-run on a private held-out split',
+            'Average over seeds/templates before concluding a regression'
           ],
-          prevention: 'Always keep a clean, contamination-free test set. Report train/val/test metrics separately.'
+          prevention: 'Always keep a clean, contamination-free test set locked before training. Report train/val/test separately with protocol.'
         },
         badoutputs: {
           title: 'Model Outputs Are Bad',
-          causes: ['Insufficient fine-tuning data', 'Wrong hyperparameters', 'Mode collapse', 'Bad prompt format'],
+          causes: ['Template mismatch between training and serving (most common)', 'SFT LR too high / too many epochs (alignment damage)', 'Sampling misconfiguration (temperature/p Penalties)', 'Underfit adapter (LoRA rank too low for the shift)'],
           checks: [
-            'Sample outputs at different temperatures',
-            'Check if model reproduces training data format',
-            'Inspect loss curve during fine-tuning',
-            'Verify chat template matches training format'
+            'Diff the serving prompt format against training samples byte-for-byte (markers, roles, BOS)',
+            'Sample at temperature 0 (greedy): still bad = model/template issue, not sampling',
+            'Inspect the fine-tuning loss curve (collapsed? never fell?)',
+            'Compare base vs fine-tuned on the same prompts (what changed?)'
           ],
           fixes: [
-            'Increase fine-tuning data quality and quantity',
-            'Adjust learning rate (often too high for SFT)',
-            'Use temperature > 0 for more diverse outputs',
-            'Verify prompt/template format matches training',
-            'Try LoRA rank adjustment (increase if underfitting)',
-            'Add more diverse training examples'
+            'Align serving template exactly (tokenizer.apply_chat_template on both sides)',
+            'Lower SFT LR, fewer epochs; re-mix general data if capabilities dropped',
+            'Set sampling per task (factual: temp 0-0.2; creative: 0.7-0.9 + top-p)',
+            'Raise LoRA rank / target all linear layers; verify the adapter is actually attached at serve time',
+            'Add diverse, high-quality examples of the failing behavior'
           ],
-          prevention: 'Evaluate qualitatively during training, not just at the end.'
+          prevention: 'Evaluate qualitatively during training (sample generations every N steps), not just at the end.'
+        },
+        cpuoom: {
+          title: 'CPU RAM OOM',
+          causes: ['Too many dataloader workers each copying the dataset', 'Tokenizing/preprocessing the full corpus in memory', 'Checkpoint assembly or evaluation harness loading everything', 'Memory leak in preprocessing (accumulating lists/dicts)'],
+          checks: [
+            'dmesg / OOM-killer logs (which process died, how big)',
+            'RAM vs workers: dataset shards x num_workers x prefetch',
+            'Stream or materialize? (any .read()/list() over GB-scale data is suspect)',
+            'Monitor RSS during preprocessing (steady climb = leak)'
+          ],
+          fixes: [
+            'Stream datasets (iterators/generators) instead of loading; pre-tokenize to sharded files once',
+            'Lower num_workers or share memory (arrow/memory-mapped formats)',
+            'Shard preprocessing across jobs; write incrementally, never accumulate',
+            'Move giant evals to streaming harnesses; evaluate in chunks'
+          ],
+          prevention: 'Budget RAM like VRAM: workers x shard size + headroom. Preprocess once to disk, train many times from it.'
+        },
+        tokmismatch: {
+          title: 'Tokenizer / Template Mismatch',
+          causes: ['Wrong tokenizer for the model (vocab/logit shape or silent ID shift)', 'Hand-rolled chat format instead of the official template', 'Retrained tokenizer without re-encoding data', 'Train/serve template drift'],
+          checks: [
+            'tokenizer used == model card tokenizer (name + revision)',
+            'Round-trip test: decode(encode(x)) on samples incl. special tokens',
+            'Byte-compare a training sample against a serving prompt (markers, roles, BOS/EOS)',
+            'Vocab size vs model config (logit shape agreement)'
+          ],
+          fixes: [
+            "Use the model's own tokenizer and apply_chat_template everywhere",
+            'Re-encode all data after any tokenizer change; never mix ID streams',
+            'Pin tokenizer revision with the model artefact; test the pair in CI',
+            'For added domain tokens: resize embeddings + head together, init sensibly, brief-tune'
+          ],
+          prevention: 'Treat tokenizer + template + model as one atomic artefact. Version and test them together.'
+        },
+        inferoom: {
+          title: 'Inference OOM',
+          causes: ['KV cache underestimated (long context x batch x concurrency)', 'Weights + cache + overhead exceed VRAM (budgeted weights only)', 'Fragmentation from naive contiguous KV allocation', 'Concurrency burst past the cache budget'],
+          checks: [
+            'Estimate: weights + 2 x seq x layers x kv_heads x head_dim x bytes x batch (Inference Memory calculator)',
+            ' allocated vs reserved (fragmentation?) and per-request cache growth with context',
+            'Which phase: prefill OOM (prompt too long) vs decode OOM (batch/cache accumulation)',
+            'Concurrency at failure vs steady state (burst?)'
+          ],
+          fixes: [
+            'Quantize weights (INT8/INT4) and/or KV cache (8-bit often free)',
+            'Cap concurrency by KV budget + admission control (estimate-then-admit long prompts)',
+            'Use a paged KV engine (vLLM/TGI) instead of contiguous allocation',
+            'Shorten effective context (sliding window, prefix caching) or shard with tensor parallelism',
+            'Split prefill and decode (chunked prefill; disaggregate at scale)'
+          ],
+          prevention: 'Budget weights + cache x max concurrency + overhead before launch. Load-test with your p95 prompt mix, not averages.'
         }
       },
       
@@ -268,7 +329,6 @@
         if (srcEl) { document.querySelectorAll('.troubleshoot-option').forEach((b) => { b.classList.remove('selected'); b.setAttribute('aria-pressed', 'false'); }); srcEl.classList.add('selected'); srcEl.setAttribute('aria-pressed', 'true'); }
         const sol = this.solutions[key];
         if (!sol) return;
-        
         const el = document.getElementById('troubleshoot-result');
         if (!el) return;
         el.style.display = 'block';
@@ -302,6 +362,13 @@
               <div class="callout-title">Prevention</div>
               <p style="margin:0;">${sol.prevention}</p>
             </div>
+            ${(this.relatedLinks[key] || []).length ? `
+            <div class="callout callout-info mt-4">
+              <div class="callout-title">Go deeper</div>
+              <div class="flex gap-3" style="flex-wrap:wrap;">
+                ${this.relatedLinks[key].map(([label, href]) => `<a class="btn btn-sm btn-secondary" href="${href}">${label} →</a>`).join('')}
+              </div>
+            </div>` : ''}
           </div>
         `;
         

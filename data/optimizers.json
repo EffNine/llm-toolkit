@@ -5,7 +5,12 @@
     "type": "optimizer",
     "description": "Adam with decoupled weight decay. The default optimizer for most LLM training.",
     "memoryMultiplier": 2,
-    "notes": "2× parameter memory for optimizer states (m and v buffers). AdamW fixes the bias correction issue in original Adam."
+    "notes": "2x parameter memory for optimizer states (FP32 m and v buffers). AdamW decouples weight decay from the adaptive update (original Adam folds L2-in-loss into per-parameter rates); bias correction is retained from Adam.",
+    "lesson": "optimization",
+    "defaultHyperparams": "lr per recipe, betas (0.9, 0.95), eps 1e-8, weight decay 0.01-0.1, grad clip 1.0",
+    "whenToUse": "Default for LLM pretraining and fine-tuning.",
+    "rule": "Tune LR first, decay second, betas last.",
+    "failureModes": "Decaying norms/biases (exclude them); forgetting LRs don't transfer across batch sizes."
   },
   {
     "id": "sgd",
@@ -13,7 +18,12 @@
     "type": "optimizer",
     "description": "Simple stochastic gradient descent, with or without momentum.",
     "memoryMultiplier": 0,
-    "notes": "Minimal memory. Momentum adds 1× parameter memory. Sometimes used for fine-tuning."
+    "notes": "Minimal memory. Momentum adds 1\u00d7 parameter memory. Sometimes used for fine-tuning.",
+    "lesson": "optimization",
+    "defaultHyperparams": "lr higher than Adam (no adaptivity), momentum 0.9 adds 1x param memory",
+    "whenToUse": "Rarely for transformers above 1B; sometimes late-stage fine-tuning.",
+    "rule": "Only with momentum; expect longer convergence.",
+    "failureModes": "Stagnation on ill-conditioned landscapes without adaptivity."
   },
   {
     "id": "adam",
@@ -21,6 +31,24 @@
     "type": "optimizer",
     "description": "Original Adam optimizer with bias correction.",
     "memoryMultiplier": 2,
-    "notes": "Same memory as AdamW but with bias correction. Less common in practice for LLM training."
+    "notes": "Same memory as AdamW (2x FP32 states). L2 regularization added to the loss is rescaled by Adam's per-parameter adaptivity \u2014 the behavior AdamW's decoupled decay avoids.",
+    "lesson": "optimization",
+    "defaultHyperparams": "Same memory as AdamW (2x FP32 states)",
+    "whenToUse": "Legacy default; prefer AdamW (decoupled decay behaves correctly under adaptivity).",
+    "rule": "New runs: AdamW, not Adam.",
+    "failureModes": "L2-in-loss interacting with adaptive rates (the bug AdamW fixes)."
+  },
+  {
+    "id": "adam-8bit",
+    "lesson": "memory-optimization",
+    "name": "8-bit Adam",
+    "type": "optimizer",
+    "description": "Block-wise quantized Adam states. Halves optimizer memory with error feedback.",
+    "memoryMultiplier": 1,
+    "notes": "m and v stored in 8-bit blocks. Small convergence risk on sensitive runs - verify against FP32 states.",
+    "defaultHyperparams": "Same as AdamW; block size 2048 typical",
+    "whenToUse": "Memory-bound fine-tuning where full Adam states don't fit.",
+    "rule": "Verify final quality matches FP32-state runs on your evals.",
+    "failureModes": "Rare divergence on outlier-heavy runs; falls back to verifying with full states."
   }
 ]

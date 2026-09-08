@@ -1,0 +1,2457 @@
+[
+  {
+    "id": "paper-transformer",
+    "title": "Attention Is All You Need (Vaswani et al., 2017)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1706.03762",
+    "why": "The Transformer paper: self-attention, multi-head attention, and the block everything here builds on.",
+    "topics": [
+      "attention",
+      "multi-head-attention",
+      "transformer-block",
+      "self-attention",
+      "causal-attention"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-bert",
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers (Devlin et al., 2018)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1810.04805",
+    "why": "Masked-LM pretraining paradigm; the reference point pretraining is taught against.",
+    "topics": [
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gpt3",
+    "title": "Language Models are Few-Shot Learners (Brown et al., 2020)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2005.14165",
+    "why": "Scaling plus in-context learning: why scale became the strategy.",
+    "topics": [
+      "pretraining",
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-llama",
+    "title": "LLaMA: Open and Efficient Foundation Language Models (2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2302.13971",
+    "why": "The open-weights architecture template: RMSNorm, SwiGLU, RoPE lineage.",
+    "topics": [
+      "decoder-only",
+      "normalization",
+      "swiglu",
+      "rope"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-llama2",
+    "title": "Llama 2: Open Foundation and Fine-Tuned Chat Models (2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2307.09288",
+    "why": "GQA at scale plus the SFT/RLHF recipe behind chat models.",
+    "topics": [
+      "gqa",
+      "fine-tuning",
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-llama3",
+    "title": "The Llama 3 Herd of Models (2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2407.21783",
+    "why": "15T-token training, 128K context extension, multilingual and safety pipeline.",
+    "topics": [
+      "pretraining",
+      "continued-pretraining",
+      "contamination"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-mistral7b",
+    "title": "Mistral 7B (Jiang et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2310.06825",
+    "why": "Sliding-window attention plus GQA in a 7B Apache-2.0 model.",
+    "topics": [
+      "gqa",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-mixtral",
+    "title": "Mixtral of Experts (Jiang et al., 2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2401.04088",
+    "why": "Sparse MoE at open weights: 8 experts, top-2 routing, 12.9B active.",
+    "topics": [
+      "moe",
+      "expert-parallelism"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-rope",
+    "title": "RoFormer: Rotary Position Embedding (Su et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2104.09864",
+    "why": "RoPE definition: rotation-based relative positions, now the standard.",
+    "topics": [
+      "rope"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gqa",
+    "title": "GQA: Training Generalized Multi-Query Transformer Models (Ainslie et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2305.13245",
+    "why": "KV-head grouping: the quality/size trade between MHA and MQA.",
+    "topics": [
+      "gqa",
+      "mqa",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-flash2",
+    "title": "FlashAttention-2: Faster Attention with Better Parallelism (Dao, 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2307.08691",
+    "why": "IO-aware exact attention: less memory traffic, making long-context training feasible.",
+    "topics": [
+      "attention",
+      "memory-optimization",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-flash1",
+    "title": "FlashAttention: Fast and Memory-Efficient Exact Attention (Dao et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2205.14135",
+    "why": "Tiling plus recomputation that made attention linear-memory in practice.",
+    "topics": [
+      "attention",
+      "gradient-checkpointing"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-lora",
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models (Hu et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2106.09685",
+    "why": "Freeze the base, train rank-decomposed updates: the PEFT foundation.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-qlora",
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs (Dettmers et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2305.14314",
+    "why": "NF4 plus double quantization plus paged optimizers: 7B fine-tuning under 10GB.",
+    "topics": [
+      "qlora",
+      "quantization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-dpo",
+    "title": "Direct Preference Optimization (Rafailov et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2305.18290",
+    "why": "Alignment as classification over preference pairs, no reward model or RL.",
+    "topics": [
+      "dpo"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-instructgpt",
+    "title": "Training Language Models to Follow Instructions with Human Feedback (Ouyang et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2203.02155",
+    "why": "SFT plus reward model plus PPO: the RLHF recipe.",
+    "topics": [
+      "rlhf",
+      "fine-tuning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-ppo",
+    "title": "Proximal Policy Optimization Algorithms (Schulman et al., 2017)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1707.06347",
+    "why": "Clipped surrogate objective behind the RL step of RLHF.",
+    "topics": [
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-constitutional",
+    "title": "Constitutional AI: Harmlessness from AI Feedback (Bai et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2212.08073",
+    "why": "RLAIF: replacing human labels with model critique for harmlessness.",
+    "topics": [
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-chinchilla",
+    "title": "Training Compute-Optimal Large Language Models (Hoffmann et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2203.15556",
+    "why": "About 20 tokens/param compute optimum: the token-budget basis of the planners.",
+    "topics": [
+      "pretraining",
+      "effective-batch-size"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-scaling-kaplan",
+    "title": "Scaling Laws for Neural Language Models (Kaplan et al., 2020)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2001.08361",
+    "why": "Power-law loss scaling that started data and scale planning.",
+    "topics": [
+      "pretraining",
+      "loss-curves"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gptq",
+    "title": "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers (Frantar et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2210.17323",
+    "why": "Hessian-guided one-shot weight quantization.",
+    "topics": [
+      "quantization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-awq",
+    "title": "AWQ: Activation-aware Weight Quantization (Lin et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2306.00978",
+    "why": "Protect salient weights using activation statistics.",
+    "topics": [
+      "quantization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-llmint8",
+    "title": "LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale (Dettmers et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2208.07339",
+    "why": "Outlier-aware mixed-precision decomposition for 8-bit inference.",
+    "topics": [
+      "quantization",
+      "inference-basic"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-smoothquant",
+    "title": "SmoothQuant: Accurate and Efficient Post-Training Quantization (Xiao et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2211.10438",
+    "why": "Migrate activation difficulty into weights for W8A8 quantization.",
+    "topics": [
+      "quantization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-zero",
+    "title": "ZeRO: Memory Optimizations Toward Training Trillion Parameter Models (Rajbhandari et al., 2019)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1910.02054",
+    "why": "Shard optimizer, gradient, and weight states across data-parallel ranks.",
+    "topics": [
+      "zero",
+      "fsdp"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-zero-offload",
+    "title": "ZeRO-Offload: Democratizing Billion-Scale Model Training (Ren et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2101.06840",
+    "why": "Offload optimizer states and computation to CPU without killing throughput.",
+    "topics": [
+      "zero",
+      "memory-optimization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-megatron",
+    "title": "Megatron-LM: Training Multi-Billion Parameter Language Models (Shoeybi et al., 2019)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1909.08053",
+    "why": "Tensor plus pipeline parallelism for transformer training.",
+    "topics": [
+      "tensor-parallelism",
+      "pipeline-parallelism"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gpipe",
+    "title": "GPipe: Efficient Training of Giant Neural Networks (Huang et al., 2018)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1811.06965",
+    "why": "Micro-batch pipeline parallelism with recomputation.",
+    "topics": [
+      "pipeline-parallelism",
+      "gradient-checkpointing"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-switch",
+    "title": "Switch Transformers: Scaling to Trillion Parameter Models (Fedus et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2101.03961",
+    "why": "Top-1 MoE routing that scales parameters without proportional compute.",
+    "topics": [
+      "moe",
+      "expert-parallelism"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-pagedattention",
+    "title": "Efficient Memory Management for LLM Serving with PagedAttention (Kwon et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2309.06180",
+    "why": "Non-contiguous KV-cache blocks: the vLLM serving breakthrough.",
+    "topics": [
+      "inference-batching",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-speculative",
+    "title": "Fast Inference from Transformers via Speculative Decoding (Leviathan et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2211.17192",
+    "why": "Draft-then-verify decoding for faster generation.",
+    "topics": [
+      "inference-basic",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-adam",
+    "title": "Adam: A Method for Stochastic Optimization (Kingma and Ba, 2014)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1412.6980",
+    "why": "Adaptive moments; the optimizer everything else modifies.",
+    "topics": [
+      "optimization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-adamw",
+    "title": "Decoupled Weight Decay Regularization (Loshchilov and Hutter, 2017)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1711.05101",
+    "why": "Why AdamW, not Adam with L2, is the LLM default.",
+    "topics": [
+      "optimization",
+      "regularization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-rmsnorm",
+    "title": "Root Mean Square Layer Normalization (Zhang and Sennrich, 2019)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1910.07467",
+    "why": "Scale-only normalization behind LLaMA and Mistral blocks.",
+    "topics": [
+      "normalization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-layernorm",
+    "title": "Layer Normalization (Ba et al., 2016)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1607.06450",
+    "why": "Per-sample normalization that made deep transformers trainable.",
+    "topics": [
+      "normalization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-glu",
+    "title": "GLU Variants Improve Transformer (Shazeer, 2020)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2002.05202",
+    "why": "Gated linear units including SwiGLU used in modern FFNs.",
+    "topics": [
+      "swiglu",
+      "ffn",
+      "activations"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-bpe",
+    "title": "Neural Machine Translation of Rare Words with Subword Units (Sennrich et al., 2015)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1508.07909",
+    "why": "BPE merge operations: the subword algorithm behind most tokenizers.",
+    "topics": [
+      "tokenizer-bpe",
+      "tokenizers"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-sentencepiece",
+    "title": "SentencePiece: A Simple and Language Independent Subword Tokenizer (Kudo and Richardson, 2018)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1808.06226",
+    "why": "Tokenization without pre-tokenized text.",
+    "topics": [
+      "sentencepiece",
+      "tokenizers"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-self-instruct",
+    "title": "Self-Instruct: Aligning Language Models with Self-Generated Instructions (Wang et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2212.10560",
+    "why": "Bootstrapping instruction data from a handful of seeds.",
+    "topics": [
+      "sft-formatting",
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-lima",
+    "title": "LIMA: Less Is More for Alignment (Zhou et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2305.11206",
+    "why": "One thousand curated examples rival massive SFT: quality-over-quantity evidence.",
+    "topics": [
+      "fine-tuning",
+      "data-cleaning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-phi-textbooks",
+    "title": "Textbooks Are All You Need (Gunasekar et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2306.11644",
+    "why": "Textbook-quality synthetic data behind the Phi models.",
+    "topics": [
+      "dataset-engineering",
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-tinystories",
+    "title": "TinyStories: How Small Can Language Models Be and Still Speak Coherent English (Eldan and Li, 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2305.07759",
+    "why": "Small models learn fluent grammar on tiny synthetic corpora.",
+    "topics": [
+      "pretraining",
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-grokking",
+    "title": "Grokking: Generalization Beyond Overfitting on Small Algorithmic Datasets (Power et al., 2022)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2201.02177",
+    "why": "Delayed generalization long after memorization.",
+    "topics": [
+      "overfitting-underfitting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-mmlu",
+    "title": "Measuring Massive Multitask Language Understanding (Hendrycks et al., 2020)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2009.03300",
+    "why": "The 57-subject benchmark behind most reported scores.",
+    "topics": [
+      "evaluation",
+      "eval-design"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gsm8k",
+    "title": "Training Verifiers to Solve Math Word Problems (Cobbe et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2110.14168",
+    "why": "Grade-school math problems for reasoning evaluation.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-hellaswag",
+    "title": "HellaSwag: Can a Machine Really Finish Your Sentence? (Zellers et al., 2019)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1905.07830",
+    "why": "Adversarially-filtered commonsense completion.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-truthfulqa",
+    "title": "TruthfulQA: Measuring How Models Mimic Human Falsehoods (Lin et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2109.07958",
+    "why": "Misconception-avoidance benchmark.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-humaneval",
+    "title": "Evaluating Large Language Models Trained on Code (Chen et al., 2021)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2107.03374",
+    "why": "Pass-at-k functional code evaluation.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-phi3",
+    "title": "Phi-3 Technical Report: A Highly Capable Language Model Locally on Your Phone (Abdin et al., 2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2404.14219",
+    "why": "3.8B/7B/14B training recipe plus the configs in the model database.",
+    "topics": [
+      "pretraining",
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-gemma",
+    "title": "Gemma: Open Models Based on Gemini Research and Technology (2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2403.08295",
+    "why": "Architecture plus safety recipe behind the Gemma 2 configs.",
+    "topics": [
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-deepseek-v3",
+    "title": "DeepSeek-V3 Technical Report (2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2412.19437",
+    "why": "FP8 training at scale plus MoE efficiency engineering.",
+    "topics": [
+      "fp8",
+      "moe"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-deepseek-r1",
+    "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning (2025)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2501.12948",
+    "why": "Large-scale RL for reasoning behavior.",
+    "topics": [
+      "rlhf",
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-grpo",
+    "title": "DeepSeekMath: Pushing the Limits of Mathematical Reasoning with GRPO (Shao et al., 2024)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2402.03300",
+    "why": "Group-relative policy optimization without a value model.",
+    "topics": [
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-streaming-llm",
+    "title": "Efficient Streaming Language Models with Attention Sinks (Xiao et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2309.17453",
+    "why": "Keep initial tokens: why eviction policies pin attention sinks.",
+    "topics": [
+      "kv-cache",
+      "inference-batching"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-lost-middle",
+    "title": "Lost in the Middle: How Language Models Use Long Contexts (Liu et al., 2023)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/2307.03172",
+    "why": "Long-context models use beginnings and endings best; evaluate your use positionally.",
+    "topics": [
+      "eval-design",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-dora",
+    "title": "DoRA: Weight-Decomposed Low-Rank Adaptation (Liu et al., 2024)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2402.09353",
+    "why": "Magnitude plus direction decomposition over LoRA.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-rslora",
+    "title": "A Rank Stabilization Scaling Factor for Fine-Tuning with LoRA (Kalajdzievski, 2023)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2312.03732",
+    "why": "Alpha-over-sqrt-rank scaling for high-rank stability.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-pissa",
+    "title": "PiSSA: Principal Singular Values and Vectors Adaptation (Meng et al., 2024)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2404.02948",
+    "why": "SVD-based initialization for faster LoRA convergence.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-loftq",
+    "title": "LoftQ: LoRA-Fine-Tuning-aware Quantization (Li et al., 2023)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2310.08659",
+    "why": "Initialize adapters to minimize base-quantization error.",
+    "topics": [
+      "qlora",
+      "quantization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-lorafa",
+    "title": "LoRA-FA: Efficient and Effective Low Rank Representation Fine-tuning (Zhang et al., 2023)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2308.03303",
+    "why": "Freeze A, train B: rank-insensitive activation memory.",
+    "topics": [
+      "lora",
+      "memory-optimization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-loraplus",
+    "title": "LoRA+: Efficient Low Rank Adaptation of Large Models (Hayou et al., 2024)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2402.12354",
+    "why": "Different learning rates for the A and B matrices.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-alibi",
+    "title": "Train Short, Test Long: Attention with Linear Biases (Press et al., 2021)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2108.12409",
+    "why": "Extrapolating positions without learned embeddings; the RoPE alternative.",
+    "topics": [
+      "positional-encoding",
+      "rope"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-intrinsic-dim",
+    "title": "Intrinsic Dimensionality Explains the Effectiveness of Language Model Fine-Tuning (Aghajanyan et al., 2020)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2012.13255",
+    "why": "The low-dimensional-update evidence behind the LoRA assumption.",
+    "topics": [
+      "lora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-double-descent",
+    "title": "Reconciling Modern Machine-Learning Practice and the Classical Bias-Variance Trade-Off (Belkin et al., 2019)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/1812.11118",
+    "why": "Interpolation can generalize: do not downsize reflexively.",
+    "topics": [
+      "overfitting-underfitting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-mamba",
+    "title": "Mamba: Linear-Time Sequence Modeling with Selective State Spaces (Gu and Dao, 2023)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/2312.00752",
+    "why": "Selective state spaces as a sub-quadratic attention alternative.",
+    "topics": [
+      "attention",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-resnet",
+    "title": "Deep Residual Learning for Image Recognition (He et al., 2015)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/1512.03385",
+    "why": "Residual connections that enable 100-plus layer training.",
+    "topics": [
+      "residual-connections"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-transformers",
+    "title": "Hugging Face Transformers documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/transformers",
+    "why": "Model loading, Trainer, generation, and chat templates: the daily reference.",
+    "topics": [
+      "fine-tuning",
+      "inference-basic",
+      "sft-formatting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-peft",
+    "title": "Hugging Face PEFT documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/peft",
+    "why": "LoRA and QLoRA configs, target modules, merge and unmerge semantics.",
+    "topics": [
+      "lora",
+      "qlora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-trl",
+    "title": "Hugging Face TRL documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/trl",
+    "why": "SFT, DPO, PPO, and GRPO trainers with canonical configs.",
+    "topics": [
+      "fine-tuning",
+      "dpo",
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-accelerate",
+    "title": "Hugging Face Accelerate documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/accelerate",
+    "why": "Multi-GPU and mixed-precision launch without code rewrites.",
+    "topics": [
+      "ddp",
+      "mixed-precision"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-datasets",
+    "title": "Hugging Face Datasets documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/datasets",
+    "why": "Streaming, mapping, and versioning large corpora.",
+    "topics": [
+      "dataset-engineering",
+      "data-cleaning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-tokenizers",
+    "title": "Hugging Face Tokenizers documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/tokenizers",
+    "why": "Fast BPE and WordPiece training plus normalization pipelines.",
+    "topics": [
+      "tokenizers",
+      "tokenizer-bpe"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-evaluate",
+    "title": "Hugging Face Evaluate documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://huggingface.co/docs/evaluate",
+    "why": "Metric implementations and harness conventions.",
+    "topics": [
+      "evaluation",
+      "eval-design"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-pytorch",
+    "title": "PyTorch documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.pytorch.org/docs/stable/index.html",
+    "why": "Tensors, autograd, nn, and optimizers: the framework reference.",
+    "topics": [
+      "tensors",
+      "neural-networks",
+      "optimization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-pytorch-amp",
+    "title": "PyTorch Automatic Mixed Precision",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.pytorch.org/docs/stable/amp.html",
+    "why": "Autocast plus GradScaler semantics for FP16 and BF16 training.",
+    "topics": [
+      "mixed-precision",
+      "precision-fp16",
+      "bf16"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-pytorch-fsdp",
+    "title": "PyTorch FullyShardedDataParallel",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.pytorch.org/docs/stable/fsdp.html",
+    "why": "FSDP1 and FSDP2 sharding, wrapping policies, hybrid strategies.",
+    "topics": [
+      "fsdp"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-pytorch-ddp",
+    "title": "PyTorch DistributedDataParallel",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html",
+    "why": "The DDP contract: sampler, gradient bucketing, no-sync accumulation.",
+    "topics": [
+      "ddp",
+      "gradient-accumulation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-pytorch-profiler",
+    "title": "PyTorch Profiler",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.pytorch.org/docs/stable/profiler.html",
+    "why": "CUDA and CPU profiling for utilization diagnosis.",
+    "topics": [
+      "profiling",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-cuda-guide",
+    "title": "CUDA C++ Programming Guide",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.nvidia.com/cuda/cuda-programming-guide/",
+    "why": "Memory hierarchy, occupancy, and per-SM throughput tables.",
+    "topics": [
+      "profiling",
+      "throughput",
+      "vram-memory"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-nccl",
+    "title": "NCCL documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.nvidia.com/deeplearning/nccl/",
+    "why": "Collective operations behind DDP and FSDP all-reduce.",
+    "topics": [
+      "ddp",
+      "fsdp"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-tensorrt-precision",
+    "title": "TensorRT precision and accuracy considerations",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.nvidia.com/deeplearning/tensorrt/latest/inference-library/accuracy-considerations.html",
+    "why": "TF32, FP16, and BF16 trade-offs from the inference vendor.",
+    "topics": [
+      "precision-fp16",
+      "bf16",
+      "fp8",
+      "precision-fp32"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-vllm",
+    "title": "vLLM documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.vllm.ai/en/latest/",
+    "why": "Continuous batching, PagedAttention, KV policies, quantized serving.",
+    "topics": [
+      "inference-batching",
+      "kv-cache",
+      "serving-observability"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-deepspeed",
+    "title": "DeepSpeed documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://www.deepspeed.ai/",
+    "why": "ZeRO stages, Infinity offload, and the config schema.",
+    "topics": [
+      "zero"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-mistral",
+    "title": "Mistral AI documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://docs.mistral.ai/",
+    "why": "Mistral API plus open-model deployment guides.",
+    "topics": [
+      "inference-basic",
+      "fine-tuning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-openai-api",
+    "title": "OpenAI API documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://developers.openai.com/api/docs/overview",
+    "why": "The reference API design and sampling parameters others imitate.",
+    "topics": [
+      "sampling"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-anthropic-api",
+    "title": "Anthropic API documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://platform.claude.com/docs/",
+    "why": "Prompt caching and structured-output API patterns.",
+    "topics": [
+      "inference-batching",
+      "sampling"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "docs-google-ai",
+    "title": "Google AI for Developers documentation",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://ai.google.dev/",
+    "why": "Gemini API plus context-caching patterns.",
+    "topics": [
+      "inference-batching",
+      "sampling"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-llama3-8b",
+    "title": "Meta-Llama-3-8B model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/meta-llama/Meta-Llama-3-8B",
+    "why": "Config, license, and intended use for the 8B workhorse.",
+    "topics": [
+      "decoder-only",
+      "fine-tuning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-llama31-8b",
+    "title": "Meta-Llama-3.1-8B model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/meta-llama/Llama-3.1-8B",
+    "why": "128K-context config and license.",
+    "topics": [
+      "decoder-only",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-mistral-7b",
+    "title": "Mistral-7B-v0.3 model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/mistralai/Mistral-7B-v0.3",
+    "why": "Apache-2.0 7B with extended context.",
+    "topics": [
+      "decoder-only",
+      "fine-tuning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-mixtral",
+    "title": "Mixtral-8x7B-v0.1 model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/mistralai/Mixtral-8x7B-v0.1",
+    "why": "MoE config: 8 experts with top-2 routing.",
+    "topics": [
+      "moe"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-qwen25-7b",
+    "title": "Qwen2.5-7B model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/Qwen/Qwen2.5-7B",
+    "why": "28-layer GQA config with long context.",
+    "topics": [
+      "decoder-only"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-gemma2-9b",
+    "title": "Gemma 2 9B model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/google/gemma-2-9b",
+    "why": "256-dim heads plus sliding-window config notes.",
+    "topics": [
+      "decoder-only",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-phi3-mini",
+    "title": "Phi-3-mini-4k-instruct model page",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
+    "why": "MHA-32 3.8B config verified in the model audit.",
+    "topics": [
+      "decoder-only"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-gpt2",
+    "title": "GPT-2 model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/openai-community/gpt2",
+    "why": "The 1.5B reference architecture.",
+    "topics": [
+      "decoder-only",
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "card-deepseek-coder",
+    "title": "DeepSeek-Coder 6.7B model card",
+    "type": "model-card",
+    "tier": 1,
+    "url": "https://huggingface.co/deepseek-ai/deepseek-coder-6.7b-base",
+    "why": "Code-pretrained 6.7B config.",
+    "topics": [
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-transformers",
+    "title": "Hugging Face Transformers (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/transformers",
+    "why": "Model implementations, Trainer, and generation code.",
+    "topics": [
+      "fine-tuning",
+      "inference-basic"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-peft",
+    "title": "Hugging Face PEFT (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/peft",
+    "why": "LoRA, QLoRA, DoRA, and adapter merging code.",
+    "topics": [
+      "lora",
+      "qlora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-trl",
+    "title": "Hugging Face TRL (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/trl",
+    "why": "SFT, DPO, PPO, and GRPO trainer implementations.",
+    "topics": [
+      "fine-tuning",
+      "dpo",
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-accelerate",
+    "title": "Hugging Face Accelerate (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/accelerate",
+    "why": "Distributed and mixed-precision launch helpers.",
+    "topics": [
+      "ddp",
+      "mixed-precision"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-datasets",
+    "title": "Hugging Face Datasets (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/datasets",
+    "why": "Dataset loading, streaming, mapping, and sharing code.",
+    "topics": [
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-tokenizers",
+    "title": "Hugging Face Tokenizers (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/tokenizers",
+    "why": "Fast tokenizer training and inference in Rust with bindings.",
+    "topics": [
+      "tokenizers"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-pytorch",
+    "title": "PyTorch (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/pytorch/pytorch",
+    "why": "The framework source: autograd, distributed, FSDP2.",
+    "topics": [
+      "tensors",
+      "fsdp"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-deepspeed",
+    "title": "DeepSpeed (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/deepspeedai/DeepSpeed",
+    "why": "ZeRO, Infinity offload, and large-scale training runtimes.",
+    "topics": [
+      "zero"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-vllm",
+    "title": "vLLM (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/vllm-project/vllm",
+    "why": "PagedAttention serving engine source.",
+    "topics": [
+      "inference-batching",
+      "kv-cache"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-flash-attn",
+    "title": "FlashAttention (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/Dao-AILab/flash-attention",
+    "why": "Reference kernels for exact IO-aware attention.",
+    "topics": [
+      "attention"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-bitsandbytes",
+    "title": "bitsandbytes (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/bitsandbytes-foundation/bitsandbytes",
+    "why": "8-bit optimizers plus NF4 quantization for QLoRA.",
+    "topics": [
+      "quantization",
+      "qlora"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-transformer-engine",
+    "title": "NVIDIA Transformer Engine (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/NVIDIA/TransformerEngine",
+    "why": "Per-layer FP8 and mixed-precision recipe automation.",
+    "topics": [
+      "fp8",
+      "mixed-precision"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-llamacpp",
+    "title": "llama.cpp (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/ggml-org/llama.cpp",
+    "why": "CPU and edge inference plus GGUF quantization formats.",
+    "topics": [
+      "quantization",
+      "inference-basic"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-tgi",
+    "title": "Hugging Face Text Generation Inference (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/huggingface/text-generation-inference",
+    "why": "Production serving runtime with continuous batching.",
+    "topics": [
+      "inference-batching",
+      "deployment-basics"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-nanogpt",
+    "title": "nanoGPT (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/karpathy/nanoGPT",
+    "why": "The minimal readable GPT training stack behind the tiny-model projects.",
+    "topics": [
+      "pretraining",
+      "training-loops"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-xformers",
+    "title": "xFormers (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/facebookresearch/xformers",
+    "why": "Memory-efficient attention operators including block-sparse variants.",
+    "topics": [
+      "attention",
+      "memory-optimization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-nccl-tests",
+    "title": "NCCL tests (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/NVIDIA/nccl-tests",
+    "why": "Measure all-reduce bandwidth before planning distributed runs.",
+    "topics": [
+      "ddp",
+      "profiling"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-axolotl",
+    "title": "Axolotl (repository)",
+    "type": "software",
+    "tier": 2,
+    "url": "https://github.com/axolotl-ai-cloud/axolotl",
+    "why": "Config-driven fine-tuning stack for LoRA and QLoRA runs.",
+    "topics": [
+      "lora",
+      "sft-formatting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-torchtune",
+    "title": "TorchTune (repository)",
+    "type": "software",
+    "tier": 2,
+    "url": "https://github.com/meta-pytorch/torchtune",
+    "why": "PyTorch-native recipes for SFT, DPO, and quantization-aware tuning.",
+    "topics": [
+      "fine-tuning",
+      "dpo"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-ollama",
+    "title": "Ollama (repository)",
+    "type": "software",
+    "tier": 2,
+    "url": "https://github.com/ollama/ollama",
+    "why": "Local model serving with a simple API.",
+    "topics": [
+      "deployment-basics"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-tiktoken",
+    "title": "tiktoken (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/openai/tiktoken",
+    "why": "Fast BPE implementation behind GPT and LLaMA-family tokenizers.",
+    "topics": [
+      "tokenizers",
+      "tokenizer-bpe"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "soft-sentencepiece",
+    "title": "SentencePiece (repository)",
+    "type": "software",
+    "tier": 1,
+    "url": "https://github.com/google/sentencepiece",
+    "why": "Reference implementation for training custom tokenizers.",
+    "topics": [
+      "sentencepiece"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-pile",
+    "title": "The Pile (dataset and paper)",
+    "type": "dataset",
+    "tier": 1,
+    "url": "https://huggingface.co/datasets/EleutherAI/pile",
+    "why": "825GB diverse pretraining corpus; the composition reference.",
+    "topics": [
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-c4",
+    "title": "C4 / Colossal Clean Crawled Corpus",
+    "type": "dataset",
+    "tier": 1,
+    "url": "https://huggingface.co/datasets/allenai/c4",
+    "why": "Cleaned Common Crawl baseline used by T5 and many replicas.",
+    "topics": [
+      "data-cleaning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-slimpajama",
+    "title": "SlimPajama-627B",
+    "type": "dataset",
+    "tier": 1,
+    "url": "https://huggingface.co/datasets/cerebras/SlimPajama-627B",
+    "why": "Large-scale MinHash deduplication exemplar. Access is gated; request it on the dataset page.",
+    "topics": [
+      "deduplication"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "unverified"
+  },
+  {
+    "id": "data-fineweb",
+    "title": "FineWeb",
+    "type": "dataset",
+    "tier": 1,
+    "url": "https://huggingface.co/datasets/HuggingFaceFW/fineweb",
+    "why": "Modern filtered web-text pipeline with published ablations.",
+    "topics": [
+      "dataset-engineering",
+      "data-cleaning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-redpajama",
+    "title": "RedPajama-Data",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/togethercomputer/RedPajama-Data",
+    "why": "Open 1.2T-token LLaMA-style pretraining mix. Access is gated; request it on the dataset page.",
+    "topics": [
+      "dataset-engineering",
+      "data-mixing-splits"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "unverified"
+  },
+  {
+    "id": "data-dolma",
+    "title": "Dolma",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/allenai/dolma",
+    "why": "3T-token corpus with a documented curation toolkit.",
+    "topics": [
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-refinedweb",
+    "title": "Falcon RefinedWeb",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/tiiuae/falcon-refinedweb",
+    "why": "Strictly filtered web data; quality-filtering reference.",
+    "topics": [
+      "data-cleaning"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-ultrachat",
+    "title": "UltraChat",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/openbmb/UltraChat",
+    "why": "Large-scale synthetic instruction conversations.",
+    "topics": [
+      "sft-formatting"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-ultrafeedback",
+    "title": "UltraFeedback",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/openbmb/UltraFeedback",
+    "why": "64K preference pairs for DPO and reward modeling.",
+    "topics": [
+      "dpo"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-hh-rlhf",
+    "title": "Anthropic HH-RLHF",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/Anthropic/hh-rlhf",
+    "why": "Helpfulness and harmlessness preference data.",
+    "topics": [
+      "rlhf"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-mmlu",
+    "title": "MMLU (dataset)",
+    "type": "dataset",
+    "tier": 1,
+    "url": "https://huggingface.co/datasets/cais/mmlu",
+    "why": "The 57-subject evaluation set in loadable form.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-alpaca",
+    "title": "Stanford Alpaca (repository and data)",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://github.com/tatsu-lab/stanford_alpaca",
+    "why": "52K self-instruct pairs that launched the SFT wave.",
+    "topics": [
+      "sft-formatting",
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "data-openwebtext",
+    "title": "OpenWebTextCorpus",
+    "type": "dataset",
+    "tier": 2,
+    "url": "https://huggingface.co/datasets/Skylion007/openwebtext",
+    "why": "Open GPT-2-era web-text replica for small runs.",
+    "topics": [
+      "dataset-engineering"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-lm-harness",
+    "title": "LM Evaluation Harness (repository)",
+    "type": "benchmark",
+    "tier": 1,
+    "url": "https://github.com/EleutherAI/lm-evaluation-harness",
+    "why": "The standard harness: pinned protocols across hundreds of tasks.",
+    "topics": [
+      "evaluation",
+      "eval-design"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-helm",
+    "title": "HELM (repository)",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://github.com/stanford-crfm/helm",
+    "why": "Holistic multi-metric evaluation scenarios.",
+    "topics": [
+      "evaluation",
+      "eval-design"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-open-llm",
+    "title": "Open LLM Leaderboard",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard",
+    "why": "Comparable open-model scores with versions pinned.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-arena",
+    "title": "LMArena",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://arena.ai/",
+    "why": "Crowdsourced pairwise preference rankings.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-alpacaeval",
+    "title": "AlpacaEval (repository)",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://github.com/tatsu-lab/alpaca_eval",
+    "why": "LLM-judge win-rate evaluation with reference baselines.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-bigbench",
+    "title": "BIG-bench (repository)",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://github.com/google/BIG-bench",
+    "why": "200-plus beyond-imitation tasks for capability probing.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "bench-paperswithcode",
+    "title": "Papers With Code trending (now on Hugging Face)",
+    "type": "benchmark",
+    "tier": 2,
+    "url": "https://huggingface.co/papers/trending",
+    "why": "Benchmark index linking papers, code, and results.",
+    "topics": [
+      "evaluation"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-d2l",
+    "title": "Dive into Deep Learning",
+    "type": "course",
+    "tier": 2,
+    "url": "https://d2l.ai/",
+    "why": "Free runnable textbook from linear models to transformers.",
+    "topics": [
+      "neural-networks",
+      "optimization",
+      "numpy",
+      "linear-algebra",
+      "calculus"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-fastai",
+    "title": "fast.ai Practical Deep Learning",
+    "type": "course",
+    "tier": 2,
+    "url": "https://course.fast.ai/",
+    "why": "Top-down applied ML course with notebook-first teaching.",
+    "topics": [
+      "ml-fundamentals"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-cs224n",
+    "title": "Stanford CS224N: NLP with Deep Learning",
+    "type": "course",
+    "tier": 2,
+    "url": "https://web.stanford.edu/class/cs224n/",
+    "why": "Lecture-grade attention and transformer foundations.",
+    "topics": [
+      "attention",
+      "transformer-block"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-zero-to-hero",
+    "title": "Neural Networks: Zero to Hero (repository)",
+    "type": "course",
+    "tier": 2,
+    "url": "https://github.com/karpathy/nn-zero-to-hero",
+    "why": "Build GPT from scratch in lectures plus code.",
+    "topics": [
+      "neural-networks",
+      "training-loops"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-illustrated",
+    "title": "The Illustrated Transformer",
+    "type": "course",
+    "tier": 2,
+    "url": "https://jalammar.github.io/illustrated-transformer/",
+    "why": "The visual walkthrough behind a generation of intuition.",
+    "topics": [
+      "attention",
+      "transformer-block"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-lil-log",
+    "title": "Lil Log (Lilian Weng)",
+    "type": "course",
+    "tier": 2,
+    "url": "https://lilianweng.github.io/",
+    "why": "Deep explainers on RLHF, attention, and large-model techniques.",
+    "topics": [
+      "rlhf",
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-gpu-mode",
+    "title": "GPU MODE (lectures and code)",
+    "type": "course",
+    "tier": 3,
+    "url": "https://github.com/gpu-mode",
+    "why": "CUDA performance engineering for ML workloads.",
+    "topics": [
+      "profiling",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-epoch",
+    "title": "Epoch AI",
+    "type": "course",
+    "tier": 3,
+    "url": "https://epoch.ai/",
+    "why": "Data-driven scaling trends and compute forecasts.",
+    "topics": [
+      "throughput",
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-openai-cookbook",
+    "title": "OpenAI Cookbook (repository)",
+    "type": "course",
+    "tier": 3,
+    "url": "https://github.com/openai/openai-cookbook",
+    "why": "Applied patterns for inference, embeddings, and eval harnesses.",
+    "topics": [
+      "sampling",
+      "inference-basic"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-rasbabka",
+    "title": "Sebastian Raschka: AI Magazine",
+    "type": "course",
+    "tier": 3,
+    "url": "https://magazine.sebastianraschka.com/",
+    "why": "Practitioner-grade LLM research explainers.",
+    "topics": [
+      "fine-tuning",
+      "pretraining"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-fsdl",
+    "title": "Full Stack Deep Learning",
+    "type": "course",
+    "tier": 3,
+    "url": "https://fullstackdeeplearning.com/",
+    "why": "Shipping, experiment tracking, and deployment workflows.",
+    "topics": [
+      "deployment-basics",
+      "reproducibility"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "course-udl",
+    "title": "Understanding Deep Learning (book)",
+    "type": "course",
+    "tier": 3,
+    "url": "https://udlbook.github.io/udlbook/",
+    "why": "Free rigorous textbook through diffusion models.",
+    "topics": [
+      "ml-fundamentals",
+      "probability"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "license-apache2",
+    "title": "Apache License 2.0 (full text)",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://www.apache.org/licenses/LICENSE-2.0",
+    "why": "The license behind Mistral and most tooling; read the grant before shipping.",
+    "topics": [
+      "licensing"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "license-mit",
+    "title": "MIT License (full text)",
+    "type": "docs",
+    "tier": 1,
+    "url": "https://opensource.org/license/MIT",
+    "why": "The license behind Phi and permissive code; one page, know it cold.",
+    "topics": [
+      "licensing"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-01",
+    "title": "MI300X specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.amd.com/content/dam/amd/en/documents/instinct-tech-docs/data-sheets/amd-instinct-mi300x-data-sheet.pdf",
+    "why": "Official specifications: 192GB HBM3, 5300 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-02",
+    "title": "RX 7900 XTX specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.amd.com/en/geforce/radeon-rx-7900",
+    "why": "Official specifications: 24GB GDDR6, 960 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-01-15",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-03",
+    "title": "MI250X specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.amd.com/en/products/accelerators/instinct/mi200/mi250x.html",
+    "why": "Official specifications: 128GB HBM2e, 3200 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-04",
+    "title": "CDNA2 architecture",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.amd.com/en/server/mi250x",
+    "why": "Official AMD CDNA2 architecture brief: Tensor/Matrix core generations and precision support.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-01-15",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-05",
+    "title": "CDNA3 architecture",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.amd.com/en/server/mi300x",
+    "why": "Official AMD CDNA3 architecture brief: Tensor/Matrix core generations and precision support.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-06-01",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-06",
+    "title": "M3 Max specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.apple.com/m3/",
+    "why": "Official specifications: 128GB Unified Memory, 400 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-06-01",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-07",
+    "title": "M4 Ultra specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.apple.com/m4/",
+    "why": "Official specifications: 192GB Unified Memory, 460 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-06-01",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-08",
+    "title": "Gaudi 2 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.intel.com/content/www/us/en/products/details/processors/deep-learning-boost/overview.html",
+    "why": "Official specifications: 96GB HBM2e, 2400 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2025-01-15",
+    "status": "unverified"
+  },
+  {
+    "id": "spec-hw-09",
+    "title": "B200 SXM specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/",
+    "why": "Official specifications: 192GB HBM3e, 8000 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-10",
+    "title": "A10 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/a10/",
+    "why": "Official specifications: 24GB GDDR6, 600 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-11",
+    "title": "A100 SXM specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/a100/",
+    "why": "Official specifications: 80GB HBM2e, 2039 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-12",
+    "title": "Blackwell architecture",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/blackwell-architecture/",
+    "why": "Official NVIDIA Blackwell architecture brief: Tensor/Matrix core generations and precision support.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-13",
+    "title": "H100 SXM specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/h100/",
+    "why": "Official specifications: 80GB HBM3, 3350 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-14",
+    "title": "H200 SXM specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/h200/",
+    "why": "Official specifications: 141GB HBM3e, 4800 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-15",
+    "title": "Hopper architecture",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/hopper-architecture/",
+    "why": "Official NVIDIA Hopper architecture brief: Tensor/Matrix core generations and precision support.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-16",
+    "title": "L40S specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/l40s/",
+    "why": "Official specifications: 48GB GDDR6, 864 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-17",
+    "title": "T4 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/t4/",
+    "why": "Official specifications: 16GB GDDR6, 320 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-18",
+    "title": "V100 SXM2 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/data-center/v100/",
+    "why": "Official specifications: 16GB HBM2, 900 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-19",
+    "title": "RTX 3090 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/geforce/graphics-cards/30-series/",
+    "why": "Official specifications: 24GB GDDR6X, 936 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-20",
+    "title": "RTX 4090 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/",
+    "why": "Official specifications: 24GB GDDR6X, 1008 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-21",
+    "title": "RTX 5090 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/",
+    "why": "Official specifications: 32GB GDDR7, 1792 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "spec-hw-22",
+    "title": "RTX 4080 specifications",
+    "type": "hardware-spec",
+    "tier": 1,
+    "url": "https://www.nvidia.com/en-us/geforce/graphics-cards/compare/",
+    "why": "Official specifications: 16GB GDDR6X, 717 GB/s bandwidth. Sizing reference for the hardware database.",
+    "topics": [
+      "vram-memory",
+      "throughput"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-word2vec",
+    "title": "Efficient Estimation of Word Representations in Vector Space (Mikolov et al., 2013)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1301.3781",
+    "why": "Word2vec: distributed representations that embeddings descend from.",
+    "topics": [
+      "embeddings"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-batchnorm",
+    "title": "Batch Normalization: Accelerating Deep Network Training (Ioffe and Szegedy, 2015)",
+    "type": "paper",
+    "tier": 1,
+    "url": "https://arxiv.org/abs/1502.03167",
+    "why": "Per-batch statistics that stabilized vision training; the contrast case for LayerNorm in transformers.",
+    "topics": [
+      "batch-normalization"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-clr",
+    "title": "Cyclical Learning Rates for Training Neural Networks (Smith, 2015)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/1506.01186",
+    "why": "LR range tests and cyclic schedules behind warmup-plus-decay practice.",
+    "topics": [
+      "learning-rate",
+      "schedulers"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  },
+  {
+    "id": "paper-sgdr",
+    "title": "SGDR: Stochastic Gradient Descent with Warm Restarts (Loshchilov and Hutter, 2016)",
+    "type": "paper",
+    "tier": 2,
+    "url": "https://arxiv.org/abs/1608.03983",
+    "why": "Cosine annealing with restarts: the schedule family LLM cosine decay descends from.",
+    "topics": [
+      "schedulers",
+      "learning-rate"
+    ],
+    "lastVerified": "2026-09-08",
+    "status": "verified"
+  }
+]

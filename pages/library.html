@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library — LLM Toolkit</title>
+  <link rel="stylesheet" href="/css/tokens.css">
+  <link rel="stylesheet" href="/css/reset.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/navigation.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/learning.css">
+  <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="canonical" href="https://llm.effnine.dev/pages/library.html">
+  <meta name="description" content="Curated library of primary AI sources: papers, official docs, model cards, hardware specs, software, datasets, benchmarks, and courses — every entry linked to the curriculum topic that teaches it.">
+  <meta property="og:title" content="Library — LLM Toolkit">
+  <meta property="og:description" content="Curated primary sources for LLM engineering: papers, docs, model cards, specs, tools, datasets, benchmarks, courses.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://llm.effnine.dev/pages/library.html">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <a href="#main-content" class="sr-only focus:not-sr-only" style="position:absolute;left:-9999px;top:0;z-index:999;padding:1rem;color:#fff;background:#000;">Skip to main content</a>
+  <div class="site-wrapper">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation"><div class="sidebar-logo"><h2>llm.effnine.dev</h2><p>Training &amp; Engineering Toolkit</p></div><nav class="sidebar-nav" id="sidebar-nav" aria-label="Primary navigation"></nav><div class="sidebar-footer"><a href="/pages/reference.html">Reference</a></div></aside>
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <header class="top-nav">
+      <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-expanded="false" aria-controls="sidebar"><span></span><span></span><span></span></button>
+      <div class="nav-brand">LLM <span>Toolkit</span></div>
+      <div class="nav-actions"><button type="button" class="nav-search-btn" id="nav-search-btn" aria-label="Search (press / to open)"><span>Search</span><kbd>/</kbd></button></div>
+    </header>
+    <main class="main-content" id="main-content">
+      <div class="page-header narrow">
+        <div class="breadcrumbs"><a href="/">Home</a><span class="sep">/</span><span>Library</span></div>
+        <h1>Source Library</h1>
+        <p style="margin-top: var(--space-4);">Curated primary sources for LLM engineering. Every entry links to the curriculum topic that teaches its prerequisites — learn first, then read the source.</p>
+      </div>
+      <div class="page-content narrow">
+        <div id="library-count" class="text-sm text-muted mt-2" role="status"></div>
+        <div class="planner-card mt-4">
+          <div class="planner-config-grid">
+            <div><label class="form-label" for="lib-search">Search</label><input type="search" id="lib-search" class="form-input" placeholder="e.g. LoRA, KV cache, MMLU" autocomplete="off"></div>
+            <div><label class="form-label" for="lib-tier">Authority tier</label>
+              <select id="lib-tier" class="form-select">
+                <option value="">All tiers</option>
+                <option value="1">Tier 1 — primary sources</option>
+                <option value="2">Tier 2 — reputable references</option>
+                <option value="3">Tier 3 — high-quality explainers</option>
+              </select>
+            </div>
+            <div><label class="form-label" for="lib-topic">Curriculum topic</label><select id="lib-topic" class="form-select"><option value="">All topics</option></select></div>
+          </div>
+          <div id="lib-types" class="flex gap-3 mt-4" style="flex-wrap:wrap;" role="group" aria-label="Filter by source type"></div>
+        </div>
+        <div id="library-list" class="mt-4"></div>
+        <div class="callout callout-info mt-8">
+          <div class="callout-title">Inclusion criteria</div>
+          <p style="margin:0; font-size: var(--text-sm);">Primary sources preferred; no SEO farms; nothing paywalled-only; every entry maps to at least one curriculum topic and carries a verification date. Unverified entries are labeled. Report rot via the <a href="https://github.com/EffNine/llm-toolkit" target="_blank" rel="noopener">GitHub repository</a>.</p>
+        </div>
+      </div>
+
+    <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">
+      <div class="flex justify-between items-center" style="flex-wrap: wrap; gap: var(--space-4);">
+        <div>
+          <strong style="color: var(--color-text);">LLM Training &amp; Engineering Toolkit</strong>
+          <br>EffNine &middot; Open source &middot; No tracking
+        </div>
+        <div class="flex gap-4">
+          <a href="/pages/reference.html" style="color: var(--color-text-secondary);">Reference</a>
+          <a href="/pages/troubleshooting.html" style="color: var(--color-text-secondary);">Troubleshoot</a>
+          <a href="https://github.com/EffNine/llm-toolkit" style="color: var(--color-text-secondary);" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </footer>
+    </main>
+  </div>
+  <script type="module" src="/js/storage.js"></script>
+  <script type="module" src="/js/router.js"></script>
+  <script type="module" src="/js/navigation.js"></script>
+  <script type="module" src="/js/search.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script>
+    const Library = {
+      _type: '',
+      TYPE_META: [
+        ['paper', 'Papers'],
+        ['docs', 'Docs'],
+        ['model-card', 'Model cards'],
+        ['hardware-spec', 'Hardware specs'],
+        ['software', 'Software'],
+        ['dataset', 'Datasets'],
+        ['benchmark', 'Benchmarks'],
+        ['course', 'Courses']
+      ],
+      escapeHtml(s) {
+        return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      },
+      async init() {
+        const list = document.getElementById('library-list');
+        if (list) list.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text">Loading library…</div></div>';
+        try {
+          const res = await fetch('/data/sources.json', { headers: { Accept: 'application/json' } });
+          window.SOURCES = res.ok ? await res.json() : [];
+          if (!Array.isArray(window.SOURCES)) window.SOURCES = [];
+        } catch { window.SOURCES = []; }
+        try {
+          const res = await fetch('/data/topics.json', { headers: { Accept: 'application/json' } });
+          const topics = res.ok ? await res.json() : [];
+          window.TOPICS = Array.isArray(topics) ? topics : (window.TOPICS || []);
+        } catch { /* topics optional here; ids still work */ }
+        this.buildControls();
+        this.readDeepLink();
+        ['lib-search', 'lib-tier', 'lib-topic'].forEach((id) => {
+          document.getElementById(id)?.addEventListener('input', () => this.render());
+        });
+        this.render();
+      },
+      buildControls() {
+        const wrap = document.getElementById('lib-types');
+        if (!wrap) return;
+        const counts = {};
+        (window.SOURCES || []).forEach((s) => { counts[s.type] = (counts[s.type] || 0) + 1; });
+        const total = (window.SOURCES || []).length;
+        wrap.innerHTML = [`<button type="button" class="btn btn-sm ${this._type === '' ? 'btn-primary' : 'btn-secondary'}" data-type="">All (${total})</button>`]
+          .concat(this.TYPE_META.filter(([t]) => counts[t]).map(([t, label]) =>
+            `<button type="button" class="btn btn-sm ${this._type === t ? 'btn-primary' : 'btn-secondary'}" data-type="${t}">${label} (${counts[t]})</button>`)).join('');
+        wrap.querySelectorAll('[data-type]').forEach((b) => b.addEventListener('click', () => {
+          this._type = b.getAttribute('data-type') || '';
+          this.buildControls();
+          this.render();
+        }));
+        const sel = document.getElementById('lib-topic');
+        if (sel && sel.options.length <= 1) {
+          const names = {};
+          (window.TOPICS || []).forEach((t) => { names[t.id] = t.title || t.id; });
+          const used = [...new Set((window.SOURCES || []).flatMap((s) => s.topics || []))].sort();
+          used.forEach((id) => {
+            const o = document.createElement('option');
+            o.value = id; o.textContent = names[id] || id;
+            sel.appendChild(o);
+          });
+        }
+      },
+      readDeepLink() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const topic = params.get('topic');
+          if (topic) {
+            const sel = document.getElementById('lib-topic');
+            if (sel) sel.value = topic;
+          }
+        } catch { /* ignore */ }
+      },
+      filtered() {
+        const q = (document.getElementById('lib-search')?.value || '').trim().toLowerCase();
+        const tier = document.getElementById('lib-tier')?.value || '';
+        const topic = document.getElementById('lib-topic')?.value || '';
+        return (window.SOURCES || []).filter((s) => {
+          if (this._type && s.type !== this._type) return false;
+          if (tier && String(s.tier) !== tier) return false;
+          if (topic && !(s.topics || []).includes(topic)) return false;
+          if (q && !((s.title + ' ' + (s.why || '') + ' ' + s.id).toLowerCase().includes(q))) return false;
+          return true;
+        }).sort((a, b) => (a.tier - b.tier) || a.title.localeCompare(b.title));
+      },
+      tierBadge(t) {
+        if (t === 1) return '<span class="badge badge-success">Tier 1</span>';
+        if (t === 2) return '<span class="badge badge-info">Tier 2</span>';
+        return '<span class="badge">Tier 3</span>';
+      },
+      render() {
+        const el = document.getElementById('library-list');
+        const countEl = document.getElementById('library-count');
+        if (!el) return;
+        const items = this.filtered();
+        const verified = (window.SOURCES || []).filter((s) => s.status === 'verified').length;
+        if (countEl) countEl.textContent = `${items.length} of ${(window.SOURCES || []).length} curated sources · ${verified} verified · all mapped to curriculum topics`;
+        if (items.length === 0) {
+          el.innerHTML = '<div class="empty-state" role="status"><div class="empty-state-text"><strong>No sources match.</strong><br>Broaden the filters or search.</div></div>';
+          return;
+        }
+        const hash = (window.location.hash || '').slice(1);
+        el.innerHTML = items.map((s) => `
+          <div class="card mb-4" id="src-${this.escapeHtml(s.id)}"${s.id === hash ? ' style="outline: 2px solid var(--color-accent);"' : ''}>
+            <div class="flex justify-between items-center" style="gap: var(--space-3); flex-wrap: wrap;">
+              <a href="${this.escapeHtml(s.url)}" target="_blank" rel="noopener" style="font-weight:600; color:var(--color-text);">${this.escapeHtml(s.title)} ↗</a>
+              <span class="flex gap-3" style="flex-wrap:wrap;">
+                ${this.tierBadge(s.tier)}
+                <span class="badge">${this.escapeHtml(s.type)}</span>
+                ${s.status === 'unverified' ? '<span class="badge badge-warning">unverified</span>' : ''}
+              </span>
+            </div>
+            <p class="text-sm text-muted mt-2" style="margin-bottom:0;">${this.escapeHtml(s.why || '')}</p>
+            <div class="flex gap-3 mt-2" style="flex-wrap:wrap; align-items:center;">
+              ${(s.topics || []).map((t) => `<a class="badge" href="/pages/learn.html#${this.escapeHtml(t)}" title="Learn this first">▸ ${this.escapeHtml(t)}</a>`).join('')}
+              <span class="text-xs text-tertiary">verified ${this.escapeHtml(s.lastVerified || '—')}</span>
+            </div>
+          </div>`).join('');
+        if (hash) document.getElementById(`src-${hash}`)?.scrollIntoView({ block: 'center' });
+      }
+    };
+    window.Library = Library;
+    window.renderLibrary = () => Library.init();
+  </script>
+</body>
+</html>

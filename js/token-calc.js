@@ -93,16 +93,18 @@ const TokenCalculator = {
     const heuristic = document.getElementById('tc-heuristic')?.value || 'standard';
     
     // Heuristics for token targets based on model size
-    // These are well-known rough guidelines from the literature
+    // Chinchilla (~20 tok/param) is the compute-optimal minimum for a fixed
+    // training budget. Modern open models routinely overtrain past it
+    // (100-300+ tok/param) because inference is far cheaper on a dense,
+    // well-trained small model than on a larger undertrained one.
     const heuristics = {
-      standard: { label: 'Standard (Chinchilla-optimal)', mult: 20 },
-      dataLimited: { label: 'Data-limited (below Chinchilla)', mult: 10 },
-      computeLimited: { label: 'Compute-limited (above Chinchilla)', mult: 40 },
-      aggressive: { label: 'Aggressive scaling', mult: 100 }
+      standard: { label: 'Standard (Chinchilla ~20x)', mult: 20 },
+      dataLimited: { label: 'Data-limited (~10x)', mult: 10 },
+      inferenceOptimal: { label: 'Inference-optimal overtraining (~100x)', mult: 100 },
+      aggressive: { label: 'LLaMA-3-style overtraining (~300x)', mult: 300 }
     };
     
     const h = heuristics[heuristic] || heuristics.standard;
-    const tokenBillions = modelSize * h.mult / 1e9;
     const totalTokens = modelSize * h.mult * 1e9;
     
     const el = document.getElementById('token-result');
@@ -132,7 +134,9 @@ const TokenCalculator = {
           <p style="margin:0; font-size: var(--text-sm);">
             These are rough guidelines based on Chinchilla-scaling laws and empirical observations. 
             The optimal token count depends on data quality, model architecture, and training objectives. 
-            Well-curated data can achieve good results with fewer tokens.
+            Well-curated data can achieve good results with fewer tokens. Conversely, training past Chinchilla 
+            (100-300+ tokens/param) is standard when inference cost dominates: a small overtrained model 
+            serves far cheaper than a larger undertrained one at equal quality.
           </p>
         </div>
       </div>

@@ -18,7 +18,7 @@ code { word-break: break-word; }
   .planner-result-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
 }
 @media (max-width: 640px) {
-  :root { --text-5xl: 2rem; --text-4xl: 1.75rem; --text-3xl: 1.5rem; }
+  :root { --text-4xl: 2rem; --text-3xl: 1.5rem; }
   .page-header, .page-content { padding-left: var(--space-4); padding-right: var(--space-4); }
   .selection-grid { grid-template-columns: 1fr; }
   .planner-config-grid { grid-template-columns: 1fr; }

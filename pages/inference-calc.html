@@ -53,11 +53,23 @@
                 <option value="bf16">BF16 (2 bytes)</option>
                 <option value="fp16">FP16 (2 bytes)</option>
                 <option value="fp32">FP32 (4 bytes)</option>
+                <option value="fp8">FP8 (1 byte)</option>
                 <option value="int8">INT8 (1 byte)</option>
                 <option value="int4">INT4 (0.5 bytes)</option>
+                <option value="fp4">FP4 (0.5 bytes, Blackwell-only)</option>
               </select>
             </div>
             <div><label class="form-label" for="infer-quant">Quantization Bits (override)</label><input type="number" id="infer-quant" class="form-input" value="0" min="0" max="8" placeholder="0 = use precision above"></div>
+            <div><label class="form-label" for="infer-kv-precision">KV Cache Precision</label>
+              <select id="infer-kv-precision" class="form-select">
+                <option value="same">Same as weights</option>
+                <option value="fp32">FP32 (4 bytes)</option>
+                <option value="bf16">BF16 (2 bytes)</option>
+                <option value="fp16">FP16 (2 bytes)</option>
+                <option value="fp8">FP8 (1 byte)</option>
+                <option value="int8">INT8 (1 byte)</option>
+              </select>
+            </div>
             <div><label class="form-label" for="infer-context">Context Length</label><input type="number" id="infer-context" class="form-input" value="4096" min="64" step="64"></div>
             <div><label class="form-label" for="infer-batch">Batch Size</label><input type="number" id="infer-batch" class="form-input" value="1" min="1"></div>
             <div><label class="form-label" for="infer-layers">Layers</label><input type="number" id="infer-layers" class="form-input" value="32" min="1"></div>

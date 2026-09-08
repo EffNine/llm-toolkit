@@ -43,15 +43,21 @@ const InferenceCalculator = {
       quantBits = get('infer-quant', { min: 0, max: 8, integer: true, label: 'Quantization bits' });
     } catch { return; }
     const precision = document.getElementById('infer-precision')?.value || 'bf16';
+    const kvPrecision = document.getElementById('infer-kv-precision')?.value || 'same';
     
-    const bytesPerParam = quantBits > 0 ? quantBits / 8 : (precision === 'fp32' ? 4 : 2);
+    const bytesPerParam = quantBits > 0 ? quantBits / 8 : ({ fp32: 4, bf16: 2, fp16: 2, fp8: 1, int8: 1, int4: 0.5, fp4: 0.5 }[precision] ?? 2);
+    // KV cache precision is an independent knob from weight precision: engines
+    // commonly keep weights in BF16/INT4 while caching K/V in FP8/INT8.
+    const kvBytes = kvPrecision === 'same' ? bytesPerParam
+      : kvPrecision === 'fp32' ? 4
+      : kvPrecision === 'fp8' || kvPrecision === 'int8' ? 1 : 2;
     const headDim = hidden / heads;
     
     // Weight memory
     const weightMem = modelSize * 1e9 * bytesPerParam / 1e9;
     
-    // KV cache memory (per request)
-    const kvCachePerReq = 2 * context * layers * kvHeads * headDim * bytesPerParam / 1e9;
+    // KV cache memory (per request) — uses the KV dtype, not the weight dtype.
+    const kvCachePerReq = 2 * context * layers * kvHeads * headDim * kvBytes / 1e9;
     const totalKvCache = kvCachePerReq * batch;
     
     // Runtime overhead (activations, temporary buffers)
@@ -85,7 +91,7 @@ const InferenceCalculator = {
         <div class="section-title mt-4">CONTEXT LENGTH vs MEMORY TRADE-OFF</div>
         <div class="vram-breakdown mt-2">
           ${[1024, 2048, 4096, 8192, 16384, 32768].map(c => {
-            const kv = 2 * c * layers * kvHeads * headDim * bytesPerParam / 1e9;
+            const kv = 2 * c * layers * kvHeads * headDim * kvBytes / 1e9;
             const total = weightMem + kv + overhead;
             const fit = document.getElementById('infer-gpu-vram') ? 
               (total <= parseFloat(document.getElementById('infer-gpu-vram').value) || !document.getElementById('infer-gpu-vram').value) : true;
@@ -94,11 +100,16 @@ const InferenceCalculator = {
         </div>
         
         <div class="callout callout-info mt-4">
-          <div class="callout-title">Note</div>
+          <div class="callout-title">Assumptions (read before trusting the number)</div>
           <p style="margin:0; font-size: var(--text-sm);">
-            This is a theoretical estimate. Actual memory usage depends on the inference engine 
-            (vLLM, TGI, llama.cpp), continuous batching, PagedAttention, and quantization methods.
-            KV cache is allocated per-request and grows with context length.
+            Theoretical estimate, not a guarantee of fit. Weight precision covers FP8/INT8/INT4/FP4 weight-only
+            quantization (scales/metadata add ~10-30% over raw bits — the same caveat as the Quantization topic).
+            FP4 is Blackwell-only: verify kernels and re-run quality evals. KV cache uses the selected KV precision,
+            independently of the weight precision (8-bit KV is frequently near-free on quality — verify on your evals).
+            Runtime overhead is a rough allowance (activations, CUDA context, engine bookkeeping), not a measurement.
+            Excluded: fragmentation, continuous-batching dynamics, speculative-decoding buffers, and per-engine
+            differences (vLLM PagedAttention vs TGI vs llama.cpp). Verify on the target engine and keep headroom.
+            GQA savings are exact in the formula: fewer KV heads = proportionally smaller cache.
           </p>
         </div>
       </div>

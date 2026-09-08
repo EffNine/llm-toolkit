@@ -89,7 +89,7 @@
               <label class="form-label" for="optimizer">Optimizer</label>
               <select id="optimizer" class="form-select">
                 <option value="adamw">AdamW</option>
-                <option value="sgd">SGD</option>
+                <option value="sgd">SGD + momentum</option>
                 <option value="adam">Adam</option>
               </select>
             </div>
@@ -136,12 +136,14 @@
           </button>
           <div class="expandable-content">
             <div class="expandable-body">
-              <p><strong>Weight memory</strong> = params &times; bytes_per_param</p>
-              <p><strong>Gradient memory</strong> = params &times; 2 bytes (BF16 gradients). LoRA reduces this by ~90%.</p>
-              <p><strong>Optimizer memory</strong> = params &times; bytes_per_param &times; multiplier (AdamW = 2x, SGD = 0x)</p>
-              <p><strong>Activation memory</strong> = batch &times; seq_len &times; hidden &times; layers &times; 2 bytes. Gradient checkpointing reduces by ~90%.</p>
-              <p><strong>Temporary + overhead</strong> = ~2GB for framework buffers + ~2GB overhead</p>
-              <p class="mt-4"><em>All values in GB. This is an estimate; actual usage varies by framework and GPU.</em></p>
+              <p><strong>Weight memory</strong> = params &times; stored bytes (BF16/FP16 = 2, FP32 = 4, 4-bit = 0.5)</p>
+              <p><strong>FP32 master weights</strong> = params &times; 4 bytes, counted for full training in BF16/FP16 (mixed precision keeps an FP32 copy; pure-FP32 needs none; LoRA freezes the base so none)</p>
+              <p><strong>Gradient memory</strong> = trainable params &times; working bytes. Full training: all params. LoRA: adapters only (~1% of params — assumption; actual share depends on rank and target modules)</p>
+              <p><strong>Optimizer memory</strong> = trainable params &times; 8 bytes for Adam/AdamW (FP32 m+v) or &times; 4 bytes for SGD with momentum. LoRA pays this on adapters only</p>
+              <p><strong>Activation memory</strong> ≈ effective batch &times; seq_len &times; hidden &times; layers &times; bytes — a rough lower bound (attention backend and saved tensors shift it). Gradient checkpointing ≈ &times;0.1 at ~20–30% extra compute</p>
+              <p><strong>Temporary + overhead</strong> = ~2GB framework buffers + ~2GB overhead (CUDA context, fragmentation allowance)</p>
+              <p><strong>Per-GPU</strong> = total &divide; GPU count (assumes replication; FSDP/ZeRO-3 shards weights+grads+optimizer ≈ &divide;N)</p>
+              <p class="mt-4"><em>Theoretical estimate, not a guarantee of fit. Verify with torch.cuda.max_memory_allocated() and keep ~20% headroom.</em></p>
             </div>
           </div>
         </div>

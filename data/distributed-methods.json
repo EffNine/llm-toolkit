@@ -6,7 +6,11 @@
     "description": "Replicate model on each GPU, split data, average gradients via all-reduce.",
     "scaling": "linear-with-gpus",
     "memoryPerGPU": "full-model",
-    "communication": "all-reduce-gradients"
+    "communication": "all-reduce-gradients",
+    "lesson": "ddp",
+    "whenToUse": "Model fits on one GPU; you want speed.",
+    "rule": "If one GPU OOMs, DDP changes nothing - shard instead.",
+    "failureModes": "Missing distributed sampler (all ranks same data); comm-bound on small models/slow links."
   },
   {
     "id": "fsdp",
@@ -15,7 +19,11 @@
     "description": "PyTorch's ZeRO-like implementation. Shards model, gradients, and optimizer states across GPUs.",
     "scaling": "near-linear",
     "memoryPerGPU": "model / num_gpus",
-    "communication": "all-gather-parameters + all-reduce-gradients"
+    "communication": "all-gather-parameters + all-reduce-gradients",
+    "lesson": "fsdp",
+    "whenToUse": "Model exceeds one GPU; PyTorch-native stack.",
+    "rule": "Start FULL_SHARD + per-block wrapping; HYBRID across slow inter-node links.",
+    "failureModes": "All-gather storms from per-linear wrapping; checkpoint/world-size skew on load."
   },
   {
     "id": "zero",
@@ -24,7 +32,11 @@
     "description": "Microsoft's sharded data parallelism. Stages 1-3 progressively shard more state.",
     "scaling": "near-linear",
     "memoryPerGPU": "model / num_gpus (stage 3)",
-    "communication": "all-gather + all-reduce"
+    "communication": "all-gather + all-reduce",
+    "lesson": "zero",
+    "whenToUse": "Need DeepSpeed offload/kernels, or established ZeRO recipes.",
+    "rule": "Smallest stage that fits; stage 2 is often the efficiency sweet spot.",
+    "failureModes": "Stage-3 comm cost accepted blindly; offload thrash misread as slow GPUs."
   },
   {
     "id": "tensor-parallel",
@@ -33,7 +45,11 @@
     "description": "Split individual layer operations across GPUs. Requires fast interconnect (NVLink).",
     "scaling": "per-layer",
     "memoryPerGPU": "model / tp_size",
-    "communication": "all-reduce-within-layer"
+    "communication": "all-reduce-within-layer",
+    "lesson": "tensor-parallelism",
+    "whenToUse": "Model too wide for one GPU (esp. inference); layers must split.",
+    "rule": "TP inside one NVLink domain only; kv_heads divisible by TP degree.",
+    "failureModes": "TP over PCIe (per-layer syncs strangle throughput); head-count indivisibility."
   },
   {
     "id": "pipeline-parallel",
@@ -42,6 +58,23 @@
     "description": "Split model layers across GPUs in sequence. Different micro-batches on different GPUs.",
     "scaling": "model-size-limited",
     "memoryPerGPU": "model / pp_size",
-    "communication": "send-activations-forward + send-graduations-backward"
+    "communication": "send-activations-forward + send-graduations-backward",
+    "lesson": "pipeline-parallelism",
+    "whenToUse": "Very deep models; combined with TP across nodes.",
+    "rule": "Micro-batches >= 4x stages; bubble = (stages-1)/micro-batches.",
+    "failureModes": "Too few micro-batches (idle bubble); uneven stage times gating the pipe."
+  },
+  {
+    "id": "expert-parallel",
+    "lesson": "expert-parallelism",
+    "name": "Expert Parallelism",
+    "type": "distributed",
+    "description": "Each GPU hosts a subset of MoE experts; tokens route via all-to-all.",
+    "scaling": "expert-count-limited",
+    "memoryPerGPU": "experts / num_gpus",
+    "communication": "all-to-all-dispatch-combine",
+    "whenToUse": "MoE models where total params exceed one GPU but active params do not.",
+    "rule": "Measure all-to-all bandwidth first - it is the MoE scaling ceiling.",
+    "failureModes": "Hot-expert stragglers; capacity overflow dropping tokens."
   }
 ]

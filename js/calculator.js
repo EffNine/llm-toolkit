@@ -82,25 +82,44 @@ const Calculator = {
     
     const bytesPerParam = this.getBytesPerParam(precision, quantBits);
     const totalParams = params * 1e9;
-    
-    // Weight memory
+    const isLowPrecision = bytesPerParam < 4 && quantBits === 0;
+
+    // Weight memory (stored precision; quantized base when quantBits > 0)
     const weightMem = totalParams * bytesPerParam / 1e9;
-    
-    // Gradient memory (same precision as weights)
+
+    // FP32 master copy: mixed-precision training (AMP) keeps an FP32 copy of the
+    // trainable weights for the optimizer step. Full-FT in BF16/FP16 therefore
+    // costs an extra 4 bytes/param. Pure-FP32 training needs no separate copy.
+    // LoRA/QLoRA freeze the base model, so no master copy of base weights.
+    const masterMem = (!lora && isLowPrecision) ? totalParams * 4 / 1e9 : 0;
+
+    // Gradient memory. Full fine-tuning: gradients for every trainable param in
+    // the working precision. LoRA: only adapter params get gradients — typically
+    // ~1% of base params (depends on rank/target modules; assumption, see note).
     const gradBytes = quantBits > 0 ? quantBits / 8 : bytesPerParam;
-    const gradMem = lora ? weightMem * 0.1 : totalParams * gradBytes / 1e9;
-    
-    // Optimizer memory
+    const gradMem = lora ? totalParams * gradBytes / 1e9 * 0.01 : totalParams * gradBytes / 1e9;
+
+    // Optimizer memory (FP32 m+v buffers for Adam-family). SGD with momentum
+    // keeps one FP32 buffer; plain SGD keeps none. LoRA optimizes adapters only.
     let optimizerMem = 0;
     if (!lora) {
-      if (optimizer === 'adamw') optimizerMem = weightMem * 2;
-      else if (optimizer === 'sgd') optimizerMem = weightMem;
-      else optimizerMem = weightMem * 2;
+      if (optimizer === 'adamw' || optimizer === 'adam') optimizerMem = totalParams * 8 / 1e9;
+      else if (optimizer === 'sgd') optimizerMem = totalParams * 4 / 1e9;
+      else optimizerMem = totalParams * 8 / 1e9;
+    } else {
+      optimizerMem = totalParams * 8 / 1e9 * 0.01; // adapters only (assumption)
     }
-    
-    // Activation memory (rough estimate)
-    const effectiveBatch = batchSize * gradAccum;
-    let activationMem = (effectiveBatch * seqLen * hidden * layers * 2) / 1e9;
+
+    // Activation memory (rough lower-bound estimate).
+    // Real activation memory depends on tensors saved per layer, attention
+    // implementation (FlashAttention saves far less), and checkpointing
+    // granularity. This uses the MICRO-batch (batchSize only) as the scale
+    // proxy: gradient-accumulation micro-steps run sequentially and reuse the
+    // same activation buffers, so accumulation must NOT multiply activations.
+    // The batch input is per-GPU micro-batch, so this is already the per-GPU
+    // activation figure (each data-parallel rank holds only its own micro-batch).
+    const actBytes = quantBits > 0 ? 2 : bytesPerParam; // activations stay in compute precision
+    let activationMem = (batchSize * seqLen * hidden * layers * actBytes) / 1e9;
     if (checkpointing) activationMem *= 0.1;
     
     // Temporary memory
@@ -109,7 +128,10 @@ const Calculator = {
     // Framework overhead
     const overhead = 2;
     
-    const totalEstimate = weightMem + gradMem + optimizerMem + activationMem + tempMem + overhead;
+    const totalEstimate = weightMem + masterMem + gradMem + optimizerMem + activationMem + tempMem + overhead;
+    // Naive per-GPU split (data-parallel replication). FSDP/ZeRO-3 shards
+    // weights+grads+optimizer across GPUs (~total/N each), so treat per-GPU as
+    // pessimistic unless you use sharding — see the Scaling guide.
     const perGpu = totalEstimate / gpuCount;
     const headroom = gpuVram > 0 ? ((gpuVram - perGpu) / gpuVram * 100) : null;
     
@@ -132,9 +154,9 @@ const Calculator = {
     const resultEl = document.getElementById('vram-result');
     this._lastResult = {
       inputs: { paramsB: params, method, precision, optimizer, batchSize, seqLen, gradAccum, checkpointing, lora, quantBits, gpuCount, gpuVram, layers, hidden },
-      estimateGB: { weights: +weightMem.toFixed(2), gradients: +gradMem.toFixed(2), optimizer: +optimizerMem.toFixed(2), activations: +activationMem.toFixed(2), temporaryAndOverhead: +(tempMem + overhead).toFixed(2), total: +totalEstimate.toFixed(2), perGpu: +perGpu.toFixed(2) },
+      estimateGB: { weights: +weightMem.toFixed(2), masterWeights: +masterMem.toFixed(2), gradients: +gradMem.toFixed(2), optimizer: +optimizerMem.toFixed(2), activations: +activationMem.toFixed(2), temporaryAndOverhead: +(tempMem + overhead).toFixed(2), total: +totalEstimate.toFixed(2), perGpu: +perGpu.toFixed(2) },
       status, headroomPct: headroom !== null ? +headroom.toFixed(1) : null,
-      note: 'Estimate only — verify with actual measurements. Not a guarantee.'
+      note: 'Theoretical estimate only — verify with nvidia-smi / torch.cuda.max_memory_allocated. Not a guarantee of fit.'
     };
     if (resultEl) {
       resultEl.innerHTML = `
@@ -145,6 +167,12 @@ const Calculator = {
               <span class="vram-row-label">Model weights (${precision.toUpperCase()})</span>
               <span class="vram-row-value">${weightMem.toFixed(1)} GB</span>
             </div>
+            ${masterMem > 0 ? `
+            <div class="vram-row">
+              <span class="vram-row-label">FP32 master weights (mixed precision)</span>
+              <span class="vram-row-value">${masterMem.toFixed(1)} GB</span>
+            </div>
+            ` : ''}
             <div class="vram-row">
               <span class="vram-row-label">Gradients</span>
               <span class="vram-row-value">${gradMem.toFixed(1)} GB</span>
@@ -186,8 +214,15 @@ const Calculator = {
             ` : ''}
           </div>
           <div class="callout callout-info mt-4">
-            <div class="callout-title">Note</div>
-            This is a rough estimate. Actual memory usage depends on framework, cuDNN benchmarks, GPU architecture, and runtime conditions. Always verify with actual measurements.
+            <div class="callout-title">Assumptions (read before trusting the number)</div>
+            Theoretical estimate, not a guarantee of fit. Mixed-precision full training counts an FP32 master
+            copy + FP32 Adam m/v (8 bytes/param); LoRA counts gradients/optimizer on ~1% of params (adapters —
+            actual share depends on rank and target modules). Activations are a rough lower bound on the
+            micro-batch (accumulation steps reuse buffers — they add steps, not memory): FlashAttention,
+            sequence packing, and checkpointing granularity change them significantly. Excluded: CUDA context
+            (~0.5–1 GB), NCCL buffers, data-loader workers, fragmentation (10–20% extra is common). Per-GPU assumes
+            replication; FSDP/ZeRO-3 shards weights+grads+optimizer (~÷N). Verify with
+            torch.cuda.max_memory_allocated() and keep ~20% headroom.
           </div>
         </div>
       `;

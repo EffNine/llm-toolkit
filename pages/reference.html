@@ -47,19 +47,24 @@
             <p class="text-xs mt-2">BF16 = 2 bytes, FP32 = 4 bytes</p>
           </div>
           <div class="card">
-            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Optimizer (AdamW)</div>
-            <pre style="margin:0; font-size: var(--text-sm);">optimizer = params × 2 × bytes_per_param</pre>
-            <p class="text-xs mt-2">m and v buffers, each same size as weights</p>
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Full training (mixed precision, AdamW)</div>
+            <pre style="margin:0; font-size: var(--text-sm);">total ≈ P×(w + 4 + g + 8) + acts + overhead</pre>
+            <p class="text-xs mt-2">P = params; w/g = stored bytes (2 for BF16); +4 FP32 master copy; +8 Adam m+v (FP32). So BF16 full-FT ≈ 16 bytes/param before activations. LoRA trains ~1% of params: gradients+optimizer apply to adapters only.</p>
           </div>
           <div class="card">
-            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Activations</div>
-            <pre style="margin:0; font-size: var(--text-sm);">acts = batch × seq × hidden × layers × 2</pre>
-            <p class="text-xs mt-2">BF16 activations. Checkpointing reduces ~90%</p>
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Optimizer (AdamW, FP32 states)</div>
+            <pre style="margin:0; font-size: var(--text-sm);">optimizer = params × 8 bytes (m + v in FP32)</pre>
+            <p class="text-xs mt-2">Plus a 4-byte/param FP32 master weight copy when training in BF16/FP16. Pure-FP32 training needs no separate master copy.</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Memory — Activations (rough lower bound)</div>
+            <pre style="margin:0; font-size: var(--text-sm);">acts ≈ batch × seq × hidden × layers × bytes</pre>
+            <p class="text-xs mt-2">Scale proxy only. FlashAttention, packing, and per-layer saved tensors change it. Checkpointing trades ~20–30% extra compute for large activation savings.</p>
           </div>
           <div class="card">
             <div class="text-mono text-xs uppercase text-tertiary mb-2">Perplexity</div>
             <pre style="margin:0; font-size: var(--text-sm);">PPL = exp(cross_entropy_loss)</pre>
-            <p class="text-xs mt-2">Lower is better. PPL=10 means 10^10 possible next tokens effectively</p>
+            <p class="text-xs mt-2">Lower is better. PPL = 20 means the model is as surprised as if guessing uniformly among 20 tokens. Only comparable on the same test set and tokenizer.</p>
           </div>
           <div class="card">
             <div class="text-mono text-xs uppercase text-tertiary mb-2">MFU</div>
@@ -67,9 +72,14 @@
             <p class="text-xs mt-2">Target: 40-60% for training. Measures hardware efficiency.</p>
           </div>
           <div class="card">
-            <div class="text-mono text-xs uppercase text-tertiary mb-2">KV Cache Memory</div>
-            <pre style="margin:0; font-size: var(--text-sm);">KV = 2 × seq × layers × kv_heads × head_dim × 2</pre>
-            <p class="text-xs mt-2">BF16. GQA reduces by sharing KV heads.</p>
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">KV Cache Memory (per request batch)</div>
+            <pre style="margin:0; font-size: var(--text-sm);">KV = 2 × seq × layers × kv_heads × head_dim × bytes × batch</pre>
+            <p class="text-xs mt-2">bytes = KV precision (often BF16/FP16 = 2). GQA reduces kv_heads vs query heads. Allocated per request; grows linearly with context length.</p>
+          </div>
+          <div class="card">
+            <div class="text-mono text-xs uppercase text-tertiary mb-2">Effective batch size</div>
+            <pre style="margin:0; font-size: var(--text-sm);">eff_batch_tokens = per_device × grad_accum × num_gpus × seq</pre>
+            <p class="text-xs mt-2">Steps per epoch = dataset_tokens ÷ eff_batch_tokens. Gradient accumulation trades step time for memory, not gradient math.</p>
           </div>
         </div>
         
@@ -121,10 +131,10 @@ torch.cuda.max_memory_allocated()  # Peak memory</pre>
         <table class="data-table mt-4">
           <thead><tr><th>Format</th><th>Bits</th><th>Max Value</th><th>Training Use</th><th>Inference Use</th></tr></thead>
           <tbody>
-            <tr><td>FP32</td><td class="text-mono">32</td><td class="text-mono">~3.4×10³⁸</td><td>Accumulation only</td><td>Rarely</td></tr>
-            <tr><td>TF32</td><td class="text-mono">19 (truncated)</td><td class="text-mono">~6.8×10³⁸</td><td>Ampere+ matmul</td><td>-</td></tr>
-            <tr><td>BF16</td><td class="text-mono">16</td><td class="text-mono">~65504</td><td class="badge badge-success">Preferred</td><td class="badge badge-success">Common</td></tr>
-            <tr><td>FP16</td><td class="text-mono">16</td><td class="text-mono">~65504</td><td class="badge badge-warning">Use with care</td><td class="badge badge-info">Common</td></tr>
+            <tr><td>FP32</td><td class="text-mono">32</td><td class="text-mono">~3.4×10³⁸</td><td>Master weights, accumulation, reductions</td><td>Rarely</td></tr>
+            <tr><td>TF32</td><td class="text-mono">19 (internal)</td><td class="text-mono">~3.4×10³⁸</td><td>Ampere+ matmul (stored as FP32)</td><td>-</td></tr>
+            <tr><td>BF16</td><td class="text-mono">16</td><td class="text-mono">~3.4×10³⁸</td><td class="badge badge-success">Preferred</td><td class="badge badge-success">Common</td></tr>
+            <tr><td>FP16</td><td class="text-mono">16</td><td class="text-mono">~6.55×10⁴</td><td class="badge badge-warning">Use with care</td><td class="badge badge-info">Common</td></tr>
             <tr><td>FP8</td><td class="text-mono">8</td><td class="text-mono">~448 (E4M3)</td><td class="badge badge-info">Experimental</td><td class="badge badge-success">Hopper+ inference</td></tr>
             <tr><td>INT8</td><td class="text-mono">8</td><td class="text-mono">127</td><td>-</td><td class="badge badge-success">Widespread</td></tr>
             <tr><td>INT4</td><td class="text-mono">4</td><td class="text-mono">7</td><td>-</td><td class="badge badge-warning">Aggressive quant</td></tr>

@@ -6,10 +6,15 @@
     "firstGPU": "H100",
     "yearIntroduced": 2022,
     "computeCapability": "9.0",
-    "keyFeatures": ["FP8 support", "Transformer Engine", "5th Gen Tensor Cores", "NVLink 4th gen"],
-    "notes": "First NVIDIA architecture with native FP8 support. Transformer Engine auto-selects FP8/FP16 per layer.",
+    "keyFeatures": [
+      "FP8 support",
+      "Transformer Engine",
+      "4th Gen Tensor Cores",
+      "NVLink 4th gen"
+    ],
+    "notes": "First NVIDIA architecture with native FP8 support. Transformer Engine auto-selects FP8/FP16 per layer. 4th-gen Tensor Cores (shared generation with Ada Lovelace).",
     "source": "https://www.nvidia.com/en-us/data-center/hopper-architecture/",
-    "lastVerified": "2025-01-15"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "ampere",
@@ -18,7 +23,12 @@
     "firstGPU": "A100",
     "yearIntroduced": 2020,
     "computeCapability": "8.0",
-    "keyFeatures": ["BF16 support", "3rd Gen Tensor Cores", "NVLink", "MMA instructions"],
+    "keyFeatures": [
+      "BF16 support",
+      "3rd Gen Tensor Cores",
+      "NVLink",
+      "MMA instructions"
+    ],
     "notes": "First NVIDIA GPU with BF16. Made large-scale training practical without overflow issues of FP16.",
     "source": "https://www.nvidia.com/en-us/data-center/a100/",
     "lastVerified": "2025-01-15"
@@ -30,7 +40,12 @@
     "firstGPU": "RTX 4090",
     "yearIntroduced": 2022,
     "computeCapability": "8.9",
-    "keyFeatures": ["4th Gen Tensor Cores", "BF16 support", "FP8 (consumer)", "DLSS 3"],
+    "keyFeatures": [
+      "4th Gen Tensor Cores",
+      "BF16 support",
+      "FP8 (consumer)",
+      "DLSS 3"
+    ],
     "notes": "Consumer lineup got BF16. FP8 available but not as well supported as datacenter Hopper.",
     "source": "https://www.nvidia.com/en-us/geforce/graphics-cards/40-series/",
     "lastVerified": "2025-01-15"
@@ -42,10 +57,15 @@
     "firstGPU": "B200",
     "yearIntroduced": 2024,
     "computeCapability": "10.0",
-    "keyFeatures": ["FP4 support", "5th Gen Tensor Cores", "Dual NVLink", "Transformer Engine 2.0"],
-    "notes": "Next-gen architecture. FP4 for inference. Verify availability and software support status.",
+    "keyFeatures": [
+      "FP4 support",
+      "5th Gen Tensor Cores",
+      "Dual NVLink",
+      "Transformer Engine 2.0"
+    ],
+    "notes": "Successor to Hopper with 5th-gen Tensor Cores, FP4 for inference, and Transformer Engine 2.0. Verify shipping availability and software/kernel support before planning on FP4.",
     "source": "https://www.nvidia.com/en-us/data-center/blackwell-architecture/",
-    "lastVerified": "2025-06-01"
+    "lastVerified": "2026-09-08"
   },
   {
     "id": "cdna3",
@@ -53,7 +73,12 @@
     "vendor": "AMD",
     "firstGPU": "MI300X",
     "yearIntroduced": 2023,
-    "keyFeatures": ["FP8 support", "3rd Gen Matrix Cores", "192GB HBM3", "ROCm 6"],
+    "keyFeatures": [
+      "FP8 support",
+      "3rd Gen Matrix Cores",
+      "192GB HBM3",
+      "ROCm 6"
+    ],
     "notes": "AMD's latest datacenter GPU. Competitive specs to H100. ROCm ecosystem maturing rapidly.",
     "source": "https://www.amd.com/en/server/mi300x",
     "lastVerified": "2025-06-01"
@@ -64,7 +89,11 @@
     "vendor": "AMD",
     "firstGPU": "MI250X",
     "yearIntroduced": 2021,
-    "keyFeatures": ["BF16 support", "2nd Gen Matrix Cores", "128GB HBM2e"],
+    "keyFeatures": [
+      "BF16 support",
+      "2nd Gen Matrix Cores",
+      "128GB HBM2e"
+    ],
     "notes": "Good value for large VRAM. ROCm support improving. Verify current framework compatibility.",
     "source": "https://www.amd.com/en/server/mi250x",
     "lastVerified": "2025-01-15"
@@ -75,7 +104,12 @@
     "vendor": "Apple",
     "firstGPU": "M1",
     "yearIntroduced": 2020,
-    "keyFeatures": ["Unified memory", "Neural Engine", "BF16 (M4)", "Metal Performance Shaders"],
+    "keyFeatures": [
+      "Unified memory",
+      "Neural Engine",
+      "BF16 (M4)",
+      "Metal Performance Shaders"
+    ],
     "notes": "Unified memory means the entire model fits in one address space. Great for inference, adequate for learning/training on smaller models.",
     "source": "https://www.apple.com/m4/",
     "lastVerified": "2025-06-01"

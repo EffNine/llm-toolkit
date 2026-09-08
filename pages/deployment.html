@@ -62,12 +62,14 @@
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">INT8 Quantization</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Halves model size with minimal quality loss. Supported natively on most modern GPUs. Good first step for deployment.</p>
+            <p class="mt-4"><strong>When:</strong> the default first try — verify on your evals, especially math, code, and non-English slices, before going to 4-bit.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">GPTQ / AWQ (4-bit)</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Post-training quantization to 4-bit. 4x size reduction. GPTQ and AWQ are the most common methods. Minor quality impact on well-calibrated models.</p>
+            <p class="mt-4"><strong>When 4-bit is good enough:</strong> chat, summarization, and RAG usually qualify — but verify per task. Precise math, code generation, and low-resource languages degrade first: test 8-bit/BF16 there before accepting 4-bit. Calibrate on data resembling production, and never quantize an already-quantized artifact.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
@@ -81,12 +83,15 @@
         
         <div class="section-title mt-8">OPERATIONAL CONSIDERATIONS</div>
         <ul style="padding-left: var(--space-6); color: var(--color-text-secondary);">
-          <li style="margin-bottom: var(--space-2);"><strong>Monitoring:</strong> Track latency, throughput, error rate, and GPU utilization</li>
-          <li style="margin-bottom: var(--space-2);"><strong>Autoscaling:</strong> Scale GPU instances based on queue depth or request rate</li>
-          <li style="margin-bottom: var(--space-2);"><strong>Model versioning:</strong> Keep old versions running while testing new ones</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Monitoring:</strong> Track latency (TTFT, inter-token), throughput, error rate, queue depth, KV pressure — plus sampled output quality (LLMs fail softly with 200 OK and worse answers)</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Autoscaling:</strong> Scale GPU instances based on queue depth or request rate. Utilization above ~70% without admission control means latency explosion under bursts</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Model versioning:</strong> Keep old versions running while testing new ones. Artefacts immutable and tagged; rollback is one config flip, drilled before you need it</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Deploy gates:</strong> Promote quantized or new checkpoints only after eval-gated comparison (task score + general suite + contamination status)</li>
           <li style="margin-bottom: var(--space-2);"><strong>Rate limiting:</strong> Prevent abuse and manage GPU costs</li>
-          <li style="margin-bottom: var(--space-2);"><strong>Caching:</strong> Cache frequent prompts to reduce redundant computation</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Caching:</strong> Cache frequent prompts and shared prefixes to reduce redundant computation</li>
+          <li style="margin-bottom: var(--space-2);"><strong>Load testing:</strong> Size from measured per-GPU throughput on your p95 prompt mix: GPUs = ceil(peak load ÷ per-GPU throughput) + 1 spare</li>
         </ul>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/inference-calc.html">Size the deployment →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#serving-observability">Serving observability →</a><a class="btn btn-sm btn-secondary" href="/pages/troubleshooting.html">Failure modes →</a></div></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

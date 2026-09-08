@@ -157,6 +157,10 @@ const App = {
       if (typeof window.renderProjects === 'function') call(() => window.renderProjects());
       return;
     }
+    if (path.endsWith('/pages/library.html')) {
+      if (typeof window.renderLibrary === 'function') call(() => window.renderLibrary());
+      return;
+    }
     // Other static pages expose a renderX stub or need no JS.
     const stub = this.stubFor(path);
     if (stub && typeof window[stub] === 'function') call(() => window[stub]());

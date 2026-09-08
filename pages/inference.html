@@ -52,7 +52,7 @@
             <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Temperature Sampling</span><span class="expandable-icon">+</span></button>
             <div class="expandable-content"><div class="expandable-body">
               <p>Divide logits by temperature before softmax. Low temp (&lt;0.5) = focused/deterministic. High temp (&gt;1.0) = creative/random.</p>
-              <p class="mt-4"><strong>Typical range:</strong> 0.7-1.0 for most applications. Below 0.5 risks repetitive output.</p>
+              <p class="mt-4"><strong>Starting points (not recipes):</strong> factual QA and code 0–0.2, general chat 0.7, brainstorming 0.8–0.9. Calibrate per task — no universal setting exists.</p>
             </div></div>
           </div>
           <div class="expandable-panel">
@@ -75,10 +75,11 @@
         
         <div class="section-title mt-8">KV CACHE</div>
         <div class="card mt-4">
-          <p><strong>The problem:</strong> Without KV cache, each new token requires recomputing attention over all previous tokens. Complexity: O(n²).</p>
-          <p class="mt-4"><strong>The solution:</strong> Store computed K,V pairs. Each new token only computes attention against cached keys/values. Complexity: O(n).</p>
-          <p class="mt-4"><strong>Memory cost:</strong> 2 × seq_len × num_layers × num_kv_heads × head_dim × 2 bytes (BF16).</p>
-          <p class="mt-4"><strong>Example:</strong> 7B model, 4096 context, BF16 = ~1.3GB KV cache. At 32K context = ~10GB.</p>
+          <p><strong>The problem:</strong> Without KV cache, each new token requires recomputing attention over all previous tokens. Complexity: O(n²) per step.</p>
+          <p class="mt-4"><strong>The solution:</strong> Store computed K,V pairs. Each new token only computes attention against cached keys/values. Complexity: O(n) state, O(1)-ish work per step.</p>
+          <p class="mt-4"><strong>Memory cost (per request):</strong> 2 × seq_len × num_layers × num_kv_heads × head_dim × bytes × batch.</p>
+          <p class="mt-4"><strong>Example:</strong> LLaMA-3-8B-like (32 layers, 8 KV heads, head_dim 128, BF16): 131 KB/token — 4K context ≈ 0.5 GB/request, 32K ≈ 4 GB. GQA (fewer KV heads) cuts this proportionally.</p>
+          <p class="mt-4"><strong>Watch out:</strong> weights-only budgeting OOMs on the first long-context batch. Budget weights + cache × concurrency + overhead.</p>
         </div>
         
         <div class="divider mt-8"></div>
@@ -87,21 +88,22 @@
         <div class="grid-2 mt-4">
           <div class="card">
             <h2 class="section-title">vLLM</h2>
-            <p class="text-sm">PagedAttention, continuous batching, highest throughput. The industry standard for serving.</p>
+            <p class="text-sm">PagedAttention, continuous batching, highest throughput. The default for GPU serving. Use when throughput per GPU matters.</p>
           </div>
           <div class="card">
             <h2 class="section-title">TGI (Text Generation Inference)</h2>
-            <p class="text-sm">Hugging Face's production server. Good integration with Hugging Face ecosystem.</p>
+            <p class="text-sm">Hugging Face's production server. Good integration with Hugging Face ecosystem. Use when staying inside HF tooling.</p>
           </div>
           <div class="card">
             <h2 class="section-title">Ollama</h2>
-            <p class="text-sm">Local inference with GGUF quantized models. Simplest way to run models locally.</p>
+            <p class="text-sm">Local inference with GGUF quantized models. Simplest way to run models locally. Use for development and personal use.</p>
           </div>
           <div class="card">
             <h2 class="section-title">llama.cpp</h2>
-            <p class="text-sm">CPU + GPU hybrid inference. Best for running large models on limited hardware.</p>
+            <p class="text-sm">CPU + GPU hybrid inference. Best for running large models on limited hardware. Use when no datacenter GPU is available.</p>
           </div>
         </div>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/inference-calc.html">Estimate inference memory →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#inference-batching">Learn batching →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#sampling">Master sampling →</a><a class="btn btn-sm btn-secondary" href="/pages/deployment.html">Deploy it →</a></div></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

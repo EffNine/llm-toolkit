@@ -55,28 +55,34 @@ const ModelCalculator = {
     const rotary = document.getElementById('mc-rope')?.checked ?? true;
     
     const headDim = hidden / heads;
-    
-    // Embedding: vocab × hidden (tied or separate)
-    const embedParams = tiedEmbed ? hidden * hidden : vocab * hidden;
-    
-    // Per-layer parameters
-    // Q, K, V projections: hidden × hidden each
-    const qkvParams = 3 * hidden * hidden;
-    
-    // KV heads for GQA
-    const kvScale = kvHeads / heads;
-    const kvParams = Math.round(2 * hidden * hidden * kvScale);
-    
+    const kvHeadDim = kvHeads * headDim;
+    // NOTE: assumes heads * headDim == hidden (standard). Biases excluded (approximation).
+    if (!Number.isInteger(headDim)) {
+      this.formError(`Hidden size (${hidden}) must be divisible by attention heads (${heads}) — head dim would be ${headDim.toFixed(2)}, which no real architecture uses.`, 'mc-hidden');
+      return;
+    }
+
+    // Embedding + output head. Tied weights count the matrix once, untied counts it twice.
+    const embedParams = tiedEmbed ? vocab * hidden : 2 * vocab * hidden;
+
+    // Per-layer attention with GQA: Q (hidden x hidden), K+V (hidden x kvHeads*headDim each), O (hidden x hidden).
+    const qParams = hidden * hidden;
+    const kvParamsEach = hidden * kvHeadDim;
+
     // Output projection: hidden × hidden
     const outParams = hidden * hidden;
+
+    // FFN (SwiGLU-gated): gate + up + down = 3 x hidden x ffnHidden.
+    // Non-gated FFNs (GPT-2 style) use 2 x hidden x ffnHidden instead.
+    const ffnHidden = Math.round(ffnExpand * hidden);
+    const ffnParams = 3 * hidden * ffnHidden;
     
-    // FFN: hidden → ffnExpand×hidden → hidden (with SwiGLU: 2 × hidden × ffnExpand×hidden + ffnExpand×hidden × hidden)
-    const ffnParams = 2 * hidden * (ffnExpand * hidden) + (ffnExpand * hidden) * hidden;
+    // Norm params: 2 RMSNorms per block (attention input + FFN input) plus the
+    // final norm — 1 param per hidden element each (RMSNorm has weight only,
+    // no bias). Negligible (<0.01%) but included so the parts sum to the total.
+    const lnParams = (layers * 2 + 1) * hidden;
     
-    // Layer norm params (2 per layer: weight + bias)
-    const lnParams = layers * 2 * hidden;
-    
-    const attnPerLayer = qkvParams + kvParams + outParams;
+    const attnPerLayer = qParams + 2 * kvParamsEach + outParams;
     const totalAttn = layers * attnPerLayer;
     const totalFfn = layers * ffnParams;
     const totalParams = embedParams + totalAttn + totalFfn + lnParams;
@@ -111,11 +117,12 @@ const ModelCalculator = {
         <div class="callout callout-info mt-4">
           <div class="callout-title">Formulas Used</div>
           <p style="margin:0; font-size: var(--text-sm);">
-            Attention per layer = 3×(hidden²) + 2×(hidden² × kvHeads/headsWith) + hidden²<br>
-            FFN per layer = 3×(hidden × ffnExpand × hidden)<br>
-            Embedding = vocab × hidden${tiedEmbed ? ' (shared with output)' : ''}
+            Attention per layer = hidden² (Q) + 2 × hidden × kvHeads × headDim (K,V) + hidden² (O)<br>
+            FFN per layer = 3 × hidden × ffnHidden, with ffnHidden = expand × hidden (SwiGLU-gated; use 2× for non-gated FFN)<br>
+            Embedding + head = vocab × hidden${tiedEmbed ? ' (tied: counted once)' : ' × 2 (untied input + output)'}; norms = (2 × layers + 1) × hidden (RMSNorm assumption)<br>
+            Dense only — for MoE, multiply the FFN term by numExperts for total params (and by topK for active per token): e.g. Mixtral 8×7B ≈ 46.7B total / ~12.9B active
           </p>
-          <p style="margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--color-text-tertiary);">This is an approximation. Actual parameter counts vary by architecture variant (GPT, Llama, Mistral, etc.).</p>
+          <p style="margin: var(--space-2) 0 0; font-size: var(--text-xs); color: var(--color-text-tertiary);">Approximation: excludes biases; assumes heads × headDim == hidden (Gemma2-style models with 256-dim heads break this — expect ~5–8% error there). Actual parameter counts vary by architecture variant (GPT, Llama, Mistral, etc.).</p>
         </div>
       </div>
     `;
@@ -137,24 +144,26 @@ const ModelCalculator = {
     const ffnExpand = f.value;
     const tiedEmbed = document.getElementById('mc-est-tied')?.checked || false;
     
-    // Reverse-engineer hidden size from target params
-    // total ≈ vocab*hidden + layers*(8*hidden² + 6*ffnExpand*hidden²) + 2*layers*hidden
-    // Simplified: total ≈ vocab*hidden + layers*hidden²*(8 + 6*ffnExpand)
-    const attnCoeff = 8 + 6 * ffnExpand;
+    // Reverse-engineer hidden size from target params (assumes MHA, SwiGLU FFN, untied
+    // embeddings unless tiedEmbed is set):
+    // total ~= embedMult*vocab*hidden + layers*hidden^2*(4 + 3*ffnExpand) + 2*layers*hidden
+    // where embedMult is 1 (tied) or 2 (untied), and 4 = Q+O (2) + K+V under MHA (2).
+    const attnCoeff = 4 + 3 * ffnExpand;
     const a = layers * attnCoeff;
-    const b = tiedEmbed ? vocab : vocab;
+    const b = (tiedEmbed ? 1 : 2) * vocab + 2 * layers;
     const c = -(targetParams * 1e9);
     
     const hidden = Math.round((-b + Math.sqrt(b * b + 4 * a * targetParams * 1e9)) / (2 * a));
-    const headDim = Math.round(hidden / 8) * 8; // round to multiple of 8
-    const heads = Math.max(8, Math.min(64, Math.round(hidden / headDim)));
+    // Modern decoder-only models use head dim 128 (LLaMA/Mistral/Qwen convention):
+    // pick head count from hidden size instead of the previous circular rounding.
+    const heads = Math.max(1, Math.min(128, Math.round(hidden / 128)));
     
-    // Recalculate actual params with these rounded values
+    // Recalculate actual params with these rounded values (MHA assumption: kvHeads == heads)
     const headDimActual = hidden / heads;
-    const embedP = tiedEmbed ? hidden * hidden : vocab * hidden;
-    const attnP = layers * (3 * hidden * hidden + 2 * hidden * hidden + hidden * hidden);
+    const embedP = tiedEmbed ? vocab * hidden : 2 * vocab * hidden;
+    const attnP = layers * (2 * hidden * hidden + 2 * hidden * hidden);
     const ffnP = layers * 3 * hidden * (ffnExpand * hidden);
-    const lnP = layers * 2 * hidden;
+    const lnP = (layers * 2 + 1) * hidden;
     const totalP = embedP + attnP + ffnP + lnP;
     
     const el = document.getElementById('model-result');
@@ -173,8 +182,9 @@ const ModelCalculator = {
         <div class="callout callout-info mt-4">
           <div class="callout-title">Notes</div>
           <p style="margin:0; font-size: var(--text-sm);">
-            Hidden size estimated from target parameter count using standard decoder-only transformer formulas. 
-            Values are rounded for practicality. Actual architectures may differ (e.g., Llama uses different head counts).
+            Hidden size estimated from target parameter count using standard decoder-only transformer formulas
+            (MHA attention, SwiGLU FFN${tiedEmbed ? ', tied embeddings' : ', untied embeddings'}).
+            Values are rounded for practicality. Actual architectures may differ (e.g., Llama uses GQA and different head counts).
           </p>
         </div>
       </div>

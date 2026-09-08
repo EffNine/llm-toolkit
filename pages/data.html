@@ -42,9 +42,9 @@
       <div class="page-content narrow">
         <h2 class="section-title">DATASET PIPELINE</h2>
         <div class="grid-3 mt-4">
-          <div class="card"><h2 class="section-title">1. Collect</h2><p class="text-sm">Web crawling, API access, public datasets (The Pile, C4, Dolma). Track sources and licenses.</p></div>
-          <div class="card"><h2 class="section-title">2. Clean</h2><p class="text-sm">Remove duplicates, filter low-quality text, deduplicate, detect language, remove PII.</p></div>
-          <div class="card"><h2 class="section-title">3. Format</h2><p class="text-sm">Convert to standard format (JSONL), tokenize, pack sequences, create train/val splits.</p></div>
+          <div class="card"><h2 class="section-title">1. Collect</h2><p class="text-sm">Web crawling, API access, public datasets (The Pile, C4, Dolma). Track sources and licenses per document — gate releases on license metadata, not memory.</p></div>
+          <div class="card"><h2 class="section-title">2. Clean</h2><p class="text-sm">Remove duplicates, filter low-quality text, deduplicate (exact then near), detect language, remove PII. Report tokens after filtering — raw bytes lie.</p></div>
+          <div class="card"><h2 class="section-title">3. Format</h2><p class="text-sm">Convert to standard format (JSONL), tokenize, pack sequences, create train/val/test splits <em>before</em> tuning anything — dedup across splits.</p></div>
         </div>
         
         <div class="divider mt-8"></div>
@@ -68,9 +68,10 @@
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Dataset Mixing</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p>Different data sources contribute differently. Web text, books, code, and papers each teach different capabilities.</p>
-            <p class="mt-4"><strong>Strategy:</strong> Start with proportional mixing by source quality. Adjust based on which capabilities you want to emphasize.</p>
+            <p class="mt-4"><strong>Strategy:</strong> Start with proportional mixing by source quality. Adjust based on which capabilities you want to emphasize. Cap any single domain around ~40% without a measured reason, and track domain shares before/after every filter stage.</p>
           </div></div>
         </div>
+        <div class="callout callout-info mt-6"><div class="callout-title">Next actions</div><div class="flex gap-3" style="flex-wrap:wrap;"><a class="btn btn-sm btn-secondary" href="/pages/data-planner.html">Open Data Planner →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#data-mixing-splits">Mixing, splits &amp; versioning →</a><a class="btn btn-sm btn-secondary" href="/pages/learn.html#licensing">Licensing basics →</a><a class="btn btn-sm btn-secondary" href="/pages/token-calc.html">Budget tokens →</a></div></div>
       </div>
     
     <footer class="page-content" style="padding-top: var(--space-8); padding-bottom: var(--space-8); border-top: var(--border); font-size: var(--text-xs); color: var(--color-text-tertiary);">

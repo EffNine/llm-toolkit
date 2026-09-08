@@ -65,25 +65,27 @@
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Data Parallelism (DDP / FSDP)</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Each GPU gets a copy of the model. Data is split across GPUs. Gradients are averaged via all-reduce.</p>
-            <p class="mt-4"><strong>DDP:</strong> Full model on each GPU. Simple but memory-inefficient at scale.</p>
-            <p><strong>FSDP:</strong> Shards model states across GPUs. 3-4x memory savings vs DDP. PyTorch's recommended approach.</p>
-            <p><strong>When to use:</strong> Your model fits on one GPU but you want faster training. Or when using FSDP, when the model is too large for one GPU.</p>
+            <p class="mt-4"><strong>DDP:</strong> Full model on each GPU. Simple but memory-inefficient at scale. If one GPU OOMs alone, DDP changes nothing.</p>
+            <p><strong>FSDP:</strong> Shards weights, grads, and optimizer states across GPUs (~÷N memory each). 3-4x memory savings vs DDP for full training. PyTorch's recommended approach.</p>
+            <p><strong>When to use:</strong> Model fits one GPU and you want speed (DDP); model exceeds one GPU (FSDP/ZeRO-3). Start FULL_SHARD + per-block wrapping; HYBRID_SHARD across slow inter-node links.</p>
+            <p><strong>Failure modes:</strong> missing distributed sampler (all ranks train on the same data); all-gather storms from wrapping per-linear instead of per-block; checkpoint loads with mismatched world size or FSDP version.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Tensor Parallelism</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Splits individual layers across GPUs. Each GPU computes a slice of the matrix multiplication.</p>
-            <p class="mt-4"><strong>Best for:</strong> Single-GPU OOM situations where the model is too wide for one GPU's memory.</p>
-            <p><strong>Requirement:</strong> Fast interconnect (NVLink) between the GPUs in each tensor-parallel group.</p>
+            <p class="mt-4"><strong>Best for:</strong> Single-GPU OOM situations where the model is too wide for one GPU's memory — especially inference (70B on 2×24GB).</p>
+            <p><strong>Requirement:</strong> Fast interconnect (NVLink) between the GPUs in each tensor-parallel group. TP over PCIe-only links is usually slower than fewer GPUs.</p>
+            <p><strong>Rule:</strong> TP group stays inside one NVLink domain (typically ≤8 GPUs); kv_heads must divide evenly by the TP degree.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
           <button type="button" class="expandable-header" aria-expanded="false"><span class="expandable-title">Pipeline Parallelism</span><span class="expandable-icon">+</span></button>
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>What it does:</strong> Splits layers across GPUs in sequence. GPU 0 processes layer 0-7, GPU 1 processes layer 8-15, etc.</p>
-            <p class="mt-4"><strong>Trade-off:</strong> Reduces per-GPU memory but introduces "bubble" time where GPUs wait for activations/grads.</p>
-            <p><strong>Best for:</strong> Very large models where tensor parallelism alone is insufficient.</p>
+            <p class="mt-4"><strong>Trade-off:</strong> Reduces per-GPU memory but introduces "bubble" time where GPUs wait for activations/grads. Bubble fraction ≈ (stages−1) ÷ micro-batches — keep micro-batches ≥ 4× stages.</p>
+            <p><strong>Best for:</strong> Very large models where tensor parallelism alone is insufficient, or pipeline stages across nodes with TP inside nodes.</p>
           </div></div>
         </div>
         <div class="expandable-panel mt-3">
@@ -91,7 +93,8 @@
           <div class="expandable-content"><div class="expandable-body">
             <p><strong>2D:</strong> Tensor parallelism within a node + data parallelism across nodes. The most common setup for 70B+ models.</p>
             <p class="mt-4"><strong>3D:</strong> Tensor + pipeline + data parallelism. Used for the largest models (400B+ parameters).</p>
-            <p><strong>Guideline:</strong> Start with data parallelism (FSDP). Add tensor parallelism if a single GPU can't hold a layer. Add pipeline parallelism if you have many GPUs per node but the model still doesn't fit.</p>
+            <p><strong>Expert parallelism:</strong> for MoE models — experts live on different GPUs, tokens route via all-to-all. Memory plans use total params, latency plans use active params.</p>
+            <p><strong>Guideline:</strong> Start with data parallelism (FSDP). Add tensor parallelism if a single GPU can't hold a layer. Add pipeline parallelism if you have many GPUs per node but the model still doesn't fit. Measure all-to-all bandwidth before big MoE runs.</p>
           </div></div>
         </div>
       </div>

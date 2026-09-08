@@ -8,6 +8,7 @@
   <url><loc>https://llm.effnine.dev/pages/model-calc.html</loc><priority>0.8</priority></url>
   <url><loc>https://llm.effnine.dev/pages/token-calc.html</loc><priority>0.8</priority></url>
   <url><loc>https://llm.effnine.dev/pages/inference-calc.html</loc><priority>0.8</priority></url>
+  <url><loc>https://llm.effnine.dev/pages/fit-check.html</loc><priority>0.9</priority></url>
   <url><loc>https://llm.effnine.dev/pages/data-planner.html</loc><priority>0.7</priority></url>
   <url><loc>https://llm.effnine.dev/pages/eval-planner.html</loc><priority>0.7</priority></url>
   <url><loc>https://llm.effnine.dev/pages/hardware.html</loc><priority>0.8</priority></url>

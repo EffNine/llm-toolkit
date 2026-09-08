@@ -145,6 +145,11 @@ const App = {
       else if (typeof window.renderInferenceCalc === 'function') call(() => window.renderInferenceCalc());
       return;
     }
+    if (path.endsWith('/pages/fit-check.html')) {
+      if (window.FitChecker) call(() => window.FitChecker.init());
+      else if (typeof window.renderFitCheck === 'function') call(() => window.renderFitCheck());
+      return;
+    }
     if (path.endsWith('/pages/training.html')) {
       if (typeof window.renderTraining === 'function') call(() => window.renderTraining());
       return;

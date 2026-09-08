@@ -193,7 +193,7 @@ const Search = {
       this.fetchJson('/data/projects.json'),
       this.fetchJson('/data/sources.json')
     ]);
-    topics.forEach((t) => items.push({ ...t, type: 'Topic', path: `/pages/learn.html#${t.id}`, tags: [t.category, t.difficulty].filter(Boolean) }));
+    topics.forEach((t) => items.push({ ...t, type: 'Topic', description: t.summary || t.description || '', path: `/pages/learn.html#${t.id}`, tags: [t.category, t.difficulty].filter(Boolean) }));
     gpus.forEach((g) => items.push({ title: g.name, description: `${g.vendor || ''} ${g.architecture || ''} ${g.vram || ''}GB`, type: 'GPU', path: `/pages/hardware.html#${g.id}`, tags: [g.vendor, g.architecture].filter(Boolean) }));
     models.forEach((m) => items.push({ title: m.name, description: `${m.parameters || ''}B ${m.type || ''}`, type: 'Model', path: '/pages/models.html', tags: [m.type].filter(Boolean) }));
     projects.forEach((p, i) => items.push({ title: p.title, description: p.objective, type: 'Project', path: '/pages/projects.html', tags: [p.difficulty].filter(Boolean), _idx: i }));

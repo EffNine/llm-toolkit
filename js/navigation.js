@@ -54,6 +54,9 @@ const Navigation = {
     const current = (window.Router && typeof window.Router.getCurrent === 'function')
       ? window.Router.getCurrent()
       : window.location.pathname;
+    const normalize = (window.Router && typeof window.Router.normalize === 'function')
+      ? (p) => window.Router.normalize(p)
+      : (p) => p;
 
     let html = '';
     SECTION_META.forEach(({ key, label }) => {
@@ -62,7 +65,7 @@ const Navigation = {
       html += `<div class="nav-section-label" aria-hidden="false">${label}</div>`;
       routes.forEach((route) => {
         const icon = icons[route.path] || '·';
-        const isActive = route.path === current;
+        const isActive = normalize(route.path) === current;
         html += `<a href="${route.path}" class="nav-item${isActive ? ' active' : ''}" data-path="${route.path}"${isActive ? ' aria-current="page"' : ''}>`
           + `<span class="nav-item-icon" aria-hidden="true">${icon}</span>`
           + `${route.label}`

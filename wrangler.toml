@@ -1,10 +1,12 @@
-{
-  "site_id": "llm-effnine-dev",
-  "description": "LLM Training & Engineering Toolkit - Interactive learning and engineering resource",
-  "branch": "main",
-  "build_command": "",
-  "output_dir": ".",
-  "dev_command": "",
-  "install_command": "",
-  "env": {}
-}
+# Cloudflare Pages project metadata (dashboard-connected static site; no build step).
+# NOTE: Cloudflare Pages deploys ignore this file; it exists only as documentation.
+# Kept as valid TOML so local tooling that parses it does not break.
+site_id = "llm-effnine-dev"
+description = "LLM Training & Engineering Toolkit - Interactive learning and engineering resource"
+branch = "main"
+build_command = ""
+output_dir = "."
+dev_command = ""
+install_command = ""
+
+[env]

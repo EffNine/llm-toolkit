@@ -80,7 +80,6 @@ const Calculator = {
   },
 
   reset() {
-    document.querySelectorAll('#plan-form .form-input, .planner-card .form-input').forEach(() => {});
     const defaults = {
       'param-count': '1', 'num-layers': '24', 'hidden-size': '4096', 'batch-size': '4',
       'seq-length': '2048', 'grad-accum': '1', 'quant-bits': '0', 'gpu-count': '1', 'gpu-vram': '0'

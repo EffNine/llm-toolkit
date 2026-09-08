@@ -22,9 +22,9 @@ llm-toolkit/
 ├── site.webmanifest        # PWA manifest
 ├── favicon.svg             # Site icon
 ├── css/                    # 8 stylesheets
-├── js/                     # 12 ES module scripts
-├── data/                   # 11 JSON data files
-├── pages/                  # 20 HTML pages
+├── js/                     # 14 ES module scripts
+├── data/                   # 13 JSON data files
+├── pages/                  # 23 HTML pages
 └── projects/               # 6 project directories
 ```
 
@@ -65,7 +65,7 @@ After deployment completes:
 
 1. Visit https://llm.effnine.dev
 2. Check that homepage loads
-3. Test navigation between all 20 pages
+3. Test navigation between all 23 pages
 4. Verify search works (press `/`)
 5. Test mobile layout (resize browser to 375px, 768px)
 6. Check 404 page (`https://llm.effnine.dev/nonexistent`)
@@ -80,11 +80,11 @@ After deployment completes:
 ## Step 5: Verify Assets
 
 - [ ] All 8 CSS files load
-- [ ] All 12 JS modules load (check DevTools console for errors)
+- [ ] All 14 JS modules load (check DevTools console for errors)
 - [ ] Google Fonts load (Inter + JetBrains Mono)
 - [ ] Favicon displays
 - [ ] Search modal opens with `/` key
-- [ ] All 20 pages return HTTP 200
+- [ ] All 23 pages return HTTP 200
 - [ ] 404 page returns HTTP 404 for unknown paths
 - [ ] All JSON data files are valid
 
@@ -94,7 +94,6 @@ The `_headers` file configures these Cloudflare Page Rules headers:
 
 - `X-Frame-Options: DENY` — prevents clickjacking
 - `X-Content-Type-Options: nosniff` — prevents MIME sniffing
-- `X-XSS-Protection: 1; mode=block` — XSS filter
 - `Referrer-Policy: strict-origin-when-cross-origin` — referrer control
 - `Cache-Control: public, max-age=3600` — 1-hour cache for static assets
 Static multi-page routing (no SPA fallback):

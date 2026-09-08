@@ -283,7 +283,7 @@ const Planner = {
     const roadmap = this.buildRoadmap();
     this.clearWizard();
     try {
-      Progress.setRoadmap({ ...this.answers, roadmap, generatedAt: new Date().toISOString() });
+      window.Progress.setRoadmap({ ...this.answers, roadmap, generatedAt: new Date().toISOString() });
     } catch { /* ignore */ }
     this.renderRoadmap(roadmap, this.answers);
   },
@@ -508,7 +508,7 @@ const Planner = {
 
   saveRoadmap() {
     try {
-      Progress.setRoadmap({ ...this.answers, roadmap: this.buildRoadmap(), saved: true });
+      window.Progress.setRoadmap({ ...this.answers, roadmap: this.buildRoadmap(), saved: true });
     } catch { /* ignore */ }
     const status = document.getElementById('roadmap-save-status');
     if (status) status.textContent = 'Roadmap saved on this device.';

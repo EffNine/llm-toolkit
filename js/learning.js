@@ -56,7 +56,7 @@ const Learning = {
     } catch (err) {
       // Fallback: dynamic import for file:// or non-standard serving.
       try {
-        const mod = await import('../data/topics.json', { assert: { type: 'json' } }).catch(() => import('../data/topics.json'));
+        const mod = await import('../data/topics.json', { with: { type: 'json' } }).catch(() => import('../data/topics.json', { assert: { type: 'json' } })).catch(() => import('../data/topics.json'));
         const data = mod.default || mod;
         this._topics = Array.isArray(data) ? data : (Array.isArray(data.topics) ? data.topics : []);
         window.TOPICS = this._topics;
@@ -197,9 +197,10 @@ const Learning = {
     if (!box || box.dataset.built) return;
     box.dataset.built = '1';
     const diffs = [...new Set((window.TOPICS || []).map((t) => t.difficulty).filter(Boolean))].sort();
+    const total = (window.TOPICS || []).length;
     box.innerHTML = `
       <div class="learn-filters" role="search" aria-label="Filter curriculum">
-        <input type="search" id="lesson-q" class="form-input" placeholder="Filter 84 topics…" aria-label="Filter topics by keyword" autocomplete="off">
+        <input type="search" id="lesson-q" class="form-input" placeholder="Filter ${total} topics…" aria-label="Filter topics by keyword" autocomplete="off">
         <select id="lesson-diff" class="form-select" aria-label="Filter by difficulty">
           <option value="">All levels</option>
           ${diffs.map((d) => `<option value="${this.escapeAttr(d)}">${this.escapeAttr(d)}</option>`).join('')}
@@ -280,8 +281,8 @@ const Learning = {
 
     const isCompleted = window.Progress ? window.Progress.isCompleted(id) : false;
 
-    const prereqs = (topic.prerequisites || []).map((p) => `<span class="prereq-tag">${this.escapeHtml(p)}</span>`).join('');
-    const related = (topic.related || []).map((r) => `<span class="prereq-tag">${this.escapeHtml(r)}</span>`).join('');
+    const prereqs = (topic.prerequisites || []).map((p) => this.topicRef(p)).join('');
+    const related = (topic.related || []).map((r) => this.topicRef(r)).join('');
     const next = this.getNextTopicIndex(id);
     const prev = this.getPrevTopicIndex(id);
 
@@ -322,7 +323,7 @@ const Learning = {
         <div class="mt-8">
           <div class="section-title">Related Concepts</div>
           <div class="knowledge-graph">
-            ${(topic.related || []).map((r) => `<div class="graph-card"><div class="graph-card-title">${this.escapeHtml(r.trim())}</div><div class="graph-card-type">Related topic</div></div>`).join('')}
+            ${(topic.related || []).map((r) => this.relatedCard(r)).join('')}
           </div>
         </div>
       ` : ''}
@@ -429,15 +430,38 @@ const Learning = {
     }
   },
 
+  // Related-topic card: links to the topic when the reference resolves,
+  // otherwise a static card (same fallback as topicRef).
+  relatedCard(ref) {
+    const id = String(ref || '').trim();
+    const target = (window.TOPICS || []).find((t) => t.id === id);
+    const title = target ? target.title : id;
+    const meta = target ? [target.difficulty, target.estimatedTime].filter(Boolean).join(' · ') : 'Related topic';
+    const done = target && window.Progress ? window.Progress.isCompleted(target.id) : false;
+    const inner = `<div class="graph-card-title">${done ? '✓ ' : ''}${this.escapeHtml(title)}</div><div class="graph-card-type">${this.escapeHtml(meta)}</div>`;
+    if (target) return `<a class="graph-card" href="#${this.escapeAttr(id)}" aria-label="Open ${this.escapeAttr(title)}">${inner}</a>`;
+    return `<div class="graph-card">${inner}</div>`;
+  },
+
   toggleComplete(id) {
     if (!window.Progress) return;
+    // Remember open expert layers: re-rendering below rebuilds the DOM and
+    // would otherwise collapse everything the reader had expanded.
+    const openLayers = new Set();
+    document.querySelectorAll('#topic-content .expert-layer').forEach((panel) => {
+      const content = panel.querySelector('.expert-layer-content');
+      if (content && !content.hasAttribute('hidden')) openLayers.add(panel.getAttribute('data-layer'));
+    });
     const nowCompleted = window.Progress.toggleLesson(id);
-    const status = document.getElementById('lesson-complete-status');
-    if (status) {
-      status.textContent = nowCompleted ? 'Marked as complete. Progress saved on this device.' : 'Completion removed. Progress updated.';
-    }
     // Re-render detail header state + list without losing scroll.
     this.viewTopic(id, { updateHash: false });
+    openLayers.forEach((layer) => {
+      const btn = document.querySelector(`#topic-content .expert-layer[data-layer="${layer}"] [data-layer-toggle]`);
+      const content = btn ? document.getElementById(btn.getAttribute('aria-controls')) : null;
+      if (btn && content && content.hasAttribute('hidden')) this.toggleLayerBtn(btn);
+    });
+    // Keep focus where the user acted instead of jumping to the heading.
+    document.getElementById('lesson-complete-btn')?.focus({ preventScroll: true });
     const msg = document.getElementById('lesson-complete-status');
     if (msg) msg.textContent = nowCompleted ? 'Marked as complete. Progress saved on this device.' : 'Completion removed. Progress updated.';
   },
@@ -558,13 +582,38 @@ const Learning = {
   },
 
   getNextTopicIndex(id) {
-    const idx = (window.TOPICS || []).findIndex((t) => t.id === id);
-    return idx >= 0 && idx < window.TOPICS.length - 1 ? window.TOPICS[idx + 1] : null;
+    const ordered = this.orderedTopics();
+    const idx = ordered.findIndex((t) => t.id === id);
+    return idx >= 0 && idx < ordered.length - 1 ? ordered[idx + 1] : null;
   },
 
   getPrevTopicIndex(id) {
-    const idx = (window.TOPICS || []).findIndex((t) => t.id === id);
-    return idx > 0 ? window.TOPICS[idx - 1] : null;
+    const ordered = this.orderedTopics();
+    const idx = ordered.findIndex((t) => t.id === id);
+    return idx > 0 ? ordered[idx - 1] : null;
+  },
+
+  // Flat curriculum order (stage order, then difficulty, then file order) —
+  // the same order the list renders in. Prev/Next follow this, not the raw
+  // topics.json order (which groups some later-stage categories earlier).
+  orderedTopics() {
+    const topics = window.TOPICS || [];
+    const rank = (t) => this.DIFF_RANK[t.difficulty] ?? 9;
+    const order = new Map(topics.map((t, i) => [t.id, i]));
+    return this.STAGES.flatMap((stage) =>
+      topics
+        .filter((t) => stage.categories.includes(t.category))
+        .sort((a, b) => (rank(a) - rank(b)) || ((order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)))
+    );
+  },
+
+  // A prerequisite/related reference rendered as a link when it resolves to
+  // a real topic (all current data refs do), plain text otherwise.
+  topicRef(ref) {
+    const id = String(ref || '').trim();
+    const target = (window.TOPICS || []).find((t) => t.id === id);
+    if (target) return `<a class="prereq-tag" href="#${this.escapeAttr(id)}">${this.escapeHtml(id)}</a>`;
+    return `<span class="prereq-tag">${this.escapeHtml(id)}</span>`;
   },
 
   nextTopic(id) {
